@@ -170,7 +170,7 @@ export default function ImageScrollScrubber() {
       </div>
       
       {/* Spacer below to ensure content follows correctly after unpinning */}
-      <div className="h-[300vh] bg-black" />
+      <div className="h-[300vh]" />
     </div>
   );
 }
