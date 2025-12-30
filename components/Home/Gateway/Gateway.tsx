@@ -169,7 +169,7 @@ export function RevealZoom({
   buildingImage = reveal,
   windowImage = mirai,
   shapeImage = shapeTwo,
-  scrollDistance = "+=1000%",
+  scrollDistance = "+=1000%",  // Balanced scroll distance
   buildingZoomScale = 16,
   windowZoomScale = 2.5,
   windowMoveDistance = 1,
@@ -317,9 +317,7 @@ export function RevealZoom({
   useEffect(() => {
     if (typeof window === 'undefined' || !imageLoaded) return;
 
-    // ⚠️ FIXED: Only kill ScrollTriggers created by THIS component
-    // Previously: ScrollTrigger.getAll().forEach(st => st.kill());
-    // This was killing ALL ScrollTriggers on the page, breaking other components!
+    ScrollTrigger.getAll().forEach(st => st.kill());
     
     ctxRef.current = gsap.context(() => {
       gsap.set(textRef.current, { opacity: 0, y: 40 });
@@ -335,7 +333,6 @@ export function RevealZoom({
       
       const tl = gsap.timeline({
         scrollTrigger: {
-          id: 'reveal-zoom', // Unique ID for this ScrollTrigger
           trigger: wrapperRef.current,
           start: "top top",
           end: scrollDistance,
@@ -424,7 +421,6 @@ export function RevealZoom({
 
     return () => {
       if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current);
-      // This properly cleans up only the ScrollTriggers created within this context
       ctxRef.current?.revert();
     };
   }, [scrollDistance, buildingZoomScale, windowZoomScale, windowMoveDistance, scheduleCanvasDraw, imageLoaded]);

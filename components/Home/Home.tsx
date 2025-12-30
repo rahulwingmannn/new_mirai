@@ -14,66 +14,20 @@ import SixthElement from './Sixth_Element/Sixth_element'
 
 const Home = () => {
   return (
-    <div className="relative">
+    <div>
       {/* All sections before Contact - wrapped with higher z-index */}
       <div className="relative z-10 bg-black">
         <Hero />
         {/* Spacer to offset the fixed hero so page content starts after it */}
         <div className="h-screen" aria-hidden="true" />
-        
         <SixthElement />
-        
-        {/* 
-          ============================================================
-          PINNED SCROLLTRIGGER SECTIONS
-          ============================================================
-          Each pinned section needs proper isolation to prevent conflicts.
-          Key fixes applied:
-          1. Each section wrapped with isolation: isolate
-          2. contain: layout style paint for proper stacking context
-          3. Small spacer between pinned sections
-          4. Each component has unique ScrollTrigger ID
-          ============================================================
-        */}
-        
-        {/* RevealZoom Section - First pinned canvas animation */}
-        <section 
-          aria-label="Reveal zoom" 
-          data-section="reveal-zoom"
-          className="relative"
-          style={{ 
-            isolation: 'isolate',
-            contain: 'layout style paint',
-          }}
-        >
+        {/* Separate sections so each canvas renders within its own DOM container; no visual/layout change */}
+        <section aria-label="Reveal zoom" data-section="reveal-zoom" className="relative">
           <RevealZoom />
         </section>
-        
-        {/* 
-          Spacer between pinned sections - CRITICAL for ScrollTrigger!
-          This ensures proper separation and position calculation
-        */}
-        <div 
-          className="relative bg-black" 
-          style={{ height: '2px' }} 
-          aria-hidden="true" 
-        />
-        
-        {/* ScrollVideoComponent Section - Second pinned canvas animation */}
-        <section 
-          aria-label="Scroll video" 
-          data-section="scroll-video"
-          className="relative"
-          style={{ 
-            isolation: 'isolate',
-            contain: 'layout style paint',
-          }}
-        >
+        <section aria-label="Scroll video" data-section="scroll-video" className="relative">
           <ScrollVideoComponent />
         </section>
-        
-        {/* End of pinned sections - rest of content flows normally */}
-        
         <MiraiPodsIntro />
         <MiraiPodsSlider />
         <ClubhouseIntro />
