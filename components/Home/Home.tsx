@@ -21,8 +21,13 @@ const Home = () => {
         {/* Spacer to offset the fixed hero so page content starts after it */}
         <div className="h-screen" aria-hidden="true" />
         <SixthElement />
-        <RevealZoom />
-        <ScrollVideoComponent />
+        {/* Separate sections so each canvas renders within its own DOM container; no visual/layout change */}
+        <section aria-label="Reveal zoom" data-section="reveal-zoom" className="relative">
+          <RevealZoom />
+        </section>
+        <section aria-label="Scroll video" data-section="scroll-video" className="relative">
+          <ScrollVideoComponent />
+        </section>
         <MiraiPodsIntro />
         <MiraiPodsSlider />
         <ClubhouseIntro />

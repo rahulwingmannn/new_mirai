@@ -190,7 +190,6 @@ export function RevealZoom({
   const needsDrawRef = useRef(false);
   
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [buildingLoaded, setBuildingLoaded] = useState(false);
   const imageRef = useRef<HTMLImageElement | null>(null);
   
   const animState = useRef({
@@ -199,10 +198,6 @@ export function RevealZoom({
     lastScale: -1,
     lastPanY: -1,
   });
-
-  // Maximum canvas dimension (device pixels) to avoid browser OOM or
-  // exceeding canvas implementation limits. 16384 is a safe conservative cap.
-  const MAX_CANVAS_DIM = 16384;
 
   const resolvedBuildingSrc = typeof buildingImage === 'string' ? buildingImage : buildingImage.src;
   const resolvedWindowSrc = typeof windowImage === 'string' ? windowImage : windowImage.src;
@@ -240,35 +235,16 @@ export function RevealZoom({
       drawHeight = drawWidth / imgAspect;
     }
 
-    // Clamp drawing dimensions to avoid exceeding browser canvas limits
-    const maxDim = MAX_CANVAS_DIM;
-    if (drawWidth > maxDim || drawHeight > maxDim) {
-      const downscale = Math.min(maxDim / drawWidth, maxDim / drawHeight);
-      drawWidth *= downscale;
-      drawHeight *= downscale;
-    }
-
     const drawX = (displayWidth - drawWidth) / 2;
     const extraHeight = drawHeight - displayHeight;
     const drawY = -extraHeight * panY;
 
-    try {
-      ctx.drawImage(
-        img,
-        0, 0, img.naturalWidth, img.naturalHeight,
-        Math.round(drawX), Math.round(drawY), 
-        Math.round(drawWidth), Math.round(drawHeight)
-      );
-    } catch (err) {
-      // If the browser can't allocate the requested draw area, bail out safely
-      // and stop the RAF loop to prevent repeated failures.
-      // eslint-disable-next-line no-console
-      console.warn('Canvas draw failed:', err);
-      if (rafIdRef.current) {
-        cancelAnimationFrame(rafIdRef.current);
-        rafIdRef.current = null;
-      }
-    }
+    ctx.drawImage(
+      img,
+      0, 0, img.naturalWidth, img.naturalHeight,
+      drawX | 0, drawY | 0, 
+      (drawWidth + 0.5) | 0, (drawHeight + 0.5) | 0
+    );
   }, [imageLoaded]);
 
   const scheduleCanvasDraw = useCallback(() => {
@@ -283,22 +259,12 @@ export function RevealZoom({
 
   const setupCanvas = useCallback(() => {
     const canvas = canvasRef.current;
-    if (!canvas || typeof window === 'undefined') return;
+    if (!canvas) return;
 
     const rect = canvas.getBoundingClientRect();
-
-    // Use devicePixelRatio for crispness but cap to MAX_CANVAS_DIM to avoid OOMs
-    const DPR = Math.max(1, window.devicePixelRatio || 1);
-    const desiredWidth = Math.min(Math.round(rect.width * DPR), MAX_CANVAS_DIM);
-    const desiredHeight = Math.min(Math.round(rect.height * DPR), MAX_CANVAS_DIM);
-
-    canvas.width = desiredWidth;
-    canvas.height = desiredHeight;
-
-    // Keep CSS-sized layout the same so drawing math can use clientWidth/clientHeight
-    canvas.style.width = `${rect.width}px`;
-    canvas.style.height = `${rect.height}px`;
-
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+    
     const ctx = canvas.getContext('2d', {
       alpha: false,
       desynchronized: true,
@@ -313,9 +279,6 @@ export function RevealZoom({
     animState.current.lastScale = -1;
     animState.current.lastPanY = -1;
     drawCanvas();
-
-    // Ensure ScrollTrigger recalculates after canvas/layout changes
-    try { ScrollTrigger.refresh(); } catch (e) { /* ignore on SSR or early load */ }
   }, [drawCanvas]);
 
   useEffect(() => {
@@ -325,28 +288,8 @@ export function RevealZoom({
       imageRef.current = img;
       setImageLoaded(true);
     };
-    img.onerror = () => setImageLoaded(false);
     img.src = resolvedWindowSrc;
   }, [resolvedWindowSrc]);
-
-  // Track the building image element (the full-size background) so we can
-  // defer ScrollTrigger initialization until both images are ready.
-  useEffect(() => {
-    const el = buildingRef.current;
-    if (!el) return;
-    if (el.complete && (el as HTMLImageElement).naturalWidth) {
-      setBuildingLoaded(true);
-      return;
-    }
-    const onLoad = () => setBuildingLoaded(true);
-    const onError = () => setBuildingLoaded(false);
-    el.addEventListener('load', onLoad);
-    el.addEventListener('error', onError);
-    return () => {
-      el.removeEventListener('load', onLoad);
-      el.removeEventListener('error', onError);
-    };
-  }, [resolvedBuildingSrc]);
 
   useEffect(() => {
     if (imageLoaded) setupCanvas();
@@ -372,49 +315,34 @@ export function RevealZoom({
   }, [setupCanvas]);
 
   useEffect(() => {
-    // Defer initializing ScrollTrigger until both the window image and the
-    // building image have finished loading. This prevents premature pinning
-    // and layout shifts that can cause automatic scrolling/jumps on deploy.
-    if (typeof window === 'undefined' || !imageLoaded || !buildingLoaded) return;
+    if (typeof window === 'undefined' || !imageLoaded) return;
 
-    (async () => {
-      // Wait for fonts (if any) to be ready so measurements are stable.
-      try {
-        if ((document as any).fonts && (document as any).fonts.ready) {
-          await (document as any).fonts.ready;
-        }
-      } catch (e) {
-        // ignore
-      }
-
-      // Kill any previous ScrollTriggers and create fresh timeline now that
-      // layout and images are settled.
-      ScrollTrigger.getAll().forEach(st => st.kill());
+    ScrollTrigger.getAll().forEach(st => st.kill());
+    
+    ctxRef.current = gsap.context(() => {
+      gsap.set(textRef.current, { opacity: 0, y: 40 });
+      gsap.set([pointer1Ref.current, pointer2Ref.current, pointer3Ref.current, pointer4Ref.current], { 
+        opacity: 0, 
+        scale: 0,
+        force3D: true
+      });
       
-      ctxRef.current = gsap.context(() => {
-        gsap.set(textRef.current, { opacity: 0, y: 40 });
-        gsap.set([pointer1Ref.current, pointer2Ref.current, pointer3Ref.current, pointer4Ref.current], { 
-          opacity: 0, 
-          scale: 0,
-          force3D: true
-        });
-        
-        gsap.set(buildingRef.current, { force3D: true });
-        gsap.set(shapeRef.current, { force3D: true });
-        gsap.set(textRef.current, { force3D: true });
-        
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: wrapperRef.current,
-            start: "top top",
-            end: scrollDistance,
-            pin: true,
-            scrub: true,
-            anticipatePin: 1,
-            fastScrollEnd: true,
-            preventOverlaps: true,
-          },
-        });
+      gsap.set(buildingRef.current, { force3D: true });
+      gsap.set(shapeRef.current, { force3D: true });
+      gsap.set(textRef.current, { force3D: true });
+      
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: wrapperRef.current,
+          start: "top top",
+          end: scrollDistance,
+          pin: true,
+          scrub: true,
+          anticipatePin: 1,
+          fastScrollEnd: true,
+          preventOverlaps: true,
+        },
+      });
 
       // PHASE 1: Building zoom (much slower)
       tl.to(buildingRef.current, {
@@ -491,13 +419,11 @@ export function RevealZoom({
 
     }, wrapperRef);
 
-      })();
-
     return () => {
       if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current);
       ctxRef.current?.revert();
     };
-  }, [scrollDistance, buildingZoomScale, windowZoomScale, windowMoveDistance, scheduleCanvasDraw, imageLoaded, buildingLoaded]);
+  }, [scrollDistance, buildingZoomScale, windowZoomScale, windowMoveDistance, scheduleCanvasDraw, imageLoaded]);
 
   useEffect(() => {
     return () => {
