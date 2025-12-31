@@ -1,5 +1,4 @@
 'use client';
-
 import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -11,80 +10,37 @@ export default function ImageScrollScrubber() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  // Store static canvas-friendly image sources (ImageBitmap or HTMLImageElement).
   const imagesRef = useRef<CanvasImageSource[]>([]);
-  const frameObj = useRef({ frame: 0 }); // Object for GSAP to animate
+  const frameObj = useRef({ frame: 0 });
   const lastFrameRef = useRef<number | null>(null);
-  const debugRef = useRef<HTMLDivElement | null>(null);
+  const debugRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const loadImages = async () => {
-      try {
-        setLoading(true);
-        const images: CanvasImageSource[] = [];
-        const totalImages = 5;
-
-        for (let i = 1; i <= totalImages; i++) {
-          // Prefer GIF frames in the public folder (fallback to svg/png/jpg/webp).
-          // We create a static ImageBitmap snapshot on load so animated GIFs don't autonomously play
-          // between scroll updates — rendering is triggered by GSAP's onUpdate.
-          const exts = ['.gif', '.png', '.jpg', '.webp', '.svg'];
-          let loaded = false;
-          for (const ext of exts) {
-            const imagePath = `/components/Home/Mirai_Grace/${i}${ext}`;
-            const img = new Image();
-            img.crossOrigin = 'anonymous';
-            const loadedImage = await new Promise<HTMLImageElement | null>((resolve) => {
-              img.onload = () => resolve(img);
-              img.onerror = () => resolve(null);
-              img.src = imagePath;
-            });
-            if (!loadedImage) continue;
-            try {
-              const bitmap = await createImageBitmap(loadedImage);
-              images.push(bitmap);
-            } catch (e) {
-              // Fallback to using the HTMLImageElement directly if ImageBitmap not available
-              images.push(loadedImage);
-            }
-            loaded = true;
-            break;
-          }
-        }
-        if (images.length === 0) throw new Error("No images loaded");
-        imagesRef.current = images;
-        setLoading(false);
-        console.log('Mirai_Grace loaded', images.length);
-        initGSAP();
-
-        // Do NOT start a continuous RAF loop; rendering is driven by GSAP onUpdate (scroll)
-        // so GIFs won't animate independently when the page is idle.
-      } catch (err) {
-        setLoading(false);
-        setError(err instanceof Error ? err.message : 'Unknown error');
-      }
-    };
-
     const render = () => {
       const canvas = canvasRef.current;
       const ctx = canvas?.getContext('2d');
       if (!canvas || !ctx || imagesRef.current.length === 0) return;
 
-      const img = imagesRef.current[Math.round(frameObj.current.frame)];
+      const frameIndex = Math.round(frameObj.current.frame);
+      const img = imagesRef.current[frameIndex];
       if (!img) return;
 
-      const roundedFrame = Math.round(frameObj.current.frame);
-      if (lastFrameRef.current !== roundedFrame) {
-        lastFrameRef.current = roundedFrame;
-        console.log('Mirai_Grace render frame', roundedFrame);
-        if (debugRef.current) debugRef.current.textContent = `frame:${roundedFrame}`;
+      if (lastFrameRef.current !== frameIndex) {
+        lastFrameRef.current = frameIndex;
+        console.log('Mirai_Grace render frame', frameIndex);
       }
 
-      const vw = canvas.width / (window.devicePixelRatio || 1);
-      const vh = canvas.height / (window.devicePixelRatio || 1);
-      const sw = ('naturalWidth' in img ? (img as HTMLImageElement).naturalWidth : (img as ImageBitmap).width) || (img as any).width || 0;
-      const sh = ('naturalHeight' in img ? (img as HTMLImageElement).naturalHeight : (img as ImageBitmap).height) || (img as any).height || 0;
+      if (debugRef.current) {
+        debugRef.current.textContent = `frame:${frameIndex}`;
+      }
+
+      const dpr = window.devicePixelRatio || 1;
+      const vw = canvas.width / dpr;
+      const vh = canvas.height / dpr;
+
+      const sw = (img as any).naturalWidth || (img as any).width || 0;
+      const sh = (img as any).naturalHeight || (img as any).height || 0;
+
       const scale = Math.max(vw / sw, vh / sh);
       const w = sw * scale;
       const h = sh * scale;
@@ -92,125 +48,159 @@ export default function ImageScrollScrubber() {
       const y = (vh - h) / 2;
 
       ctx.clearRect(0, 0, vw, vh);
-      ctx.fillStyle = "black";
+      ctx.fillStyle = 'black';
       ctx.fillRect(0, 0, vw, vh);
-      ctx.drawImage(img as any, x, y, w, h);
+      ctx.drawImage(img as CanvasImageSource, x, y, w, h);
+    };
+
+    const setCanvasSize = () => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      if (ctx) {
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
     };
 
     const initGSAP = () => {
       const canvas = canvasRef.current;
       if (!canvas || !sectionRef.current) return;
 
-      // Set canvas size and use setTransform to avoid cumulative scaling
-      const dpr = window.devicePixelRatio || 1;
-      const ctx = canvas.getContext('2d');
-      canvas.width = window.innerWidth * dpr;
-      canvas.height = window.innerHeight * dpr;
-      if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      setCanvasSize();
 
-      // Create GSAP Timeline
+      // Reset frame
+      frameObj.current.frame = 0;
+
+      // Single ScrollTrigger with timeline
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: "top top",
-          end: "+=300%", // Scroll length
-          pin: true,     // GSAP handles pinning instead of CSS sticky
-          scrub: 0.5,    // Smooth transition between frames
-          onUpdate: render,
-          // Prevent the "black gap" by ensuring the pin remains active
-          anticipatePin: 1, 
-        }
+          start: 'top top',
+          end: '+=300%',
+          pin: true,
+          scrub: 0.5,
+          anticipatePin: 1,
+          onUpdate: (self) => {
+            if (debugRef.current) {
+              debugRef.current.textContent = `frame:${Math.round(frameObj.current.frame)} progress:${self.progress.toFixed(2)}`;
+            }
+          },
+        },
       });
 
-      // Reset frame to 0 and animate frame property from 0 to last index
-      frameObj.current.frame = 0;
       tl.to(frameObj.current, {
         frame: imagesRef.current.length - 1,
-        ease: "none",
-        onUpdate: render
-      });
-
-      // Ensure ScrollTrigger is aware of the new pin/size after images are loaded
-      ScrollTrigger.refresh();
-      console.log('Mirai_Grace GSAP init', imagesRef.current.length);
-
-      // Debug: log all ScrollTriggers and the timeline's scrollTrigger
-      console.log('Mirai_Grace ScrollTriggers:', ScrollTrigger.getAll().map(s => ({ start: s.start, end: s.end, trigger: s.trigger })));
-      const st = (tl as any).scrollTrigger;
-      if (st) console.log('Mirai_Grace timeline.scrollTrigger', { start: st.start, end: st.end, pin: !!st.pin });
-
-      // Create a debug ScrollTrigger to report progress, update the overlay, and as a fallback map progress -> frame
-      ScrollTrigger.create({
-        trigger: sectionRef.current,
-        start: "top top",
-        end: "+=300%",
-        onUpdate(self) {
-          console.log('Mirai_Grace ST progress', self.progress);
-          if (debugRef.current) debugRef.current.textContent = `frame:${lastFrameRef.current ?? 0} progress:${self.progress.toFixed(2)}`;
-
-          // Fallback: compute frame directly from progress and force render so visual updates during scroll are immediate
-          const last = lastFrameRef.current ?? 0;
-          const frameFromProgress = Math.round(self.progress * (imagesRef.current.length - 1));
-          if (frameFromProgress !== last) {
-            frameObj.current.frame = frameFromProgress;
-            console.log('Mirai_Grace fallback set frame', frameFromProgress);
-            render();
-          }
-        }
+        ease: 'none',
+        onUpdate: render,
       });
 
       // Initial render
       render();
+
+      // Refresh after a tick to ensure DOM is ready
+      requestAnimationFrame(() => {
+        ScrollTrigger.refresh();
+      });
+
+      console.log('Mirai_Grace GSAP init', imagesRef.current.length);
+    };
+
+    const loadImages = async () => {
+      try {
+        setLoading(true);
+        const images: CanvasImageSource[] = [];
+        const totalImages = 5;
+
+        for (let i = 1; i <= totalImages; i++) {
+          const exts = ['.gif', '.png', '.jpg', '.webp', '.svg'];
+          
+          for (const ext of exts) {
+            const imagePath = `/components/Home/Mirai_Grace/${i}${ext}`;
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+
+            const loadedImage = await new Promise<HTMLImageElement | null>((resolve) => {
+              img.onload = () => resolve(img);
+              img.onerror = () => resolve(null);
+              img.src = imagePath;
+            });
+
+            if (!loadedImage) continue;
+
+            try {
+              const bitmap = await createImageBitmap(loadedImage);
+              images.push(bitmap);
+            } catch {
+              images.push(loadedImage);
+            }
+            break;
+          }
+        }
+
+        if (images.length === 0) throw new Error('No images loaded');
+
+        imagesRef.current = images;
+        setLoading(false);
+        console.log('Mirai_Grace loaded', images.length);
+        
+        initGSAP();
+      } catch (err) {
+        setLoading(false);
+        setError(err instanceof Error ? err.message : 'Unknown error');
+      }
     };
 
     loadImages();
 
     const handleResize = () => {
+      setCanvasSize();
+      ScrollTrigger.refresh();
+      // Re-render current frame
       const canvas = canvasRef.current;
-      if (!canvas) return;
-      const dpr = window.devicePixelRatio || 1;
-      canvas.width = window.innerWidth * dpr;
-      canvas.height = window.innerHeight * dpr;
-      canvas.getContext('2d')?.scale(dpr, dpr);
-      render();
+      const ctx = canvas?.getContext('2d');
+      if (canvas && ctx && imagesRef.current.length > 0) {
+        const dpr = window.devicePixelRatio || 1;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
     };
 
     window.addEventListener('resize', handleResize);
 
     return () => {
-      ScrollTrigger.getAll().forEach(t => t.kill());
+      ScrollTrigger.getAll().forEach((t) => t.kill());
       window.removeEventListener('resize', handleResize);
-      // Close any ImageBitmaps to free memory
       imagesRef.current.forEach((img) => {
         if ((img as ImageBitmap)?.close) {
-          try { (img as ImageBitmap).close(); } catch {}
+          try {
+            (img as ImageBitmap).close();
+          } catch {}
         }
       });
     };
   }, []);
 
   return (
-    <div className="relative w-full bg-black overflow-hidden">
-      {/* GSAP will "pin" this entire section */}
-      <div ref={sectionRef} className="relative w-full h-screen bg-black">
-        {loading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black z-20">
-            <div className="w-10 h-10 border-2 border-white border-t-transparent rounded-full animate-spin" />
-          </div>
-        )}
-
-        {/* Visible debug overlay */}
-        <div ref={debugRef} className="absolute top-2 right-2 z-30 text-white bg-black/60 px-2 py-1 rounded text-xs">frame:0</div>
-
-        {/* Canvas forced to stay inside viewport */}
-        <canvas 
-          ref={canvasRef}
-          className="block w-full h-full object-cover"
-        />
+    <div ref={sectionRef} className="relative h-screen w-full">
+      {loading && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-black text-white">
+          Loading...
+        </div>
+      )}
+      {error && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-red-900 text-white">
+          Error: {error}
+        </div>
+      )}
+      <div
+        ref={debugRef}
+        className="pointer-events-none fixed right-4 top-4 z-50 rounded bg-black/80 px-2 py-1 font-mono text-xs text-green-400"
+      >
+        frame:0
       </div>
-      
-      {/* Spacer below to ensure content follows correctly after unpinning */}
-      <div className="h-px bg-black" />
+      <canvas ref={canvasRef} className="h-full w-full" />
     </div>
   );
 }
