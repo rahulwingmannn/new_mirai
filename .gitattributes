@@ -14,6 +14,8 @@ public/Earth animated.gif -filter -diff -merge -text
 *.mov filter=lfs diff=lfs merge=lfs -text
 # Keep highlight.mp4 as a normal git blob so build systems receive the real file
 public/highlight.mp4 -filter -diff -merge -text
+# Keep mirai_home_1.mp4 in public/videos as a normal git blob (not LFS)
+public/videos/mirai_home_1.mp4 -filter -diff -merge -text
 *.zip filter=lfs diff=lfs merge=lfs -text
 # Explicitly keep Mirai_Grace GIFs as normal blobs (override general *.gif rule)
 public/components/Home/Mirai_Grace/*.gif -filter -diff -merge -text
