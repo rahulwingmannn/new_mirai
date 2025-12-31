@@ -4,7 +4,6 @@ public/videos/mirai_home1.mov filter=lfs diff=lfs merge=lfs -text
 # Keep other large media in LFS, but store UI images in the repo so build systems receive real binaries
 public/images/* -filter -diff -merge -text
 public/fonts/* -filter -diff -merge -text
-
 # Explicitly keep panorama and masterplan and animated GIF as normal blobs
 public/200m.jpg -filter -diff -merge -text
 public/master_plan.png -filter -diff -merge -text
@@ -14,8 +13,6 @@ public/Earth animated.gif -filter -diff -merge -text
 *.mov filter=lfs diff=lfs merge=lfs -text
 # Keep highlight.mp4 as a normal git blob so build systems receive the real file
 public/highlight.mp4 -filter -diff -merge -text
-# Keep mirai_home_1.mp4 in public/videos as a normal git blob (not LFS)
-public/videos/mirai_home_1.mp4 -filter -diff -merge -text
 *.zip filter=lfs diff=lfs merge=lfs -text
 # Explicitly keep Mirai_Grace GIFs as normal blobs (override general *.gif rule)
 public/components/Home/Mirai_Grace/*.gif -filter -diff -merge -text
