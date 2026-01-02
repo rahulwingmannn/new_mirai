@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
 import path from 'path';
 
 const MIME: Record<string, string> = {
@@ -19,21 +18,13 @@ export async function GET(req: Request) {
     // Prevent proxying arbitrary external URLs - only allow relative paths
     if (!p.startsWith('/')) return NextResponse.json({ error: 'only relative paths allowed' }, { status: 400 });
 
-    const filePath = path.join(process.cwd(), 'public', p.replace(/^\//, ''));
-    if (!fs.existsSync(filePath)) return NextResponse.json({ error: 'not found' }, { status: 404 });
+    // Normalize and block directory traversal
+    const normalized = path.posix.normalize(p);
+    if (normalized.includes('..')) return NextResponse.json({ error: 'invalid path' }, { status: 400 });
 
-    const ext = path.extname(filePath).toLowerCase();
-    const contentType = MIME[ext] || 'application/octet-stream';
-
-    const body = await fs.promises.readFile(filePath);
-
-    return new Response(body, {
-      status: 200,
-      headers: {
-        'Content-Type': contentType,
-        'Cache-Control': 'no-cache',
-      },
-    });
+    // Redirect to the static file URL so the file is served by Vercel's static hosting
+    const staticUrl = new URL(normalized, url.origin);
+    return NextResponse.redirect(staticUrl, 307);
   } catch (e) {
     return NextResponse.json({ error: String(e) }, { status: 500 });
   }
