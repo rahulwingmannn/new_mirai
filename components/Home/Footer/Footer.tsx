@@ -55,21 +55,17 @@ export default function Footer() {
       role="contentinfo"
       aria-label="Footer - Pavani Mirai"
     >
-      {/* Top shadow for the "rising" effect - full width */}
-      <div className="absolute -top-20 left-0 right-0 h-20 bg-linear-to-t from-[#050505] to-transparent" />
-
-      {/* Background image (positioned behind content) */}
-      <div className="absolute inset-0 -z-10">
-        <Image
-          src={nightViewPath}
-          alt="Night view"
-          fill
-          priority
-          unoptimized
-          className="object-cover object-center opacity-100"
-          style={{ filter: 'none' }}
-        />
-      </div>
+      <div
+        className="absolute inset-0 -z-10 bg-center bg-no-repeat"
+        style={{
+          backgroundImage: "url('/images/night_view.png')",
+          backgroundSize: 'cover',
+          backgroundAttachment: 'fixed',
+          backgroundPosition: 'center',
+          zIndex: -10,
+        }}
+        aria-hidden="true"
+      />
 
       {/* Background overlay for readability (lighter so image remains visible) */}
       <div className="absolute inset-0 bg-black/10 pointer-events-none" aria-hidden="true" />
