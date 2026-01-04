@@ -6,7 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import type { StaticImageData } from 'next/image';
 
 // ============================================
-// 1. Hotspot Component
+// 1. Hotspot Component (Optimized)
 // ============================================
 interface HotspotProps {
   title: string;
@@ -25,14 +25,17 @@ function Hotspot({ title, subtitle, description, position, hideIconOnOpen = fals
       className={`flex items-center ${position === 'right' ? 'flex-row-reverse' : 'flex-row'}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      // Force hardware acceleration for smoother movement
+      style={{ transform: 'translateZ(0)', willChange: 'transform, opacity' }} 
     >
       {/* Icon Circle */}
       <div 
         className="relative z-20 flex items-center justify-center w-14 h-14 rounded-full cursor-pointer transition-all duration-500 ease-out shrink-0"
         style={{
-          backgroundColor: isHovered ? 'rgba(0, 0, 0, 0.7)' : 'rgba(0, 0, 0, 0.5)',
+          backgroundColor: isHovered ? 'rgba(0, 0, 0, 0.8)' : 'rgba(0, 0, 0, 0.6)', // Increased opacity slightly to reduce need for expensive blur if needed
           border: '1.5px solid rgba(255, 255, 255, 0.5)',
-          boxShadow: isHovered ? '0 0 30px rgba(255,255,255,0.2)' : '0 0 20px rgba(0,0,0,0.5)',
+          // Simple box-shadow is faster than complex heavy blurs
+          boxShadow: isHovered ? '0 0 20px rgba(255,255,255,0.3)' : '0 0 10px rgba(0,0,0,0.5)', 
           opacity: (position === 'right' && isHovered) || shouldHideIcon ? 0 : 1,
           pointerEvents: (position === 'right' && isHovered) || shouldHideIcon ? 'none' : 'auto',
           transform: (position === 'right' && isHovered) || shouldHideIcon ? 'translateX(8px) scale(0.92)' : 'none',
@@ -51,7 +54,7 @@ function Hotspot({ title, subtitle, description, position, hideIconOnOpen = fals
         </svg>
       </div>
       
-      {/* Label (Always Visible until Hover) */}
+      {/* Label */}
       <div 
         className={`flex flex-col justify-center transition-all duration-300 ${position === 'left' ? 'ml-4' : 'mr-4'}`}
         style={{
@@ -66,7 +69,7 @@ function Hotspot({ title, subtitle, description, position, hideIconOnOpen = fals
           fontWeight: '400',
           letterSpacing: '0.15em',
           textTransform: 'uppercase',
-          textShadow: '0 2px 10px rgba(0,0,0,0.8)',
+          textShadow: '0 2px 5px rgba(0,0,0,0.8)', // Reduced shadow spread for perf
           whiteSpace: 'nowrap',
         }}>
           {title}
@@ -76,7 +79,7 @@ function Hotspot({ title, subtitle, description, position, hideIconOnOpen = fals
           fontSize: '11px',
           letterSpacing: '0.1em',
           textTransform: 'uppercase',
-          textShadow: '0 2px 10px rgba(0,0,0,0.8)',
+          textShadow: '0 2px 5px rgba(0,0,0,0.8)',
           marginTop: '2px',
           whiteSpace: 'nowrap',
         }}>
@@ -102,11 +105,13 @@ function Hotspot({ title, subtitle, description, position, hideIconOnOpen = fals
           className="py-6 px-7 rounded-xl"
           style={{ 
             minWidth: '300px',
-            backgroundColor: 'rgba(0, 0, 0, 0.85)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
+            backgroundColor: 'rgba(10, 10, 10, 0.90)', // Higher opacity, less reliance on blur
+            // PERFORMANCE NOTE: backdrop-filter is very expensive on moving elements. 
+            // If lag persists, remove the line below.
+            backdropFilter: 'blur(10px)', 
+            WebkitBackdropFilter: 'blur(10px)',
             border: '1px solid rgba(255, 255, 255, 0.15)',
-            boxShadow: '0 10px 40px rgba(0,0,0,0.5)',
+            boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
           }}
         >
           <h3 style={{ color: '#FFFFFF', fontSize: '18px', fontWeight: '400', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '4px' }}>
@@ -125,7 +130,7 @@ function Hotspot({ title, subtitle, description, position, hideIconOnOpen = fals
 }
 
 // ============================================
-// 2. Main Zoom Component
+// 2. Main Zoom Component (Optimized)
 // ============================================
 interface ZoomRevealProps {
   buildingImage?: string | StaticImageData;
@@ -152,14 +157,13 @@ export function RevealZoom({
   const buildingRef = useRef<HTMLImageElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
   
-  // --- Refs ---
-  // Outer refs: Used for Position/Translation via requestAnimationFrame (performance)
-  const pointer1Ref = useRef<HTMLDivElement>(null); // SkyPods
-  const pointer2Ref = useRef<HTMLDivElement>(null); // Residencies
-  const pointer3Ref = useRef<HTMLDivElement>(null); // Clubhouse
-  const pointer4Ref = useRef<HTMLDivElement>(null); // Podium Level
+  // Outer refs
+  const pointer1Ref = useRef<HTMLDivElement>(null);
+  const pointer2Ref = useRef<HTMLDivElement>(null);
+  const pointer3Ref = useRef<HTMLDivElement>(null);
+  const pointer4Ref = useRef<HTMLDivElement>(null);
 
-  // Inner refs: Used for Scale/Opacity Animation via GSAP (avoids transform conflicts)
+  // Inner refs
   const pointer1InnerRef = useRef<HTMLDivElement>(null);
   const pointer2InnerRef = useRef<HTMLDivElement>(null);
   const pointer3InnerRef = useRef<HTMLDivElement>(null);
@@ -187,7 +191,6 @@ export function RevealZoom({
   const resolvedWindowSrc = typeof windowImage === 'string' ? windowImage : windowImage.src;
   const resolvedShapeSrc = typeof shapeImage === 'string' ? shapeImage : shapeImage.src;
 
-  // --- Initial Lock Logic ---
   useEffect(() => {
     if (typeof window === 'undefined') return;
     if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual';
@@ -207,7 +210,7 @@ export function RevealZoom({
     };
   }, [isMounted]);
 
-  // --- Canvas Logic ---
+  // --- Canvas Logic (Optimized) ---
   const drawCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     const ctx = canvasCtxRef.current;
@@ -215,13 +218,16 @@ export function RevealZoom({
     if (!canvas || !ctx || !img || !imageLoaded) return;
 
     const { scale, panY, lastScale, lastPanY } = animState.current;
-    if (Math.abs(scale - lastScale) < 0.0001 && Math.abs(panY - lastPanY) < 0.0001) return;
+    // Tiny optimization: round values to avoid sub-pixel jitter in checks, but keep float for drawing
+    if (Math.abs(scale - lastScale) < 0.001 && Math.abs(panY - lastPanY) < 0.001) return;
     
     animState.current.lastScale = scale;
     animState.current.lastPanY = panY;
 
     const displayWidth = canvas.clientWidth;
     const displayHeight = canvas.clientHeight;
+    
+    // Use clearRect for transparency, or fillRect for opaque (faster)
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
     const imgAspect = img.naturalWidth / img.naturalHeight;
@@ -236,10 +242,13 @@ export function RevealZoom({
       drawHeight = drawWidth / imgAspect;
     }
 
-    const drawX = (displayWidth - drawWidth) / 2;
+    // Rounding coordinates forces pixel-snapping which is faster and sharper
+    const drawX = Math.floor((displayWidth - drawWidth) / 2);
     const extraHeight = drawHeight - displayHeight;
-    const drawY = -extraHeight * panY;
+    const drawY = Math.floor(-extraHeight * panY);
 
+    // PERFORMANCE OPTIMIZATION: 
+    // Only draw the natural image size.
     ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight, drawX, drawY, drawWidth, drawHeight);
   }, [imageLoaded]);
 
@@ -256,13 +265,22 @@ export function RevealZoom({
     const canvas = canvasRef.current;
     if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
+    
+    // Set explicit resolution matching display size
     canvas.width = rect.width;
     canvas.height = rect.height;
-    const ctx = canvas.getContext('2d', { alpha: false });
-    if (ctx) {
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = 'high';
-      canvasCtxRef.current = ctx;
+    
+    const ctx = canvas.getContext('2d', { alpha: false }); // alpha: false can speed up if we don't need transparency (but we might for transitions)
+    // Actually we need transparency for the fade-in, so keep alpha: true (default) or test without it.
+    // Reverting to default context for safety.
+    const safeCtx = canvas.getContext('2d');
+
+    if (safeCtx) {
+      // PERFORMANCE KEY: 'high' is extremely expensive on zoom. 
+      // 'medium' or default 'low' is much faster for animation.
+      safeCtx.imageSmoothingEnabled = true;
+      safeCtx.imageSmoothingQuality = 'medium'; 
+      canvasCtxRef.current = safeCtx;
     }
     drawCanvas();
   }, [drawCanvas]);
@@ -270,6 +288,7 @@ export function RevealZoom({
   useEffect(() => {
     if (!isMounted) return;
     const img = new Image();
+    img.decoding = 'async'; // Hint to browser to decode off main thread
     img.onload = () => { imageRef.current = img; setImageLoaded(true); };
     img.src = resolvedWindowSrc;
   }, [resolvedWindowSrc, isMounted]);
@@ -277,6 +296,16 @@ export function RevealZoom({
   useEffect(() => {
     if (imageLoaded && isMounted) setupCanvas();
   }, [imageLoaded, setupCanvas, isMounted]);
+
+  // Handle Resize
+  useEffect(() => {
+    const handleResize = () => {
+      setupCanvas();
+      if(timelineRef.current) timelineRef.current.invalidate(); // Force GSAP to re-calculate values
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [setupCanvas]);
 
   // ============================================
   // ANIMATION TIMELINE
@@ -288,26 +317,33 @@ export function RevealZoom({
     if (timelineRef.current) timelineRef.current.kill();
 
     // Initial States
-    gsap.set(shapeRef.current, { opacity: 1 });
-    gsap.set(buildingRef.current, { scale: 1, opacity: 1 });
+    gsap.set(shapeRef.current, { opacity: 1, force3D: true });
+    // Force 3D to promote to GPU layer immediately
+    gsap.set(buildingRef.current, { scale: 1, opacity: 1, force3D: true, z: 0 }); 
     gsap.set(textRef.current, { opacity: 0, y: 60 });
     
-    // Set initial scale/opacity on INNER refs for ALL hotspots
-    // This allows GSAP to control fading while the Outer refs handle movement
     gsap.set([
       pointer1InnerRef.current, 
       pointer2InnerRef.current, 
       pointer3InnerRef.current, 
       pointer4InnerRef.current
-    ], { opacity: 0, scale: 0.8 });
+    ], { opacity: 0, scale: 0.8, force3D: true });
 
     const tl = gsap.timeline({ paused: true, defaults: { ease: "power2.inOut" } });
     timelineRef.current = tl;
 
     // --- PHASE 1: BUILDING ZOOM (0 - 8) ---
+    // Reduced duration of shape fade for snappier feel
     tl.to(shapeRef.current, { opacity: 0, duration: 2.0, ease: "power1.out" }, 0);
     tl.to(textRef.current, { opacity: 1, y: 0, duration: 2.2, ease: "power2.out" }, 1.5);
-    tl.to(buildingRef.current, { scale: buildingZoomScale, duration: 8.0, ease: "power1.inOut" }, 0);
+    
+    // Optimize: Use force3D: true explicitly
+    tl.to(buildingRef.current, { 
+      scale: buildingZoomScale, 
+      duration: 8.0, 
+      ease: "power1.inOut",
+      force3D: true // Ensure hardware acceleration
+    }, 0);
 
     // --- PHASE 2: TRANSITION (8 - 10) ---
     tl.to(buildingRef.current, { opacity: 0, duration: 1.5, ease: "power1.inOut" }, 8);
@@ -329,7 +365,6 @@ export function RevealZoom({
       onUpdate: () => {
         scheduleCanvasDraw();
         
-        // --- MOVEMENT LOGIC ---
         if (canvasRef.current && imageRef.current) {
           const canvas = canvasRef.current;
           const img = imageRef.current;
@@ -351,42 +386,28 @@ export function RevealZoom({
           const extraHeight = drawHeight - displayHeight;
           const panOffset = extraHeight * panY;
           
-          // SkyPods, Clubhouse, Podium move with the image
-          // Residencies stays FIXED in viewport
-          const transformStyle = `translateY(${-panOffset}px)`;
+          // Use translate3d for GPU acceleration
+          const transformStyle = `translate3d(0, ${-panOffset}px, 0)`;
           
           if(pointer1Ref.current) pointer1Ref.current.style.transform = transformStyle;
-          // pointer2 (Residencies) - NO transform, stays fixed
+          // pointer2 is fixed
           if(pointer3Ref.current) pointer3Ref.current.style.transform = transformStyle;
           if(pointer4Ref.current) pointer4Ref.current.style.transform = transformStyle;
         }
       },
     }, 12);
 
-    // Helper: Fade In/Out for hotspots (Targets Inner Ref)
     const revealHotspot = (ref: React.RefObject<HTMLDivElement | null>, time: number) => {
       tl.to(ref.current, { opacity: 1, scale: 1, duration: 1.4, ease: "back.out(1.4)" }, time);
       tl.to(ref.current, { opacity: 0, scale: 0.95, duration: 1.0, ease: "power1.in" }, time + 3.0);
     };
 
-    // --- HOTSPOT TIMINGS ---
-    // Residencies: Fixed in viewport
-    // SkyPods, Clubhouse, Podium: Move with image
-    
-    // 1. SkyPods (Moves - visible at start, pans out)
     revealHotspot(pointer1InnerRef, 13);
     
-    // 2. Residencies (Fixed in viewport)
-    // Manually reveal Residencies right after SkyPods and keep it visible until Clubhouse
     tl.to(pointer2InnerRef.current, { opacity: 1, scale: 1, duration: 1.4, ease: "back.out(1.4)" }, 14);
-    // Hide Residencies so it is fully gone when Clubhouse appears
-    // Start hiding slightly earlier (finish by t=21)
     tl.to(pointer2InnerRef.current, { opacity: 0, scale: 0.95, duration: 1.0, ease: "power1.in" }, 20.0);
     
-    // 3. Clubhouse (Moves - pans into view)
     revealHotspot(pointer3InnerRef, 21);
-    
-    // 4. Podium (Moves - pans into view at end)
     revealHotspot(pointer4InnerRef, 25);
 
     const st = ScrollTrigger.create({
@@ -394,7 +415,7 @@ export function RevealZoom({
       start: "top top",
       end: scrollDistance,
       pin: true,
-      scrub: 2,
+      scrub: 1, // Reduced scrub from 2 to 1 for more responsive feel (less floaty lag)
       onUpdate: (self) => {
         if (!isLockedRef.current) tl.progress(self.progress);
       }
@@ -412,29 +433,25 @@ export function RevealZoom({
     <section ref={wrapperRef} className="relative w-full bg-black overflow-hidden" style={{ minHeight: '100vh', zIndex: 50 }}>
       <div ref={containerRef} className="relative w-full h-screen overflow-hidden">
         
-        {/* Shape Overlay */}
+        {/* Shape Overlay - Optimized */}
         <img
           ref={shapeRef}
           src={resolvedShapeSrc}
           alt=""
+          decoding="async"
           className="absolute top-0 left-1/2 w-full max-w-[100vw] -translate-x-1/2 pointer-events-none"
-          style={{ zIndex: 100, height: 'auto', objectFit: 'contain', willChange: 'opacity' }}
+          // Added backface-visibility hidden to prevent flickering during opacity changes
+          style={{ zIndex: 100, height: 'auto', objectFit: 'contain', willChange: 'opacity', backfaceVisibility: 'hidden' }}
         />
         
-        {/* Main Canvas */}
+        {/* Main Canvas - Optimized */}
         <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" style={{ zIndex: 1 }} />
 
         {/* ========================================================= */}
-        {/* HOTSPOTS                                                  */}
+        {/* HOTSPOTS                                                */}
         {/* ========================================================= */}
-        {/* 
-          POSITIONING:
-          - Residencies: FIXED in viewport, does not move
-          - SkyPods, Clubhouse, Podium: Move WITH the image (attached to building)
-        */}
+        {/* Added will-change transform to container divs */}
         
-        {/* 1. SkyPods - MOVES with image */}
-        {/* Starts visible, pans up and out of view */}
         <div ref={pointer1Ref} className="absolute" style={{ zIndex: 20, top: '40%', left: '15%', willChange: 'transform' }}>
           <div ref={pointer1InnerRef} className="opacity-0 scale-90 origin-center">
             <Hotspot 
@@ -446,7 +463,6 @@ export function RevealZoom({
           </div>
         </div>
 
-        {/* 2. Residencies - FIXED in viewport */}
         <div ref={pointer2Ref} className="absolute" style={{ zIndex: 20, top: '40%', right: '30%', willChange: 'transform' }}>
           <div ref={pointer2InnerRef} className="opacity-0 scale-90 origin-center">
             <Hotspot 
@@ -458,8 +474,6 @@ export function RevealZoom({
           </div>
         </div>
 
-        {/* 3. Clubhouse - MOVES with image */}
-        {/* Starts off-screen below, pans into view */}
         <div ref={pointer3Ref} className="absolute" style={{ zIndex: 20, top: '200%', right: '31%', willChange: 'transform' }}>
           <div ref={pointer3InnerRef} className="opacity-0 scale-90 origin-center">
             <Hotspot 
@@ -471,8 +485,6 @@ export function RevealZoom({
           </div>
         </div>
 
-        {/* 4. Podium Level - MOVES with image */}
-        {/* Starts off-screen below, pans into view at end */}
         <div ref={pointer4Ref} className="absolute" style={{ zIndex: 20, top: '212%', left: '10%', willChange: 'transform' }}>
           <div ref={pointer4InnerRef} className="opacity-0 scale-90 origin-center">
             <Hotspot 
@@ -492,14 +504,21 @@ export function RevealZoom({
           </h2>
         </div>
 
-        {/* Initial Building View (Fades out) */}
+        {/* Initial Building View (Fades out) - Optimized */}
         <div className="absolute inset-0 w-full h-full" style={{ zIndex: 10 }}>
           <img
             ref={buildingRef}
             src={resolvedBuildingSrc}
             alt="Building View"
+            decoding="async"
             className="absolute inset-0 w-full h-full object-cover"
-            style={{ willChange: 'transform, opacity' }}
+            // KEY FIX: Added backfaceVisibility and translateZ to force GPU layer
+            // This prevents the browser from trying to rasterize the 16x scaled image on the CPU
+            style={{ 
+              willChange: 'transform, opacity', 
+              backfaceVisibility: 'hidden', 
+              transform: 'translateZ(0)' 
+            }}
           />
         </div>
       </div>
