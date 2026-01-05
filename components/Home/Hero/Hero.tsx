@@ -11,8 +11,10 @@ const Hero = () => {
   const [isHidden, setIsHidden] = React.useState(false)
 
   useEffect(() => {
-    if (!videoRef.current) return
-    videoRef.current.play().catch(() => {})
+    if (typeof window !== 'undefined' && videoRef.current) {
+      videoRef.current.load();
+      videoRef.current.play().catch(() => {});
+    }
   }, [])
 
   const handleCanPlay = () => {
