@@ -53,11 +53,11 @@ const Nav = () => {
   }, [isOpen])
 
   const carouselImages = [
-    '/images/Home_Caseroll.png',
-    '/images/Aminites_Caseroll.png',
-    '/images/Location_Caseroll.png',
-    '/images/Map_Caseroll.png',
-    '/images/Life@Mirai_Caseroll.png'
+    '/Home_Caseroll.png',
+    '/Aminites_Caseroll.png',
+    '/Location_Caseroll.png',
+    '/Map_Caseroll.png',
+    '/Life@Mirai_Caseroll.png'
   ]
 
   return (
