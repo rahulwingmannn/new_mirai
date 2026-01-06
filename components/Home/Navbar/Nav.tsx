@@ -53,16 +53,16 @@ const Nav = () => {
   }, [isOpen])
 
   const carouselImages = [
-    'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=500&h=600&fit=crop',
-    'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=500&h=600&fit=crop',
-    'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=500&h=600&fit=crop',
-    'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=500&h=600&fit=crop',
-    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&h=600&fit=crop'
+    '/images/Home_Caseroll.png',
+    '/images/Aminites_Caseroll.png',
+    '/images/Location_Caseroll.png',
+    '/images/Map_Caseroll.png',
+    '/images/Life@Mirai_Caseroll.png'
   ]
 
   return (
     <>
-<nav className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${isOpen ? 'bg-black' : 'bg-transparent'} ${isPageReady ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+      <nav className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${isOpen ? 'bg-black' : 'bg-transparent'} ${isPageReady ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
         <div className="absolute left-8 top-1/2 -translate-y-1/2 z-50">
           <Logo isOpen={isOpen} />
         </div>
