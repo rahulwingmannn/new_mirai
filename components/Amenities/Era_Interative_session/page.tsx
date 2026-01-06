@@ -20,6 +20,8 @@ interface Seasons {
 const EraSeasons: React.FC = () => {
   const [currentSeason, setCurrentSeason] = useState<string>('spring');
   const [hoveredImage, setHoveredImage] = useState<string | null>(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(true);
 
   const seasons: Seasons = {
     spring: {
@@ -140,11 +142,33 @@ const EraSeasons: React.FC = () => {
     ? getBackgroundImage(hoveredImage) 
     : getBackgroundImage(seasons[currentSeason].bgClass);
 
+  const handleSeasonChange = (season: string) => {
+    if (season !== currentSeason) {
+      setIsTransitioning(true);
+      setImageLoaded(false);
+      setTimeout(() => {
+        setCurrentSeason(season);
+        setTimeout(() => {
+          setIsTransitioning(false);
+          setImageLoaded(true);
+        }, 100);
+      }, 300);
+    }
+  };
+
+  // Preload images for smooth transitions
+  React.useEffect(() => {
+    Object.values(backgroundImages).forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, []);
+
   const seasonIcons: { [key: string]: string } = {
-    spring: './media/terra-w.png',
-    summer: './media/aqua-w.png',
-    autumn: './media/pyro-w.png',
-    winter: './media/avia-w.png'
+    spring: 'https://azure-baboon-302476.hostingersite.com/mirai_latest/media/terra-w.png',
+    summer: 'https://azure-baboon-302476.hostingersite.com/mirai_latest/media/aqua-w.png',
+    autumn: 'https://azure-baboon-302476.hostingersite.com/mirai_latest/media/pyro-w.png',
+    winter: 'https://azure-baboon-302476.hostingersite.com/mirai_latest/media/pyro-w.png'
   };
 
   return (
@@ -152,7 +176,9 @@ const EraSeasons: React.FC = () => {
       <div className="relative w-full h-full flex items-center justify-center">
         {/* Background Image */}
         <div 
-          className="absolute inset-0 w-full h-full bg-cover bg-center transition-opacity duration-800"
+          className={`absolute inset-0 w-full h-full bg-cover bg-center transition-all duration-700 ${
+            isTransitioning ? 'opacity-0 scale-105' : 'opacity-100 scale-100'
+          }`}
           style={{ 
             backgroundImage: `url(${currentBgImage})`,
             backgroundSize: '100% 100%',
@@ -161,47 +187,65 @@ const EraSeasons: React.FC = () => {
           }}
         />
 
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent" />
+
         {/* Content */}
         <div className="relative z-10 w-full flex items-center justify-start px-20 py-10 md:px-5">
-          <div className="bg-[rgba(120,37,47,0.35)] backdrop-blur-[25px] text-white p-5 w-full max-w-[340px] rounded-xl shadow-[0_15px_50px_rgba(0,0,0,0.4),inset_0_0_0_1px_rgba(255,255,255,0.1)] border border-white/20 flex flex-col">
-            {/* Season Title */}
-            <h1 className="text-[22.4px] font-light tracking-[6px] mb-0 uppercase" style={{ fontFamily: 'serif' }}>
-              {seasons[currentSeason].title}
-            </h1>
+          <div className={`bg-[rgba(120,37,47,0.35)] backdrop-blur-[25px] text-white p-5 w-full max-w-[340px] rounded-xl shadow-[0_15px_50px_rgba(0,0,0,0.4),inset_0_0_0_1px_rgba(255,255,255,0.1)] border border-white/20 flex flex-col transition-all duration-500 ${
+            isTransitioning ? 'opacity-80 scale-98' : 'opacity-100 scale-100'
+          }`}>
+            {/* Season Title with animated underline */}
+            <div className="relative">
+              <h1 className="text-[22.4px] font-light tracking-[6px] mb-0 uppercase relative" style={{ fontFamily: 'serif' }}>
+                {seasons[currentSeason].title}
+                <div className="absolute bottom-0 left-0 h-[1px] bg-gradient-to-r from-[#d4a574] to-transparent w-full mt-2" />
+              </h1>
+            </div>
 
             {/* Amenities List */}
-            <div className="mt-4 h-[280px] overflow-y-auto overflow-x-hidden pr-2 scrollbar-thin scrollbar-track-white/10 scrollbar-thumb-[rgba(212,165,116,0.5)] hover:scrollbar-thumb-[rgba(212,165,116,0.7)]">
+            <div className="mt-6 h-[280px] overflow-y-auto overflow-x-hidden pr-2 scrollbar-thin scrollbar-track-white/10 scrollbar-thumb-[rgba(212,165,116,0.5)] hover:scrollbar-thumb-[rgba(212,165,116,0.7)]">
               {seasons[currentSeason].amenities.map((amenity, index) => (
                 <div
-                  key={index}
-                  className={`py-2 opacity-80 hover:opacity-100 hover:pl-2.5 hover:bg-white/10 transition-all duration-300 cursor-pointer border-b border-white/10 ${
+                  key={`${currentSeason}-${index}`}
+                  className={`py-2.5 px-2 opacity-80 hover:opacity-100 hover:pl-3 hover:bg-white/10 transition-all duration-300 cursor-pointer border-b border-white/10 rounded group relative ${
                     largeAmenities.has(amenity.name) ? 'text-sm font-normal' : 'text-xs'
                   }`}
+                  style={{
+                    animation: `slideIn 0.3s ease-out ${index * 0.05}s both`
+                  }}
                   onMouseEnter={() => setHoveredImage(amenity.image)}
                   onMouseLeave={() => setHoveredImage(null)}
                 >
-                  {amenity.name}
+                  <span className="relative">
+                    {amenity.name}
+                    <span className="absolute -left-2 top-1/2 -translate-y-1/2 w-1 h-1 bg-[#d4a574] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </span>
                 </div>
               ))}
             </div>
 
             {/* Season Icons */}
-            <div className="flex gap-4 flex-wrap justify-start mt-8">
+            <div className="flex gap-4 flex-wrap justify-start mt-8 pt-4 border-t border-white/10">
               {Object.keys(seasons).map((season) => (
                 <div
                   key={season}
-                  className={`w-[50px] h-[50px] rounded-full flex items-center justify-center cursor-pointer transition-all duration-300 border-2 ${
+                  className={`w-[50px] h-[50px] rounded-full flex items-center justify-center cursor-pointer transition-all duration-300 border-2 relative group ${
                     currentSeason === season
-                      ? 'border-[#d4a574] shadow-[0_0_20px_rgba(212,165,116,0.5)]'
-                      : 'border-transparent'
-                  } hover:scale-110 hover:border-[#d4a574] bg-[rgba(160,70,85,0.7)]`}
-                  onClick={() => setCurrentSeason(season)}
+                      ? 'border-[#d4a574] shadow-[0_0_20px_rgba(212,165,116,0.5)] scale-110'
+                      : 'border-white/30 hover:border-[#d4a574]'
+                  } hover:scale-110 bg-[rgba(160,70,85,0.7)] hover:bg-[rgba(160,70,85,0.9)]`}
+                  onClick={() => handleSeasonChange(season)}
                 >
                   <img
                     src={seasonIcons[season]}
                     alt={seasons[season].title}
-                    className="w-6 h-6 object-contain"
+                    className="w-6 h-6 object-contain transition-transform duration-300 group-hover:scale-110"
                   />
+                  {/* Tooltip */}
+                  <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-black/80 text-white text-xs px-3 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none">
+                    {seasons[season].title}
+                  </div>
                 </div>
               ))}
             </div>
@@ -210,6 +254,17 @@ const EraSeasons: React.FC = () => {
       </div>
 
       <style jsx>{`
+        @keyframes slideIn {
+          from {
+            opacity: 0;
+            transform: translateX(-10px);
+          }
+          to {
+            opacity: 0.8;
+            transform: translateX(0);
+          }
+        }
+
         .scrollbar-thin::-webkit-scrollbar {
           width: 6px;
         }
@@ -223,6 +278,10 @@ const EraSeasons: React.FC = () => {
         }
         .hover\:scrollbar-thumb-\[rgba\(212\,165\,116\,0\.7\)\]::-webkit-scrollbar-thumb:hover {
           background: rgba(212, 165, 116, 0.7);
+        }
+        
+        .scale-98 {
+          transform: scale(0.98);
         }
       `}</style>
     </section>
