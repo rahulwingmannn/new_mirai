@@ -45,7 +45,6 @@ export default function BlurText({
       return;
     }
 
-    // Faster animation with reduced duration and stagger
     tweenRef.current = gsap.fromTo(
       selector,
       propsFrom,
@@ -54,9 +53,9 @@ export default function BlurText({
         y: 0,
         opacity: 1,
         filter: 'blur(0px)',
-        duration: 0.3,      // reduced from 0.6
-        ease: 'power2.out', // slightly snappier ease
-        stagger: 0.025,     // reduced from 0.06
+        duration: 0.45,
+        ease: 'power3.out',
+        stagger: 0.06,
         delay: (delay || 0) / 1000,
         onComplete: () => onAnimationComplete && onAnimationComplete()
       }
