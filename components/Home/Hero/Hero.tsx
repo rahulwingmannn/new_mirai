@@ -59,12 +59,13 @@ const Hero = () => {
     left: '50%',
     width: '101%',
     height: '101%',
-    transform: 'translate(-50%, -50%)',
+    transform: 'translate(-50%, -50%) translateZ(0)',
     objectFit: 'cover',
     display: 'block',
     zIndex: 1,
     backfaceVisibility: 'hidden',
-    WebkitBackfaceVisibility: 'hidden'
+    WebkitBackfaceVisibility: 'hidden',
+    willChange: 'transform'
   };
 
   return (
