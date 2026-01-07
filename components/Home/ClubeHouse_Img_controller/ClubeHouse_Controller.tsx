@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, memo, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 
-const shapeTwoPath = '/images/shape-two-pods.png';
+const SHAPE_TWO_PATH = '/images/shape-two-pods.png';
+const DEFAULT_BG = 'https://images.unsplash.com/photo-1767509778340-7664ab6583ae?w=1600&q=80&auto=format&fit=crop';
+const INITIAL_PANELS = [false, false, false, false] as const;
 
 interface Amenity {
   name: string;
@@ -16,7 +18,7 @@ interface Level {
   amenities: Amenity[];
 }
 
-const levels: Level[] = [
+const LEVELS: Level[] = [
   {
     level: 'Level 1',
     defaultImage: 'https://pavanimirai.com/55storeys-luxury-apartments-in-financial-district/media/level1-one.png',
@@ -64,35 +66,141 @@ const levels: Level[] = [
   }
 ];
 
-export default function MiraiClubhouse() {
+// Memoized animation variants
+const bgVariants = {
+  initial: { opacity: 0, scale: 1.05 },
+  animate: { opacity: 1, scale: 1 }
+};
+
+const bgTransition = { duration: 0.5, ease: 'easeInOut' };
+const panelTransition = { duration: 0.5, ease: 'easeOut' };
+
+// Memoized sub-components
+interface AmenityItemProps {
+  amenity: Amenity;
+  onHover: (image: string) => void;
+}
+
+const AmenityItem = memo<AmenityItemProps>(({ amenity, onHover }) => (
+  <p className="text-[14px] md:text-[15px] leading-relaxed">
+    <span
+      className="inline-block cursor-pointer text-white/90 hover:text-white border-b border-transparent hover:border-white/40 pb-0.5 transition-all duration-300 ease-out"
+      onMouseEnter={() => onHover(amenity.image)}
+    >
+      {amenity.name}
+    </span>
+  </p>
+));
+
+AmenityItem.displayName = 'AmenityItem';
+
+interface LevelButtonProps {
+  level: Level;
+  levelIndex: number;
+  isActive: boolean;
+  onHover: (index: number) => void;
+}
+
+const LevelButton = memo<LevelButtonProps>(({ level, levelIndex, isActive, onHover }) => (
+  <button
+    className={`py-6 px-4 text-center cursor-pointer transition-all duration-300 ${
+      levelIndex < 3 ? 'border-r border-white/20' : ''
+    } ${isActive 
+      ? 'bg-white/20 backdrop-blur-sm' 
+      : 'bg-black/60 hover:bg-black/80 backdrop-blur-sm'
+    }`}
+    onMouseEnter={() => onHover(levelIndex)}
+  >
+    <h2 
+      className="text-sm md:text-base font-bold tracking-[0.2em] uppercase text-white"
+      style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}
+    >
+      {level.level}
+    </h2>
+  </button>
+));
+
+LevelButton.displayName = 'LevelButton';
+
+interface LevelColumnProps {
+  level: Level;
+  levelIndex: number;
+  showPanel: boolean;
+  onLevelHover: (index: number) => void;
+  onLowerZoneHover: (index: number) => void;
+  onAmenityHover: (image: string) => void;
+}
+
+const LevelColumn = memo<LevelColumnProps>(({ 
+  level, 
+  levelIndex, 
+  showPanel, 
+  onLevelHover, 
+  onLowerZoneHover, 
+  onAmenityHover 
+}) => (
+  <div className={`relative h-full ${levelIndex < 3 ? 'border-r border-gray-700/30' : ''}`}>
+    <div 
+      className="absolute top-0 left-0 w-full h-[50%]"
+      onMouseEnter={() => onLevelHover(levelIndex)}
+    />
+    
+    <div 
+      className="absolute bottom-0 left-0 w-full h-[50%]"
+      onMouseEnter={() => onLowerZoneHover(levelIndex)}
+    />
+
+    <motion.div
+      initial={{ y: '100%' }}
+      animate={{ y: showPanel ? '0%' : '100%' }}
+      transition={panelTransition}
+      className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/95 via-black/80 to-transparent text-white px-6 md:px-8 py-8"
+    >
+      <div className="space-y-3">
+        {level.amenities.map((amenity, idx) => (
+          <AmenityItem key={idx} amenity={amenity} onHover={onAmenityHover} />
+        ))}
+      </div>
+    </motion.div>
+  </div>
+));
+
+LevelColumn.displayName = 'LevelColumn';
+
+function MiraiClubhouse() {
   const [activeLevel, setActiveLevel] = useState<number | null>(null);
-  const [currentBg, setCurrentBg] = useState('https://images.unsplash.com/photo-1767509778340-7664ab6583ae?w=1600&q=80&auto=format&fit=crop');
-  const [showPanels, setShowPanels] = useState<boolean[]>([false, false, false, false]);
+  const [currentBg, setCurrentBg] = useState(DEFAULT_BG);
+  const [showPanels, setShowPanels] = useState<boolean[]>([...INITIAL_PANELS]);
 
-  const handleLevelHover = (levelIndex: number) => {
+  const handleLevelHover = useCallback((levelIndex: number) => {
     setActiveLevel(levelIndex);
-    setCurrentBg(levels[levelIndex].defaultImage);
-    const newPanels = [false, false, false, false];
-    setShowPanels(newPanels);
-  };
-
-  const handleLowerZoneHover = (levelIndex: number) => {
-    setActiveLevel(levelIndex);
-    setCurrentBg(levels[levelIndex].defaultImage);
-    const newPanels = [false, false, false, false];
-    newPanels[levelIndex] = true;
-    setShowPanels(newPanels);
-  };
-
-  const handleAmenityHover = (image: string) => {
-    setCurrentBg(image);
-  };
-
-  const handleGlobalLeave = () => {
-    setActiveLevel(null);
-    setCurrentBg('https://images.unsplash.com/photo-1767509778340-7664ab6583ae?w=1600&q=80&auto=format&fit=crop');
+    setCurrentBg(LEVELS[levelIndex].defaultImage);
     setShowPanels([false, false, false, false]);
-  };
+  }, []);
+
+  const handleLowerZoneHover = useCallback((levelIndex: number) => {
+    setActiveLevel(levelIndex);
+    setCurrentBg(LEVELS[levelIndex].defaultImage);
+    setShowPanels(prev => {
+      const newPanels = [false, false, false, false];
+      newPanels[levelIndex] = true;
+      return newPanels;
+    });
+  }, []);
+
+  const handleAmenityHover = useCallback((image: string) => {
+    setCurrentBg(image);
+  }, []);
+
+  const handleGlobalLeave = useCallback(() => {
+    setActiveLevel(null);
+    setCurrentBg(DEFAULT_BG);
+    setShowPanels([false, false, false, false]);
+  }, []);
+
+  const bgStyle = useMemo(() => ({ 
+    backgroundImage: `url('${currentBg}')` 
+  }), [currentBg]);
 
   return (
     <section 
@@ -102,19 +210,22 @@ export default function MiraiClubhouse() {
       {/* Background with transition */}
       <motion.div 
         key={currentBg}
-        initial={{ opacity: 0, scale: 1.05 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, ease: 'easeInOut' }}
+        variants={bgVariants}
+        initial="initial"
+        animate="animate"
+        transition={bgTransition}
         className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: `url('${currentBg}')` }}
+        style={bgStyle}
       />
 
-      {/* Decorative shape - Always visible */}
+      {/* Decorative shape */}
       <div className="absolute inset-0 pointer-events-none z-[50] overflow-hidden">
         <div className="absolute right-[-20%] -top-2 w-[160vw] md:w-[150vw] lg:w-[140vw]">
           <img
-            src={shapeTwoPath}
-            alt="Background shape"
+            src={SHAPE_TWO_PATH}
+            alt=""
+            loading="lazy"
+            decoding="async"
             className="w-full h-auto"
           />
         </div>
@@ -122,71 +233,33 @@ export default function MiraiClubhouse() {
 
       {/* Main Interactive Grid */}
       <div className="absolute inset-0 z-[10] grid grid-cols-4" style={{ bottom: '60px' }}>
-        {levels.map((level, levelIndex) => (
-          <div
+        {LEVELS.map((level, levelIndex) => (
+          <LevelColumn
             key={levelIndex}
-            className={`relative h-full ${levelIndex < 3 ? 'border-r border-gray-700/30' : ''}`}
-          >
-            {/* Upper Zone - Hides panel when hovered */}
-            <div 
-              className="absolute top-0 left-0 w-full h-[50%]"
-              onMouseEnter={() => handleLevelHover(levelIndex)}
-            />
-            
-            {/* Lower Zone - Shows panel when hovered */}
-            <div 
-              className="absolute bottom-0 left-0 w-full h-[50%]"
-              onMouseEnter={() => handleLowerZoneHover(levelIndex)}
-            />
-
-            {/* Amenity Panel - slides up/down */}
-            <motion.div
-              initial={{ y: '100%' }}
-              animate={{ y: showPanels[levelIndex] ? '0%' : '100%' }}
-              transition={{ duration: 0.5, ease: 'easeOut' }}
-              className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/95 via-black/80 to-transparent text-white px-6 md:px-8 py-8"
-            >
-              <div className="space-y-3">
-                {level.amenities.map((amenity, idx) => (
-                  <p key={idx} className="text-[14px] md:text-[15px] leading-relaxed">
-                    <span
-                      className="inline-block cursor-pointer text-white/90 hover:text-white border-b border-transparent hover:border-white/40 pb-0.5 transition-all duration-300 ease-out"
-                      onMouseEnter={() => handleAmenityHover(amenity.image)}
-                    >
-                      {amenity.name}
-                    </span>
-                  </p>
-                ))}
-              </div>
-            </motion.div>
-          </div>
+            level={level}
+            levelIndex={levelIndex}
+            showPanel={showPanels[levelIndex]}
+            onLevelHover={handleLevelHover}
+            onLowerZoneHover={handleLowerZoneHover}
+            onAmenityHover={handleAmenityHover}
+          />
         ))}
       </div>
 
-      {/* Fixed Level Buttons at Bottom - Always Visible */}
+      {/* Fixed Level Buttons at Bottom */}
       <div className="absolute bottom-0 left-0 right-0 z-[25] grid grid-cols-4">
-        {levels.map((level, levelIndex) => (
-          <button
+        {LEVELS.map((level, levelIndex) => (
+          <LevelButton
             key={levelIndex}
-            className={`
-              py-6 px-4 text-center cursor-pointer transition-all duration-300
-              ${levelIndex < 3 ? 'border-r border-white/20' : ''}
-              ${activeLevel === levelIndex 
-                ? 'bg-white/20 backdrop-blur-sm' 
-                : 'bg-black/60 hover:bg-black/80 backdrop-blur-sm'
-              }
-            `}
-            onMouseEnter={() => handleLowerZoneHover(levelIndex)}
-          >
-            <h2 
-              className="text-sm md:text-base font-bold tracking-[0.2em] uppercase text-white"
-              style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}
-            >
-              {level.level}
-            </h2>
-          </button>
+            level={level}
+            levelIndex={levelIndex}
+            isActive={activeLevel === levelIndex}
+            onHover={handleLowerZoneHover}
+          />
         ))}
       </div>
     </section>
   );
 }
+
+export default memo(MiraiClubhouse);
