@@ -51,7 +51,7 @@ export default function Footer() {
   return (
     <footer
       className="relative text-[#bfc6cf] h-screen flex items-center bg-[#050505]"
-      style={{ zIndex: 25 }}
+      style={{ zIndex: 10 }}
       role="contentinfo"
       aria-label="Footer - Pavani Mirai"
     >
