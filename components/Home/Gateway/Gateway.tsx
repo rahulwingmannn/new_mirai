@@ -1,51 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useCallback, useState, memo, useMemo } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import type { StaticImageData } from 'next/image';
 
 // ============================================
-// Constants
-// ============================================
-const DEFAULT_BUILDING_IMAGE = '/images/gateway/reveal.png';
-const DEFAULT_WINDOW_IMAGE = '/images/gateway/mirai.png';
-const DEFAULT_SHAPE_IMAGE = '/images/gateway/shape-two.png';
-
-// Hotspot data moved outside component to prevent recreation
-const HOTSPOT_DATA = [
-  {
-    id: 'skypods',
-    title: 'SkyPods',
-    subtitle: 'Floors 29-32',
-    description: 'The top floors of the Mirai building are a collection of 16 exclusive SkyPods 100 metres above the ground.',
-    style: { top: '27%', right: '47%' },
-  },
-  {
-    id: 'residencies',
-    title: 'Residencies',
-    subtitle: 'Level 35',
-    description: 'An exclusive rooftop sanctuary featuring panoramic 360-degree views of the city skyline.',
-    style: { top: '30%', right: '40%' },
-  },
-  {
-    id: 'clubhouse',
-    title: 'Clubhouse',
-    subtitle: 'Levels 3-4',
-    description: 'A world-class wellness destination spanning two floors featuring infinity pools and private suites.',
-    style: { top: '210%', right: '40%' },
-  },
-  {
-    id: 'podium',
-    title: 'Podium Level',
-    subtitle: 'Gardens',
-    description: 'Landscaped terraces and secret gardens create tranquil retreats within the urban landscape.',
-    style: { top: '220%', right: '40%' },
-  },
-] as const;
-
-// ============================================
-// Hotspot Component (Memoized)
+// 1. Hotspot Component (Optimized)
 // ============================================
 interface HotspotProps {
   title: string;
@@ -55,71 +16,35 @@ interface HotspotProps {
   hideIconOnOpen?: boolean;
 }
 
-const Hotspot = memo<HotspotProps>(({ title, subtitle, description, position, hideIconOnOpen = false }) => {
+function Hotspot({ title, subtitle, description, position, hideIconOnOpen = false }: HotspotProps) {
   const [isHovered, setIsHovered] = useState(false);
   const shouldHideIcon = isHovered && hideIconOnOpen;
 
-  const containerStyle = useMemo(() => ({
-    transform: 'translateZ(0)',
-    willChange: 'transform, opacity'
-  }), []);
-
-  const isIconHidden = (position === 'right' && isHovered) || shouldHideIcon;
-
-  const iconStyle = useMemo<React.CSSProperties>(() => ({
-    backgroundColor: isHovered ? 'rgba(0, 0, 0, 0.8)' : 'rgba(0, 0, 0, 0.6)',
-    border: '1.5px solid rgba(255, 255, 255, 0.5)',
-    boxShadow: isHovered ? '0 0 20px rgba(255,255,255,0.3)' : '0 0 10px rgba(0,0,0,0.5)',
-    opacity: isIconHidden ? 0 : 1,
-    pointerEvents: isIconHidden ? 'none' : 'auto',
-    transform: isIconHidden ? 'translateX(8px) scale(0.92)' : 'none',
-  }), [isHovered, isIconHidden]);
-
-  const labelStyle = useMemo<React.CSSProperties>(() => ({
-    opacity: isHovered ? 0 : 1,
-    transform: isHovered ? (position === 'left' ? 'translateX(12px)' : 'translateX(-12px)') : 'translateX(0)',
-    willChange: 'transform, opacity',
-  }), [isHovered, position]);
-
-  const cardContainerStyle = useMemo<React.CSSProperties>(() => ({
-    maxWidth: isHovered ? '400px' : '0px',
-    opacity: isHovered ? 1 : 0,
-    marginLeft: position === 'left' ? '-15px' : '0',
-    marginRight: position === 'right' ? '-15px' : '0',
-    paddingLeft: position === 'left' ? '25px' : '0',
-    paddingRight: position === 'right' ? '25px' : '0',
-    pointerEvents: 'auto',
-    willChange: 'max-width, opacity',
-  }), [isHovered, position]);
-
-  const cardStyle = useMemo<React.CSSProperties>(() => ({
-    minWidth: '300px',
-    backgroundColor: 'rgba(10, 10, 10, 0.90)',
-    backdropFilter: 'blur(10px)',
-    WebkitBackdropFilter: 'blur(10px)',
-    border: '1px solid rgba(255, 255, 255, 0.15)',
-    boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
-  }), []);
-
-  const handleMouseEnter = useCallback(() => setIsHovered(true), []);
-  const handleMouseLeave = useCallback(() => setIsHovered(false), []);
-
   return (
-    <div
+    <div 
       className={`flex items-center ${position === 'right' ? 'flex-row-reverse' : 'flex-row'}`}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      style={containerStyle}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      // Force hardware acceleration for smoother movement
+      style={{ transform: 'translateZ(0)', willChange: 'transform, opacity' }} 
     >
       {/* Icon Circle */}
-      <div
+      <div 
         className="relative z-20 flex items-center justify-center w-14 h-14 rounded-full cursor-pointer transition-all duration-500 ease-out shrink-0"
-        style={iconStyle}
+        style={{
+          backgroundColor: isHovered ? 'rgba(0, 0, 0, 0.8)' : 'rgba(0, 0, 0, 0.6)', // Increased opacity slightly to reduce need for expensive blur if needed
+          border: '1.5px solid rgba(255, 255, 255, 0.5)',
+          // Simple box-shadow is faster than complex heavy blurs
+          boxShadow: isHovered ? '0 0 20px rgba(255,255,255,0.3)' : '0 0 10px rgba(0,0,0,0.5)', 
+          opacity: (position === 'right' && isHovered) || shouldHideIcon ? 0 : 1,
+          pointerEvents: (position === 'right' && isHovered) || shouldHideIcon ? 'none' : 'auto',
+          transform: (position === 'right' && isHovered) || shouldHideIcon ? 'translateX(8px) scale(0.92)' : 'none',
+        }}
       >
-        <svg
-          width="22"
-          height="22"
-          viewBox="0 0 24 24"
+        <svg 
+          width="22" 
+          height="22" 
+          viewBox="0 0 24 24" 
           fill="none"
           className="transition-transform duration-500"
           style={{ transform: isHovered ? 'rotate(45deg)' : 'rotate(0deg)' }}
@@ -128,36 +53,84 @@ const Hotspot = memo<HotspotProps>(({ title, subtitle, description, position, hi
           <line x1="5" y1="12" x2="19" y2="12" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
         </svg>
       </div>
-
+      
       {/* Label */}
-      <div
+      <div 
         className={`flex flex-col justify-center transition-all duration-300 ${position === 'left' ? 'ml-4' : 'mr-4'}`}
-        style={labelStyle}
+        style={{
+          opacity: isHovered ? 0 : 1,
+          transform: isHovered ? (position === 'left' ? 'translateX(12px)' : 'translateX(-12px)') : 'translateX(0)',
+          willChange: 'transform, opacity',
+        }}
       >
-        <h3 className="text-white text-base font-normal tracking-[0.15em] uppercase whitespace-nowrap" style={{ textShadow: '0 2px 5px rgba(0,0,0,0.8)' }}>
+        <h3 style={{
+          color: '#FFFFFF',
+          fontSize: '16px',
+          fontWeight: '400',
+          letterSpacing: '0.15em',
+          textTransform: 'uppercase',
+          textShadow: '0 2px 5px rgba(0,0,0,0.8)', // Reduced shadow spread for perf
+          whiteSpace: 'nowrap',
+        }}>
           {title}
         </h3>
-        <p className="text-white/60 text-[11px] tracking-[0.1em] uppercase whitespace-nowrap mt-0.5" style={{ textShadow: '0 2px 5px rgba(0,0,0,0.8)' }}>
+        <p style={{
+          color: 'rgba(255, 255, 255, 0.6)',
+          fontSize: '11px',
+          letterSpacing: '0.1em',
+          textTransform: 'uppercase',
+          textShadow: '0 2px 5px rgba(0,0,0,0.8)',
+          marginTop: '2px',
+          whiteSpace: 'nowrap',
+        }}>
           {subtitle}
         </p>
       </div>
-
+      
       {/* Expanded Content Card */}
-      <div className="overflow-hidden transition-all duration-300 ease-out" style={cardContainerStyle}>
-        <div className="py-6 px-7 rounded-xl" style={cardStyle}>
-          <h3 className="text-white text-lg font-normal tracking-[0.2em] uppercase mb-1">{title}</h3>
-          <p className="text-white/50 text-xs tracking-[0.15em] uppercase mb-4">{subtitle}</p>
-          <p className="text-white/85 text-sm font-light leading-[1.7] tracking-[0.02em]">{description}</p>
+      <div 
+        className="overflow-hidden transition-all duration-300 ease-out"
+        style={{
+          maxWidth: isHovered ? '400px' : '0px',
+          opacity: isHovered ? 1 : 0,
+          marginLeft: position === 'left' ? '-15px' : '0',
+          marginRight: position === 'right' ? '-15px' : '0',
+          paddingLeft: position === 'left' ? '25px' : '0',
+          paddingRight: position === 'right' ? '25px' : '0',
+          pointerEvents: 'auto',
+          willChange: 'max-width, opacity',
+        }}
+      >
+        <div 
+          className="py-6 px-7 rounded-xl"
+          style={{ 
+            minWidth: '300px',
+            backgroundColor: 'rgba(10, 10, 10, 0.90)', // Higher opacity, less reliance on blur
+            // PERFORMANCE NOTE: backdrop-filter is very expensive on moving elements. 
+            // If lag persists, remove the line below.
+            backdropFilter: 'blur(10px)', 
+            WebkitBackdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+          }}
+        >
+          <h3 style={{ color: '#FFFFFF', fontSize: '18px', fontWeight: '400', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '4px' }}>
+            {title}
+          </h3>
+          <p style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '12px', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '16px' }}>
+            {subtitle}
+          </p>
+          <p style={{ color: 'rgba(255, 255, 255, 0.85)', fontSize: '14px', fontWeight: '300', lineHeight: '1.7', letterSpacing: '0.02em' }}>
+            {description}
+          </p>
         </div>
       </div>
     </div>
   );
-});
-
-Hotspot.displayName = 'Hotspot';
+}
 
 // ============================================
-// Main Zoom Component
+// 2. Main Zoom Component (Optimized)
 // ============================================
 interface ZoomRevealProps {
   buildingImage?: string | StaticImageData;
@@ -169,11 +142,11 @@ interface ZoomRevealProps {
   windowMoveDistance?: number;
 }
 
-function RevealZoom({
-  buildingImage = DEFAULT_BUILDING_IMAGE,
-  windowImage = DEFAULT_WINDOW_IMAGE,
-  shapeImage = DEFAULT_SHAPE_IMAGE,
-  scrollDistance = "+=1100%",
+export function RevealZoom({
+  buildingImage = '/images/gateway/reveal.png',
+  windowImage = '/images/gateway/mirai.png',
+  shapeImage = '/images/gateway/shape-two.png',
+  scrollDistance = "+=1100%", 
   buildingZoomScale = 16,
   windowZoomScale = 2.5,
   windowMoveDistance = 1,
@@ -183,22 +156,30 @@ function RevealZoom({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const buildingRef = useRef<HTMLImageElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
-  const shapeRef = useRef<HTMLImageElement>(null);
-  const imageRef = useRef<HTMLImageElement | null>(null);
+  
+  // Outer refs
+  const pointer1Ref = useRef<HTMLDivElement>(null);
+  const pointer2Ref = useRef<HTMLDivElement>(null);
+  const pointer3Ref = useRef<HTMLDivElement>(null);
+  const pointer4Ref = useRef<HTMLDivElement>(null);
 
-  // Refs arrays for cleaner iteration
-  const pointerOuterRefs = useRef<(HTMLDivElement | null)[]>([null, null, null, null]);
-  const pointerInnerRefs = useRef<(HTMLDivElement | null)[]>([null, null, null, null]);
-
+  // Inner refs
+  const pointer1InnerRef = useRef<HTMLDivElement>(null);
+  const pointer2InnerRef = useRef<HTMLDivElement>(null);
+  const pointer3InnerRef = useRef<HTMLDivElement>(null);
+  const pointer4InnerRef = useRef<HTMLDivElement>(null);
+  
   const canvasCtxRef = useRef<CanvasRenderingContext2D | null>(null);
   const rafIdRef = useRef<number | null>(null);
   const needsDrawRef = useRef(false);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
   const isLockedRef = useRef(true);
-
+  
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
-
+  const shapeRef = useRef<HTMLImageElement | null>(null);
+  const imageRef = useRef<HTMLImageElement | null>(null);
+  
   const animState = useRef({
     scale: 1,
     panY: 0,
@@ -206,21 +187,10 @@ function RevealZoom({
     lastPanY: -1,
   });
 
-  // Resolve image sources once
-  const resolvedBuildingSrc = useMemo(() =>
-    typeof buildingImage === 'string' ? buildingImage : buildingImage.src,
-    [buildingImage]
-  );
-  const resolvedWindowSrc = useMemo(() =>
-    typeof windowImage === 'string' ? windowImage : windowImage.src,
-    [windowImage]
-  );
-  const resolvedShapeSrc = useMemo(() =>
-    typeof shapeImage === 'string' ? shapeImage : shapeImage.src,
-    [shapeImage]
-  );
+  const resolvedBuildingSrc = typeof buildingImage === 'string' ? buildingImage : buildingImage.src;
+  const resolvedWindowSrc = typeof windowImage === 'string' ? windowImage : windowImage.src;
+  const resolvedShapeSrc = typeof shapeImage === 'string' ? shapeImage : shapeImage.src;
 
-  // Initial mount setup
   useEffect(() => {
     if (typeof window === 'undefined') return;
     if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual';
@@ -229,7 +199,6 @@ function RevealZoom({
     setIsMounted(true);
   }, []);
 
-  // Unlock on user interaction
   useEffect(() => {
     if (typeof window === 'undefined' || !isMounted) return;
     const unlock = () => { isLockedRef.current = false; };
@@ -241,7 +210,7 @@ function RevealZoom({
     };
   }, [isMounted]);
 
-  // Canvas drawing
+  // --- Canvas Logic (Optimized) ---
   const drawCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     const ctx = canvasCtxRef.current;
@@ -249,19 +218,21 @@ function RevealZoom({
     if (!canvas || !ctx || !img || !imageLoaded) return;
 
     const { scale, panY, lastScale, lastPanY } = animState.current;
+    // Tiny optimization: round values to avoid sub-pixel jitter in checks, but keep float for drawing
     if (Math.abs(scale - lastScale) < 0.001 && Math.abs(panY - lastPanY) < 0.001) return;
-
+    
     animState.current.lastScale = scale;
     animState.current.lastPanY = panY;
 
     const displayWidth = canvas.clientWidth;
     const displayHeight = canvas.clientHeight;
-
+    
+    // Use clearRect for transparency, or fillRect for opaque (faster)
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+    
     const imgAspect = img.naturalWidth / img.naturalHeight;
     const canvasAspect = displayWidth / displayHeight;
-
+    
     let drawWidth: number, drawHeight: number;
     if (imgAspect > canvasAspect) {
       drawHeight = displayHeight * scale;
@@ -271,10 +242,13 @@ function RevealZoom({
       drawHeight = drawWidth / imgAspect;
     }
 
+    // Rounding coordinates forces pixel-snapping which is faster and sharper
     const drawX = Math.floor((displayWidth - drawWidth) / 2);
     const extraHeight = drawHeight - displayHeight;
     const drawY = Math.floor(-extraHeight * panY);
 
+    // PERFORMANCE OPTIMIZATION: 
+    // Only draw the natural image size.
     ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight, drawX, drawY, drawWidth, drawHeight);
   }, [imageLoaded]);
 
@@ -291,94 +265,91 @@ function RevealZoom({
     const canvas = canvasRef.current;
     if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
-
+    
+    // Set explicit resolution matching display size
     canvas.width = rect.width;
     canvas.height = rect.height;
+    
+    const ctx = canvas.getContext('2d', { alpha: false }); // alpha: false can speed up if we don't need transparency (but we might for transitions)
+    // Actually we need transparency for the fade-in, so keep alpha: true (default) or test without it.
+    // Reverting to default context for safety.
+    const safeCtx = canvas.getContext('2d');
 
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = 'medium';
-      canvasCtxRef.current = ctx;
+    if (safeCtx) {
+      // PERFORMANCE KEY: 'high' is extremely expensive on zoom. 
+      // 'medium' or default 'low' is much faster for animation.
+      safeCtx.imageSmoothingEnabled = true;
+      safeCtx.imageSmoothingQuality = 'medium'; 
+      canvasCtxRef.current = safeCtx;
     }
     drawCanvas();
   }, [drawCanvas]);
 
-  // Load window image
   useEffect(() => {
     if (!isMounted) return;
     const img = new Image();
-    img.decoding = 'async';
-    img.onload = () => {
-      imageRef.current = img;
-      setImageLoaded(true);
-    };
+    img.decoding = 'async'; // Hint to browser to decode off main thread
+    img.onload = () => { imageRef.current = img; setImageLoaded(true); };
     img.src = resolvedWindowSrc;
-    return () => {
-      img.onload = null;
-    };
   }, [resolvedWindowSrc, isMounted]);
 
-  // Setup canvas when image loads
   useEffect(() => {
     if (imageLoaded && isMounted) setupCanvas();
   }, [imageLoaded, setupCanvas, isMounted]);
 
-  // Handle resize
+  // Handle Resize
   useEffect(() => {
-    let resizeTimeout: NodeJS.Timeout;
     const handleResize = () => {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(() => {
-        setupCanvas();
-        timelineRef.current?.invalidate();
-      }, 100);
+      setupCanvas();
+      if(timelineRef.current) timelineRef.current.invalidate(); // Force GSAP to re-calculate values
     };
     window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      clearTimeout(resizeTimeout);
-    };
+    return () => window.removeEventListener('resize', handleResize);
   }, [setupCanvas]);
 
-  // Cleanup RAF on unmount
-  useEffect(() => {
-    return () => {
-      if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current);
-    };
-  }, []);
-
-  // Animation Timeline
+  // ============================================
+  // ANIMATION TIMELINE
+  // ============================================
   useEffect(() => {
     if (typeof window === 'undefined' || !imageLoaded || !isMounted) return;
 
     gsap.registerPlugin(ScrollTrigger);
-    timelineRef.current?.kill();
+    if (timelineRef.current) timelineRef.current.kill();
 
     // Initial States
     gsap.set(shapeRef.current, { opacity: 1, force3D: true });
-    gsap.set(buildingRef.current, { scale: 1, opacity: 1, force3D: true, z: 0 });
+    // Force 3D to promote to GPU layer immediately
+    gsap.set(buildingRef.current, { scale: 1, opacity: 1, force3D: true, z: 0 }); 
     gsap.set(textRef.current, { opacity: 0, y: 60 });
-    gsap.set(pointerInnerRefs.current, { opacity: 0, scale: 0.8, force3D: true });
+    
+    gsap.set([
+      pointer1InnerRef.current, 
+      pointer2InnerRef.current, 
+      pointer3InnerRef.current, 
+      pointer4InnerRef.current
+    ], { opacity: 0, scale: 0.8, force3D: true });
 
     const tl = gsap.timeline({ paused: true, defaults: { ease: "power2.inOut" } });
     timelineRef.current = tl;
 
-    // PHASE 1: BUILDING ZOOM (0 - 8)
+    // --- PHASE 1: BUILDING ZOOM (0 - 8) ---
+    // Reduced duration of shape fade for snappier feel
     tl.to(shapeRef.current, { opacity: 0, duration: 2.0, ease: "power1.out" }, 0);
     tl.to(textRef.current, { opacity: 1, y: 0, duration: 2.2, ease: "power2.out" }, 1.5);
-    tl.to(buildingRef.current, {
-      scale: buildingZoomScale,
-      duration: 8.0,
+    
+    // Optimize: Use force3D: true explicitly
+    tl.to(buildingRef.current, { 
+      scale: buildingZoomScale, 
+      duration: 8.0, 
       ease: "power1.inOut",
-      force3D: true
+      force3D: true // Ensure hardware acceleration
     }, 0);
 
-    // PHASE 2: TRANSITION (8 - 10)
+    // --- PHASE 2: TRANSITION (8 - 10) ---
     tl.to(buildingRef.current, { opacity: 0, duration: 1.5, ease: "power1.inOut" }, 8);
     tl.to(textRef.current, { opacity: 0, y: -40, duration: 1.2, ease: "power1.in" }, 8);
 
-    // PHASE 3: WINDOW ZOOM (10 - 12)
+    // --- PHASE 3: WINDOW ZOOM (10 - 12) ---
     tl.to(animState.current, {
       scale: windowZoomScale,
       duration: 2.0,
@@ -386,62 +357,65 @@ function RevealZoom({
       onUpdate: scheduleCanvasDraw,
     }, 10);
 
-    // PHASE 4: PAN & HOTSPOTS (12 - 25)
+    // --- PHASE 4: PAN & HOTSPOTS (12 - 25) ---
     tl.to(animState.current, {
       panY: windowMoveDistance,
       duration: 13.0,
       ease: "sine.inOut",
       onUpdate: () => {
         scheduleCanvasDraw();
-
-        const canvas = canvasRef.current;
-        const img = imageRef.current;
-        if (!canvas || !img) return;
-
-        const displayHeight = canvas.clientHeight;
-        const { scale, panY } = animState.current;
-
-        const imgAspect = img.naturalWidth / img.naturalHeight;
-        const canvasAspect = canvas.clientWidth / displayHeight;
-
-        let drawHeight: number;
-        if (imgAspect > canvasAspect) {
-          drawHeight = displayHeight * scale;
-        } else {
-          const drawWidth = canvas.clientWidth * scale;
-          drawHeight = drawWidth / imgAspect;
+        
+        if (canvasRef.current && imageRef.current) {
+          const canvas = canvasRef.current;
+          const img = imageRef.current;
+          const displayHeight = canvas.clientHeight;
+          const scale = animState.current.scale;
+          const panY = animState.current.panY;
+          
+          const imgAspect = img.naturalWidth / img.naturalHeight;
+          const canvasAspect = canvas.clientWidth / displayHeight;
+          
+          let drawHeight: number;
+          if (imgAspect > canvasAspect) {
+            drawHeight = displayHeight * scale;
+          } else {
+            const drawWidth = canvas.clientWidth * scale;
+            drawHeight = drawWidth / imgAspect;
+          }
+          
+          const extraHeight = drawHeight - displayHeight;
+          const panOffset = extraHeight * panY;
+          
+          // Use translate3d for GPU acceleration
+          const transformStyle = `translate3d(0, ${-panOffset}px, 0)`;
+          
+          if(pointer1Ref.current) pointer1Ref.current.style.transform = transformStyle;
+          // pointer2 is fixed
+          if(pointer3Ref.current) pointer3Ref.current.style.transform = transformStyle;
+          if(pointer4Ref.current) pointer4Ref.current.style.transform = transformStyle;
         }
-
-        const extraHeight = drawHeight - displayHeight;
-        const panOffset = extraHeight * panY;
-        const transformStyle = `translate3d(0, ${-panOffset}px, 0)`;
-
-        // Update pointers (skip index 1 which is fixed)
-        [0, 2, 3].forEach(i => {
-          const ref = pointerOuterRefs.current[i];
-          if (ref) ref.style.transform = transformStyle;
-        });
       },
     }, 12);
 
-    // Hotspot reveal animations
-    const revealHotspot = (index: number, time: number, hideTime?: number) => {
-      const ref = pointerInnerRefs.current[index];
-      tl.to(ref, { opacity: 1, scale: 1, duration: 1.4, ease: "back.out(1.4)" }, time);
-      tl.to(ref, { opacity: 0, scale: 0.95, duration: 1.0, ease: "power1.in" }, hideTime ?? time + 3.0);
+    const revealHotspot = (ref: React.RefObject<HTMLDivElement | null>, time: number) => {
+      tl.to(ref.current, { opacity: 1, scale: 1, duration: 1.4, ease: "back.out(1.4)" }, time);
+      tl.to(ref.current, { opacity: 0, scale: 0.95, duration: 1.0, ease: "power1.in" }, time + 3.0);
     };
 
-    revealHotspot(0, 13);
-    revealHotspot(1, 14, 20.0);
-    revealHotspot(2, 21);
-    revealHotspot(3, 25);
+    revealHotspot(pointer1InnerRef, 13);
+    
+    tl.to(pointer2InnerRef.current, { opacity: 1, scale: 1, duration: 1.4, ease: "back.out(1.4)" }, 14);
+    tl.to(pointer2InnerRef.current, { opacity: 0, scale: 0.95, duration: 1.0, ease: "power1.in" }, 20.0);
+    
+    revealHotspot(pointer3InnerRef, 21);
+    revealHotspot(pointer4InnerRef, 25);
 
     const st = ScrollTrigger.create({
       trigger: wrapperRef.current,
       start: "top top",
       end: scrollDistance,
       pin: true,
-      scrub: 1,
+      scrub: 1, // Reduced scrub from 2 to 1 for more responsive feel (less floaty lag)
       onUpdate: (self) => {
         if (!isLockedRef.current) tl.progress(self.progress);
       }
@@ -453,62 +427,74 @@ function RevealZoom({
     };
   }, [imageLoaded, isMounted, buildingZoomScale, windowZoomScale, windowMoveDistance, scrollDistance, scheduleCanvasDraw]);
 
-  // Memoized styles
-  const shapeStyle = useMemo<React.CSSProperties>(() => ({
-    zIndex: 100,
-    height: 'auto',
-    objectFit: 'contain',
-    willChange: 'opacity',
-    backfaceVisibility: 'hidden'
-  }), []);
-
-  const buildingStyle = useMemo<React.CSSProperties>(() => ({
-    willChange: 'transform, opacity',
-    backfaceVisibility: 'hidden',
-    transform: 'translateZ(0)'
-  }), []);
-
   if (!isMounted) return <section className="w-full h-screen bg-black" />;
 
   return (
     <section ref={wrapperRef} className="relative w-full bg-black overflow-hidden" style={{ minHeight: '100vh', zIndex: 50 }}>
       <div ref={containerRef} className="relative w-full h-screen overflow-hidden">
-
-        {/* Shape Overlay */}
+        
+        {/* Shape Overlay - Optimized */}
         <img
           ref={shapeRef}
           src={resolvedShapeSrc}
           alt=""
           decoding="async"
-          loading="eager"
           className="absolute top-0 left-1/2 w-full max-w-[100vw] -translate-x-1/2 pointer-events-none"
-          style={shapeStyle}
+          // Added backface-visibility hidden to prevent flickering during opacity changes
+          style={{ zIndex: 100, height: 'auto', objectFit: 'contain', willChange: 'opacity', backfaceVisibility: 'hidden' }}
         />
-
-        {/* Main Canvas */}
+        
+        {/* Main Canvas - Optimized */}
         <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" style={{ zIndex: 1 }} />
 
-        {/* Hotspots */}
-        {HOTSPOT_DATA.map((hotspot, index) => (
-          <div
-            key={hotspot.id}
-            ref={el => { pointerOuterRefs.current[index] = el; }}
-            className="absolute"
-            style={{ zIndex: 20, ...hotspot.style, willChange: 'transform' }}
-          >
-            <div
-              ref={el => { pointerInnerRefs.current[index] = el; }}
-              className="opacity-0 scale-90 origin-center"
-            >
-              <Hotspot
-                title={hotspot.title}
-                subtitle={hotspot.subtitle}
-                position="left"
-                description={hotspot.description}
-              />
-            </div>
+        {/* ========================================================= */}
+        {/* HOTSPOTS                                                */}
+        {/* ========================================================= */}
+        {/* Added will-change transform to container divs */}
+        
+        <div ref={pointer1Ref} className="absolute" style={{ zIndex: 20, top: '27%', right: '47%', willChange: 'transform' }}>
+          <div ref={pointer1InnerRef} className="opacity-0 scale-90 origin-center">
+            <Hotspot 
+              title="SkyPods" 
+              subtitle="Floors 29-32" 
+              position="left" 
+              description="The top floors of the Mirai building are a collection of 16 exclusive SkyPods 100 metres above the ground." 
+            />
           </div>
-        ))}
+        </div>
+
+        <div ref={pointer2Ref} className="absolute" style={{ zIndex: 20, top: '30%', right: '40%', willChange: 'transform' }}>
+          <div ref={pointer2InnerRef} className="opacity-0 scale-90 origin-center">
+            <Hotspot 
+              title="Residencies" 
+              subtitle="Level 35" 
+              position="left" 
+              description="An exclusive rooftop sanctuary featuring panoramic 360-degree views of the city skyline." 
+            />
+          </div>
+        </div>
+
+        <div ref={pointer3Ref} className="absolute" style={{ zIndex: 20, top: '210%', right: '40%', willChange: 'transform' }}>
+          <div ref={pointer3InnerRef} className="opacity-0 scale-90 origin-center">
+            <Hotspot 
+              title="Clubhouse" 
+              subtitle="Levels 3-4" 
+              position="left" 
+              description="A world-class wellness destination spanning two floors featuring infinity pools and private suites." 
+            />
+          </div>
+        </div>
+
+        <div ref={pointer4Ref} className="absolute" style={{ zIndex: 20, top: '220%', right: '40%', willChange: 'transform' }}>
+          <div ref={pointer4InnerRef} className="opacity-0 scale-90 origin-center">
+            <Hotspot 
+              title="Podium Level" 
+              subtitle="Gardens" 
+              position="left" 
+              description="Landscaped terraces and secret gardens create tranquil retreats within the urban landscape." 
+            />
+          </div>
+        </div>
 
         {/* Floating Text */}
         <div ref={textRef} className="absolute top-10 right-10 md:top-16 md:right-24" style={{ zIndex: 5 }}>
@@ -518,16 +504,21 @@ function RevealZoom({
           </h2>
         </div>
 
-        {/* Initial Building View */}
+        {/* Initial Building View (Fades out) - Optimized */}
         <div className="absolute inset-0 w-full h-full" style={{ zIndex: 10 }}>
           <img
             ref={buildingRef}
             src={resolvedBuildingSrc}
             alt="Building View"
             decoding="async"
-            loading="eager"
             className="absolute inset-0 w-full h-full object-cover"
-            style={buildingStyle}
+            // KEY FIX: Added backfaceVisibility and translateZ to force GPU layer
+            // This prevents the browser from trying to rasterize the 16x scaled image on the CPU
+            style={{ 
+              willChange: 'transform, opacity', 
+              backfaceVisibility: 'hidden', 
+              transform: 'translateZ(0)' 
+            }}
           />
         </div>
       </div>
@@ -535,4 +526,4 @@ function RevealZoom({
   );
 }
 
-export default memo(RevealZoom);
+export default RevealZoom;
