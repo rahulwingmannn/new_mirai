@@ -1,5 +1,4 @@
 'use client';
-
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 
@@ -31,6 +30,7 @@ export default function BlurText({
 
     const selector = wrapper.querySelectorAll<HTMLElement>('span.blurtarget');
     const offset = direction === 'top' ? -18 : direction === 'bottom' ? 18 : direction === 'left' ? -12 : 12;
+
     const propsFrom: any = {
       y: (direction === 'left' || direction === 'right') ? 0 : offset,
       x: (direction === 'left' || direction === 'right') ? offset : 0,
@@ -45,7 +45,7 @@ export default function BlurText({
       return;
     }
 
-    // small stagger
+    // Faster animation with reduced duration and stagger
     tweenRef.current = gsap.fromTo(
       selector,
       propsFrom,
@@ -54,9 +54,9 @@ export default function BlurText({
         y: 0,
         opacity: 1,
         filter: 'blur(0px)',
-        duration: 0.6,
-        ease: 'power3.out',
-        stagger: 0.06,
+        duration: 0.3,      // reduced from 0.6
+        ease: 'power2.out', // slightly snappier ease
+        stagger: 0.025,     // reduced from 0.06
         delay: (delay || 0) / 1000,
         onComplete: () => onAnimationComplete && onAnimationComplete()
       }
@@ -69,7 +69,6 @@ export default function BlurText({
   }, [text, delay, animateBy, direction, onAnimationComplete, play]);
 
   // Split text into words or chars and render spans
-  // For words, split with capture groups to preserve whitespace tokens exactly (e.g., spaces, newlines).
   let parts: string[];
   if (animateBy === 'words') {
     parts = text.split(/(\s+)/).filter((p) => p.length > 0);
