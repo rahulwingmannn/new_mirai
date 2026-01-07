@@ -28,7 +28,7 @@ export default function ContactForm() {
       <section
         id="contact-section"
         className="fixed inset-0 flex items-center justify-start bg-gray-100"
-        style={{ zIndex: 1 }}
+        style={{ zIndex: 20 }}
       >
         <div className="absolute inset-0 -z-10 bg-linear-to-r from-white via-gray-100 to-white" aria-hidden="true" />
         <div className="relative z-10 h-full pl-6 lg:pl-12">
@@ -59,7 +59,7 @@ export default function ContactForm() {
     <section
       id="contact-section"
       className="fixed inset-0 flex items-center justify-start bg-black"
-      style={{ zIndex: 1 }}
+      style={{ zIndex: 20 }}
     >
       {/* Background Image (render only if it loaded without error) */}
       {!bgError && (
