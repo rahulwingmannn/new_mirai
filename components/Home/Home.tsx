@@ -14,18 +14,21 @@ import SixthElement from './Sixth_Element/Sixth_element'
 const Home = () => {
   return (
     <div className="relative bg-black w-full overflow-x-hidden">
+      {/* Contact Form - Fixed, lowest z-index among fixed elements */}
+      <ContactForm />
+      
       <div className="relative z-10 bg-black">
         <Hero />
         
         {/* Spacer for Hero */}
         <div className="h-screen" aria-hidden="true" />
         
-        {/* SixthElement - Using z-index 10 */}
+        {/* SixthElement */}
         <div className="relative" style={{ zIndex: 10 }}>
           <SixthElement />
         </div>
         
-        {/* RevealZoom - Using z-index 11 (next in line) */}
+        {/* RevealZoom */}
         <section 
           aria-label="Reveal zoom" 
           className="relative bg-black"
@@ -34,7 +37,7 @@ const Home = () => {
           <RevealZoom />
         </section>
         
-        {/* Following sections continue the ladder */}
+        {/* Scroll video */}
         <section 
           aria-label="Scroll video" 
           className="relative bg-black"
@@ -43,7 +46,8 @@ const Home = () => {
           <Mirai_Grace />
         </section>
         
-        <div style={{ position: 'relative', zIndex: 13 }}>
+        {/* Main content sections - HIGHER z-index to cover ContactForm */}
+        <div className="relative bg-white" style={{ zIndex: 25 }}>
           <MiraiPodsIntro />
           <MiraiPodsSlider />
           <ClubhouseIntro />
@@ -52,10 +56,13 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Fixed UI layers remain at the bottom/top of the stack */}
-      <ContactForm />
+      {/* Spacer to allow scrolling to reveal ContactForm */}
       <div className="relative h-screen" style={{ zIndex: 0 }} />
-      <Footer />
+      
+      {/* Footer - highest z-index */}
+      <div className="relative" style={{ zIndex: 30 }}>
+        <Footer />
+      </div>
     </div>
   )
 }
