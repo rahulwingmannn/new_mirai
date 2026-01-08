@@ -182,8 +182,8 @@ export default function MiraiAmenitiesShowcase() {
               }}
             >
               <div
-                className="text-[clamp(3.5rem,10vw,8rem)] font-light tracking-[-0.02em] text-[#6B2C3E] leading-[1.1] text-center whitespace-nowrap"
-                style={{ fontFamily: '"Playfair Display", Georgia, serif' }}
+                className="text-[clamp(3.5rem,10vw,8rem)] tracking-[-0.02em] text-[#6B2C3E] leading-[1.1] text-center whitespace-nowrap"
+                style={{ fontFamily: 'Migra, serif', fontWeight: 300 }}
               >
                 {item.text}
               </div>
@@ -192,9 +192,6 @@ export default function MiraiAmenitiesShowcase() {
         })}
       </div>
 
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500&display=swap');
-      `}</style>
     </section>
   );
 }
