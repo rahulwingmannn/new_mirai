@@ -1,141 +1,102 @@
 'use client';
 
-import { memo } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
+const dayViewPath = '/images/day_view.png';
 
-const DAY_VIEW_PATH = '/images/day_view.png';
+export default function ContactForm() {
+  const [bgLoaded, setBgLoaded] = useState(false);
+  const [bgError, setBgError] = useState(false);
 
-const ContactForm = memo(function ContactForm() {
+  useEffect(() => {
+    const img = new window.Image();
+    img.onload = () => setBgLoaded(true);
+    img.onerror = () => {
+      setBgLoaded(true);
+      setBgError(true);
+    };
+    img.src = dayViewPath;
+    return () => {
+      img.onload = null;
+      img.onerror = null;
+    };
+  }, []);
+
+  // Render a neutral placeholder until background image is ready
+  if (!bgLoaded) {
+    return (
+      <section
+        id="contact-section"
+        className="fixed inset-0 flex items-center justify-start bg-gray-100"
+        style={{ zIndex: 1 }}
+      >
+        <div className="absolute inset-0 -z-10 bg-linear-to-r from-white via-gray-100 to-white" aria-hidden="true" />
+        <div className="relative z-10 h-full pl-6 lg:pl-12">
+          <div className="flex items-center justify-start h-full">
+            <div className="w-auto bg-white rounded-xl p-8 md:p-10 shadow-2xl" style={{ maxWidth: '340px' }}>
+              <h2 className="text-3xl font-bold mb-8 text-gray-900 font-serif">Contact Us</h2>
+              <div className="space-y-6">
+                <input 
+                  placeholder="Name *" 
+                  className="w-full px-4 py-4 border-b-2 border-gray-200 outline-none text-black focus:border-blue-600 transition-colors" 
+                />
+                <input 
+                  placeholder="Email *" 
+                  className="w-full px-4 py-4 border-b-2 border-gray-200 outline-none text-black focus:border-blue-600 transition-colors" 
+                />
+                <button className="w-full bg-blue-600 text-white py-4 rounded-lg font-bold hover:bg-blue-700 transition-all">
+                  SUBMIT
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
-    <div className="relative w-full min-h-screen flex items-center justify-center p-4">
-      {/* Background Image */}
-      <Image
-        src={DAY_VIEW_PATH}
-        alt="Background"
-        fill
-        className="object-cover"
-        priority
-      />
-
-      {/* Form Container */}
-      <div className="relative z-10 w-full max-w-2xl">
-        {/* Glassmorphism Card */}
-        <div
-          className="rounded-2xl p-10 md:p-12"
-          style={{
-            background: 'rgba(255, 255, 255, 0.75)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-          }}
-        >
-          {/* Title */}
-          <h2
-            className="text-2xl md:text-3xl tracking-[0.3em] mb-10"
-            style={{
-              fontFamily: 'Georgia, "Times New Roman", serif',
-              color: '#1a2a3a',
-              fontWeight: 400,
-            }}
-          >
-            CONTACT US
-          </h2>
-
-          {/* Form */}
-          <form onSubmit={(e) => e.preventDefault()}>
-            {/* Name Input */}
-            <div className="border-b border-gray-300 mb-6">
-              <input
-                type="text"
-                placeholder="Name"
-                className="w-full bg-transparent py-4 outline-none"
-                style={{
-                  fontFamily: 'Georgia, "Times New Roman", serif',
-                  color: '#722F37',
-                  fontSize: '1rem',
-                }}
+    <section
+      id="contact-section"
+      className="fixed inset-0 flex items-center justify-start bg-black"
+      style={{ zIndex: 1 }}
+    >
+      {/* Background Image (render only if it loaded without error) */}
+      {!bgError && (
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src={dayViewPath}
+            alt="Day view"
+            fill
+            priority
+            unoptimized
+            className="object-cover object-center"
+          />
+        </div>
+      )}
+      
+      {/* Removed dark overlay so background image displays at full brightness */}
+      
+      <div className="relative z-10 h-full pl-6 lg:pl-12">
+        <div className="flex items-center justify-start h-full">
+          <div className="w-auto bg-white rounded-xl p-8 md:p-10 shadow-2xl" style={{ maxWidth: '340px' }}>
+            <h2 className="text-3xl font-bold mb-8 text-gray-900 font-serif">Contact Us</h2>
+            <div className="space-y-6">
+              <input 
+                placeholder="Name *" 
+                className="w-full px-4 py-4 border-b-2 border-gray-200 outline-none text-black focus:border-blue-600 transition-colors" 
               />
-            </div>
-
-            {/* Email Input */}
-            <div className="border-b border-gray-300 mb-6">
-              <input
-                type="email"
-                placeholder="Email"
-                className="w-full bg-transparent py-4 outline-none"
-                style={{
-                  fontFamily: 'Georgia, "Times New Roman", serif',
-                  color: '#722F37',
-                  fontSize: '1rem',
-                }}
+              <input 
+                placeholder="Email *" 
+                className="w-full px-4 py-4 border-b-2 border-gray-200 outline-none text-black focus:border-blue-600 transition-colors" 
               />
+              <button className="w-full bg-blue-600 text-white py-4 rounded-lg font-bold hover:bg-blue-700 transition-all">
+                SUBMIT
+              </button>
             </div>
-
-            {/* Number Input */}
-            <div className="border-b border-gray-300 mb-6">
-              <input
-                type="tel"
-                placeholder="Number"
-                className="w-full bg-transparent py-4 outline-none"
-                style={{
-                  fontFamily: 'Georgia, "Times New Roman", serif',
-                  color: '#722F37',
-                  fontSize: '1rem',
-                }}
-              />
-            </div>
-
-            {/* Terms Checkbox */}
-            <div className="flex items-center gap-3 mb-6">
-              <input
-                type="checkbox"
-                id="terms"
-                className="w-4 h-4 border-2 border-gray-400 rounded-sm cursor-pointer"
-                style={{
-                  accentColor: '#722F37',
-                }}
-              />
-              <label
-                htmlFor="terms"
-                className="cursor-pointer"
-                style={{
-                  fontFamily: 'Georgia, "Times New Roman", serif',
-                  color: '#1a2a3a',
-                  fontSize: '0.95rem',
-                }}
-              >
-                I accept the terms and conditions
-              </label>
-            </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              className="w-full py-5 rounded-xl transition-all duration-300 hover:opacity-90 active:scale-[0.98]"
-              style={{
-                background: '#722F37',
-                fontFamily: 'Georgia, "Times New Roman", serif',
-                color: '#ffffff',
-                fontSize: '1rem',
-                letterSpacing: '0.15em',
-              }}
-            >
-              Submit Form
-            </button>
-          </form>
+          </div>
         </div>
       </div>
-
-      <style jsx global>{`
-        input::placeholder {
-          color: #722F37 !important;
-          opacity: 1 !important;
-          font-family: Georgia, "Times New Roman", serif !important;
-        }
-      `}</style>
-    </div>
+    </section>
   );
-});
-
-ContactForm.displayName = 'ContactForm';
-
-export default ContactForm;
+}
