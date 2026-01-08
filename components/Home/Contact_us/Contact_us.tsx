@@ -7,6 +7,7 @@ const dayViewPath = '/images/day_view.png';
 export default function ContactForm() {
   const [bgLoaded, setBgLoaded] = useState(false);
   const [bgError, setBgError] = useState(false);
+  const [acceptTerms, setAcceptTerms] = useState(false);
 
   useEffect(() => {
     const img = new window.Image();
@@ -34,18 +35,54 @@ export default function ContactForm() {
         <div className="relative z-10 h-full pl-6 lg:pl-12">
           <div className="flex items-center justify-start h-full">
             <div className="w-auto bg-white rounded-xl p-8 md:p-10 shadow-2xl" style={{ maxWidth: '340px' }}>
-              <h2 className="text-3xl font-bold mb-8 text-gray-900 font-serif">Contact Us</h2>
+              <h2 
+                className="text-2xl mb-8 text-gray-900 tracking-[0.3em] uppercase"
+                style={{ fontFamily: 'Georgia, serif', fontWeight: 400 }}
+              >
+                Contact Us
+              </h2>
               <div className="space-y-6">
                 <input 
-                  placeholder="Name *" 
-                  className="w-full px-4 py-4 border-b-2 border-gray-200 outline-none text-black focus:border-blue-600 transition-colors" 
+                  placeholder="Name" 
+                  className="w-full px-0 py-3 border-b border-gray-300 outline-none bg-transparent transition-colors placeholder:text-[#8B4A5E] placeholder:opacity-100 text-gray-800 focus:border-[#8B4A5E]"
+                  style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic' }}
                 />
                 <input 
-                  placeholder="Email *" 
-                  className="w-full px-4 py-4 border-b-2 border-gray-200 outline-none text-black focus:border-blue-600 transition-colors" 
+                  placeholder="Email" 
+                  type="email"
+                  className="w-full px-0 py-3 border-b border-gray-300 outline-none bg-transparent transition-colors placeholder:text-[#8B4A5E] placeholder:opacity-100 text-gray-800 focus:border-[#8B4A5E]"
+                  style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic' }}
                 />
-                <button className="w-full bg-blue-600 text-white py-4 rounded-lg font-bold hover:bg-blue-700 transition-all">
-                  SUBMIT
+                <input 
+                  placeholder="Number" 
+                  type="tel"
+                  className="w-full px-0 py-3 border-b border-gray-300 outline-none bg-transparent transition-colors placeholder:text-[#8B4A5E] placeholder:opacity-100 text-gray-800 focus:border-[#8B4A5E]"
+                  style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic' }}
+                />
+                <label className="flex items-center gap-3 cursor-pointer pt-2">
+                  <input 
+                    type="checkbox"
+                    checked={acceptTerms}
+                    onChange={(e) => setAcceptTerms(e.target.checked)}
+                    className="w-4 h-4 border border-gray-400 rounded-none accent-[#6B2C3E] cursor-pointer"
+                  />
+                  <span 
+                    className="text-sm text-gray-700"
+                    style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic' }}
+                  >
+                    I accept the terms and conditions
+                  </span>
+                </label>
+                <button 
+                  className="w-full py-4 rounded-lg font-medium tracking-wider transition-all mt-4"
+                  style={{ 
+                    fontFamily: 'Georgia, serif',
+                    backgroundColor: '#6B2C3E',
+                    color: 'white',
+                    letterSpacing: '0.15em'
+                  }}
+                >
+                  Submit Form
                 </button>
               </div>
             </div>
@@ -80,18 +117,54 @@ export default function ContactForm() {
       <div className="relative z-10 h-full pl-6 lg:pl-12">
         <div className="flex items-center justify-start h-full">
           <div className="w-auto bg-white rounded-xl p-8 md:p-10 shadow-2xl" style={{ maxWidth: '340px' }}>
-            <h2 className="text-3xl font-bold mb-8 text-gray-900 font-serif">Contact Us</h2>
+            <h2 
+              className="text-2xl mb-8 text-gray-900 tracking-[0.3em] uppercase"
+              style={{ fontFamily: 'Georgia, serif', fontWeight: 400 }}
+            >
+              Contact Us
+            </h2>
             <div className="space-y-6">
               <input 
-                placeholder="Name *" 
-                className="w-full px-4 py-4 border-b-2 border-gray-200 outline-none text-black focus:border-blue-600 transition-colors" 
+                placeholder="Name" 
+                className="w-full px-0 py-3 border-b border-gray-300 outline-none bg-transparent transition-colors placeholder:text-[#8B4A5E] placeholder:opacity-100 text-gray-800 focus:border-[#8B4A5E]"
+                style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic' }}
               />
               <input 
-                placeholder="Email *" 
-                className="w-full px-4 py-4 border-b-2 border-gray-200 outline-none text-black focus:border-blue-600 transition-colors" 
+                placeholder="Email" 
+                type="email"
+                className="w-full px-0 py-3 border-b border-gray-300 outline-none bg-transparent transition-colors placeholder:text-[#8B4A5E] placeholder:opacity-100 text-gray-800 focus:border-[#8B4A5E]"
+                style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic' }}
               />
-              <button className="w-full bg-blue-600 text-white py-4 rounded-lg font-bold hover:bg-blue-700 transition-all">
-                SUBMIT
+              <input 
+                placeholder="Number" 
+                type="tel"
+                className="w-full px-0 py-3 border-b border-gray-300 outline-none bg-transparent transition-colors placeholder:text-[#8B4A5E] placeholder:opacity-100 text-gray-800 focus:border-[#8B4A5E]"
+                style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic' }}
+              />
+              <label className="flex items-center gap-3 cursor-pointer pt-2">
+                <input 
+                  type="checkbox"
+                  checked={acceptTerms}
+                  onChange={(e) => setAcceptTerms(e.target.checked)}
+                  className="w-4 h-4 border border-gray-400 rounded-none accent-[#6B2C3E] cursor-pointer"
+                />
+                <span 
+                  className="text-sm text-gray-700"
+                  style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic' }}
+                >
+                  I accept the terms and conditions
+                </span>
+              </label>
+              <button 
+                className="w-full py-4 rounded-lg font-medium tracking-wider transition-all mt-4 hover:opacity-90"
+                style={{ 
+                  fontFamily: 'Georgia, serif',
+                  backgroundColor: '#6B2C3E',
+                  color: 'white',
+                  letterSpacing: '0.15em'
+                }}
+              >
+                Submit Form
               </button>
             </div>
           </div>
