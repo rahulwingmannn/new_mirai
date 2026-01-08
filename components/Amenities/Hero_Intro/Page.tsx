@@ -2,94 +2,136 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 
-const MiraiAmenities: React.FC = () => {
-  const boxRef = useRef<HTMLDivElement>(null);
-  const [isInView, setIsInView] = useState(false);
+interface AnimatedElementProps {
+  delay?: number;
+  children: React.ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
+}
+
+const AnimatedElement: React.FC<AnimatedElementProps> = ({ delay = 0, children, className = '', style }) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const elementRef = useRef<HTMLDivElement>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    const box = boxRef.current;
-    if (!box) return;
+    const element = elementRef.current;
+    if (!element) return;
 
-    // Intersection Observer for reveal animation
     const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsInView(true);
-            observer.unobserve(box);
-          }
-        });
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          timeoutRef.current = setTimeout(() => setIsVisible(true), delay);
+        } else {
+          if (timeoutRef.current) clearTimeout(timeoutRef.current);
+          setIsVisible(false);
+        }
       },
-      { threshold: 0.18 }
+      { 
+        rootMargin: '0px 0px -12% 0px', 
+        threshold: 0 
+      }
     );
 
-    observer.observe(box);
-
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    const box = boxRef.current;
-    if (!box) return;
-
-    // Check if device supports hover
-    const supportsHover = window.matchMedia('(hover: hover)').matches;
-    if (!supportsHover) return;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      const r = box.getBoundingClientRect();
-      const x = (e.clientX - r.left) / r.width - 0.5;
-      const y = (e.clientY - r.top) / r.height - 0.5;
-      
-      box.style.transform = `translateX(${x * 8}px) translateY(${-y * 8}px) rotateX(${-y * 2}deg) rotateY(${x * 2}deg)`;
-    };
-
-    const handleMouseLeave = () => {
-      box.style.transform = '';
-    };
-
-    box.addEventListener('mousemove', handleMouseMove);
-    box.addEventListener('mouseleave', handleMouseLeave);
+    observer.observe(element);
 
     return () => {
-      box.removeEventListener('mousemove', handleMouseMove);
-      box.removeEventListener('mouseleave', handleMouseLeave);
+      observer.disconnect();
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
-  }, []);
+  }, [delay]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 sm:p-12 bg-white">
-      <div className="w-full max-w-[1100px]">
-        <div
-          ref={boxRef}
-          className={`
-            relative
-            text-center
-            transition-all duration-[800ms] ease-[cubic-bezier(0.2,0.9,0.2,1)]
-            motion-reduce:transition-none
-            ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}
-          `}
-          style={{ perspective: '1000px', transformStyle: 'preserve-3d' }}
-        >
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-light leading-tight tracking-tight text-[#8b4f4f] mb-8 sm:mb-12" style={{ fontFamily: 'serif' }}>
-            Limitless Indulgence<br />For the Limited Few
-          </h1>
-          
-          <p className="text-[#5a5a5a] text-base sm:text-lg lg:text-xl leading-relaxed mb-6 max-w-4xl mx-auto" style={{ fontFamily: 'sans-serif' }}>
-            Experience leisure in every corner at Mirai with 2,00,000 sq. ft. amenities curated just for you.
-          </p>
-          
-          <p className="text-[#5a5a5a] text-base sm:text-lg lg:text-xl leading-relaxed mb-6 max-w-4xl mx-auto" style={{ fontFamily: 'sans-serif' }}>
-            From the podium to the element pods & the gigantic Clubhouse, Mirai has everything you desire to beat moments of monotony and transform them into core memories.
-          </p>
-          
-          <p className="text-[#5a5a5a] text-base sm:text-lg lg:text-xl leading-relaxed m-0 max-w-4xl mx-auto" style={{ fontFamily: 'sans-serif' }}>
-            The Podium-level amenities comprise varied landscapes and lush gardens to keep you rooted to nature. The lavish Clubhouse spread across 1,01,415 host a myriad of amenities spread across 4 dynamic levels. The Pods on the terrace are an extension of space where one can truly connect and feel one with the different elements that birthed Mirai.
-          </p>
-        </div>
-      </div>
+    <div
+      ref={elementRef}
+      className={`transition-all duration-700 ease-out ${
+        isVisible 
+          ? 'opacity-100 translate-y-0 scale-100' 
+          : 'opacity-0 translate-y-8 scale-[0.99]'
+      } ${className}`}
+      style={style}
+    >
+      {children}
     </div>
   );
 };
 
-export default MiraiAmenities;
+export default function MiraiAmenities() {
+  const headingBase: React.CSSProperties = {
+    letterSpacing: '4px',
+    textRendering: 'optimizeLegibility',
+    WebkitFontSmoothing: 'antialiased',
+    unicodeBidi: 'isolate',
+    marginBlock: '.83em',
+    marginInline: 0,
+    display: 'block',
+    fontSize: '64px',
+    fontWeight: 500,
+    fontFamily: 'Migra, serif',
+    color: '#78252f'
+  };
+
+  return (
+    <section className="relative py-8 lg:py-16 bg-white overflow-hidden min-h-screen flex items-center">
+      <div className="container max-w-[1100px] mx-auto px-4 lg:px-6 relative z-10 w-full">
+        <div className="text-center">
+          <AnimatedElement delay={0} className="mb-6">
+            <h1 style={headingBase}>
+              Limitless Indulgence<br />For the Limited Few
+            </h1>
+          </AnimatedElement>
+
+          <AnimatedElement delay={150} className="w-full mx-auto" style={{ marginTop: '30px' }}>
+            <p style={{ 
+              fontSize: '20px',
+              lineHeight: '1.4',
+              fontWeight: '300',
+              fontFamily: 'Century Gothic, system-ui, -apple-system, sans-serif',
+              display: 'block',
+              marginBlockStart: '1em',
+              marginBlockEnd: '1em',
+              marginInlineStart: '0px',
+              marginInlineEnd: '0px',
+              unicodeBidi: 'isolate',
+              color: '#000000'
+            }}>
+              Experience leisure in every corner at Mirai with 2,00,000 sq. ft. amenities curated just for you.
+            </p>
+            
+            <p style={{ 
+              fontSize: '20px',
+              lineHeight: '1.4',
+              fontWeight: '300',
+              fontFamily: 'Century Gothic, system-ui, -apple-system, sans-serif',
+              display: 'block',
+              marginBlockStart: '1em',
+              marginBlockEnd: '1em',
+              marginInlineStart: '0px',
+              marginInlineEnd: '0px',
+              unicodeBidi: 'isolate',
+              color: '#000000'
+            }}>
+              From the podium to the element pods & the gigantic Clubhouse, Mirai has everything you desire to beat moments of monotony and transform them into core memories.
+            </p>
+            
+            <p style={{ 
+              fontSize: '20px',
+              lineHeight: '1.4',
+              fontWeight: '300',
+              fontFamily: 'Century Gothic, system-ui, -apple-system, sans-serif',
+              display: 'block',
+              marginBlockStart: '1em',
+              marginBlockEnd: '1em',
+              marginInlineStart: '0px',
+              marginInlineEnd: '0px',
+              unicodeBidi: 'isolate',
+              color: '#000000'
+            }}>
+              The Podium-level amenities comprise varied landscapes and lush gardens to keep you rooted to nature. The lavish Clubhouse spread across 1,01,415 host a myriad of amenities spread across 4 dynamic levels. The Pods on the terrace are an extension of space where one can truly connect and feel one with the different elements that birthed Mirai.
+            </p>
+          </AnimatedElement>
+        </div>
+      </div>
+    </section>
+  );
+}
