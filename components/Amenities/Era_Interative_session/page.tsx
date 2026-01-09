@@ -61,16 +61,16 @@ const EraSeasons: React.FC = () => {
       title: 'PYRO',
       description: '',
       amenities: [
-        { name: 'Agni-Water Sculptures', image: 'bg-pyro-agni' },
-        { name: 'Ultra-Luxury Lounge', image: 'bg-pyro-lounge' },
-        { name: 'Bonfire Arena', image: 'bg-pyro-bonfire' },
-        { name: 'Barbeque Area', image: 'bg-pyro-bbq' },
-        { name: 'Bar Counter/Juice Station', image: 'bg-pyro-bar' },
-        { name: 'Gathering Lawn', image: 'bg-pyro-lawn' },
-        { name: 'Lava Walk Zone', image: 'bg-pyro-lava' },
-        { name: 'Flame Seating Pods', image: 'bg-pyro-flame' },
-        { name: 'Senior Citizens Corner', image: 'bg-pyro-senior' },
-        { name: 'Vantage Point', image: 'bg-pyro-vantage' }
+        { name: 'Agni-Water Sculptures', image: 'bg-pyro-1' },      // 1
+        { name: 'Ultra-Luxury Lounge', image: 'bg-pyro-2' },        // 2
+        { name: 'Bonfire Arena', image: 'bg-pyro-3' },              // 3
+        { name: 'Barbeque Area', image: 'bg-pyro-1' },              // 1
+        { name: 'Bar Counter/Juice Station', image: 'bg-pyro-2' }, // 2
+        { name: 'Gathering Lawn', image: 'bg-pyro-3' },             // 3
+        { name: 'Lava Walk Zone', image: 'bg-pyro-1' },             // 1
+        { name: 'Flame Seating Pods', image: 'bg-pyro-2' },         // 2
+        { name: 'Senior Citizens Corner', image: 'bg-pyro-3' },     // 3
+        { name: 'Vantage Point', image: 'bg-pyro-1' }               // 1
       ],
       bgClass: 'bg-winter'
     },
@@ -142,7 +142,11 @@ const EraSeasons: React.FC = () => {
     'bg-aqua-1': 'https://d3p1hokpi6aqc3.cloudfront.net/AQUA%20POD_1.png',
     'bg-aqua-2': 'https://d3p1hokpi6aqc3.cloudfront.net/AQUA%20POD_2.png',
     'bg-aqua-3': 'https://d3p1hokpi6aqc3.cloudfront.net/AQUA%20POD_3.png',
-    'bg-aqua-4': 'https://d3p1hokpi6aqc3.cloudfront.net/AQUA%20POD_4.png'
+    'bg-aqua-4': 'https://d3p1hokpi6aqc3.cloudfront.net/AQUA%20POD_4.png',
+    // Pyro images
+    'bg-pyro-1': 'https://d3p1hokpi6aqc3.cloudfront.net/Pyro_Pod_1.png',
+    'bg-pyro-2': 'https://d3p1hokpi6aqc3.cloudfront.net/Pyro_pod_2.png',
+    'bg-pyro-3': 'https://d3p1hokpi6aqc3.cloudfront.net/Pyro_Pod_3.png'
   };
 
   const getBackgroundImage = (bgClass: string): string => {
