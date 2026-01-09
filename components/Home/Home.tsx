@@ -70,6 +70,10 @@ const Home = () => {
       {/* Video Preloader - highest z-index */}
       {!isPreloaderComplete && <VideoPreloader onComplete={handlePreloaderComplete} />}
       
+      {/* Hero is fixed position and needs to be rendered outside the main content wrapper
+          so it's immediately visible after preloader completes */}
+      {isPreloaderComplete && <Hero />}
+      
       <div 
         className="relative bg-black w-full overflow-x-hidden"
         style={{
@@ -80,10 +84,7 @@ const Home = () => {
         }}
       >
         <div className="relative z-10 bg-black">
-          {/* Hero will be visible immediately after preloader */}
-          <Hero />
-          
-          {/* Spacer for Hero */}
+          {/* Spacer for Hero - keeps space for the fixed Hero */}
           <div className="h-screen" aria-hidden="true" />
           
           {/* Rest of content - hidden until page fully loads */}
