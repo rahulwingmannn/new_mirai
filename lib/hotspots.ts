@@ -3,7 +3,7 @@ import type { HotspotData } from '@/types/panorama';
 export const defaultHotspots: HotspotData[] = [
   { id: 'hp-league-sports', pitch: -40, yaw: 65, title: 'The League Sports Village', distance: 'Walk Away', highlight: true, icon: 'sports' },
   { id: 'hp-prestige', pitch: -10, yaw: 83, title: 'Prestige Skytech', distance: 'Walk Away', icon: 'building' },
-  { id: 'hp-ignite', pitch: -7, yaw: 64, title: 'Ignite Art Cafe', distance: 'Walk Away', icon: 'cafe' },
+  { id: 'hp-ignite', pitch: 0, yaw: 64, title: 'Ignite Art Cafe', distance: 'Walk Away', icon: 'cafe' },
   { id: 'hp-tansen', pitch: -11, yaw: 93, title: 'Tansen Restaurant', distance: 'Walk Away', icon: 'restaurant' },
   { id: 'hp-asie', pitch: -33, yaw: 182, title: 'Asie Stories', distance: 'Walk Away', icon: 'restaurant' },
   { id: 'hp-mamalola', pitch: -32, yaw: 170, title: 'Mamalola', distance: 'Walk Away', icon: 'restaurant' },
