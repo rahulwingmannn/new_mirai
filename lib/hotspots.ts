@@ -31,7 +31,7 @@ export const defaultHotspots: HotspotData[] = [
   { id: 'hp-neopolis', pitch: -3, yaw: 247, title: 'Neopolis', distance: '10 Mins', icon: 'shopping' },
   { id: 'hp-gandipet', pitch: -1, yaw: 220, title: 'Gandipet Lake', distance: '10 Mins', icon: 'lake' },
   { id: 'hp-wipro', pitch: -5, yaw: 380, title: 'Wipro Circle', distance: '10 Mins', icon: 'tech' },
-  { id: 'hp-google', pitch: -4, yaw: 100, title: 'Google', distance: '10 Mins', icon: 'tech' },
+  { id: 'hp-google', pitch: -4, yaw: 0, title: 'Google', distance: '10 Mins', icon: 'tech' },
   { id: 'hp-iiit', pitch: 1, yaw: 375, title: 'IIIT Hyderabad', distance: '10 Mins', icon: 'university' },
   { id: 'hp-cbit', pitch: -3, yaw: 210, title: 'CBIT', distance: '10 Mins', icon: 'university' },
   { id: 'hp-hcu', pitch: 1, yaw: 322, title: 'Hyderabad Central University', distance: '10 Mins', icon: 'university' },
