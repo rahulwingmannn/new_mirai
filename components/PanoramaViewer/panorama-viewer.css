@@ -175,20 +175,20 @@
    HIGHLIGHT STATE (special locations)
    ============================================ */
 
-.label-hotspot.highlight .hotspot-icon {
+/* .label-hotspot.highlight .hotspot-icon {
   background: linear-gradient(135deg, #18a558, #0d7a3e);
   box-shadow: 
     0 2px 8px rgba(24, 165, 88, 0.5),
     0 0 0 3px rgba(24, 165, 88, 0.3);
-}
+} */
 
 .label-hotspot.highlight .hotspot-icon svg {
-  color: #fff;
+  color: #000;
 }
 
-.label-hotspot.highlight .hotspot-icon::after {
+/* .label-hotspot.highlight .hotspot-icon::after {
   background: rgba(24, 165, 88, 0.4);
-}
+} */
 
 .label-hotspot.highlight:hover .hotspot-icon {
   box-shadow: 
