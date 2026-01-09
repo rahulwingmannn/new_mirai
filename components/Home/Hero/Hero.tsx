@@ -1,5 +1,4 @@
 'use client'
-
 import React, { useRef, useEffect, useState, useCallback, useMemo, memo } from 'react'
 import Image from 'next/image'
 
@@ -32,7 +31,6 @@ const Hero = memo(function Hero() {
           const windowHeight = window.innerHeight
           const scrollHeight = document.documentElement.scrollHeight
           const distanceFromBottom = scrollHeight - (scrollY + windowHeight)
-
           const pastHeroSection = scrollY >= windowHeight - 5
           const nearBottom = distanceFromBottom < 200
 
@@ -75,6 +73,8 @@ const Hero = memo(function Hero() {
     transition: 'opacity 0.5s ease-in-out'
   }), [fullScreenMediaStyle, videoReady])
 
+  // Updated z-index to 5 - Hero sits behind the z-10 content
+  // But since we moved Hero outside the z-10 wrapper, this works correctly now
   const sectionStyle = useMemo<React.CSSProperties>(() => ({
     zIndex: 5,
     opacity: isHidden ? 0 : 1,
@@ -133,5 +133,4 @@ const Hero = memo(function Hero() {
 })
 
 Hero.displayName = 'Hero'
-
 export default Hero
