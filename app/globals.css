@@ -1,3 +1,11 @@
+/* CRITICAL: Prevent white flash on load - must be before @import */
+html {
+	background-color: #000 !important;
+}
+body {
+	background-color: #000 !important;
+}
+
 @import "tailwindcss";
 
 /* Local font variables */
@@ -11,6 +19,8 @@ html, body {
 	/* Prevent horizontal scroll caused by overflowing children */
 	overflow-x: hidden;
 	font-family: var(--font-family-century, "Century Gothic", "CenturyGothic", Arial, sans-serif);
+	background-color: #000 !important;
+	background: #000 !important;
 }
 
 /* Use Magra / Migra for headings (loaded via next/font/google and local Migra) */
@@ -94,6 +104,7 @@ h3,h4,h5,h6{
  	text-rendering: optimizeLegibility;
  	-webkit-font-smoothing: antialiased;
 }
+
 /* Specific heading style for the '4 Pods' section (applied only to that H2) */
 .pods-heading {
 	display: block;
