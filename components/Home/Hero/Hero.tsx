@@ -1,5 +1,5 @@
 'use client'
-import React, { useRef, useEffect, useState, useCallback, useMemo, memo } from 'react'
+import React, { useRef, useEffect, useState, memo } from 'react'
 import Image from 'next/image'
 
 const HERO_LOGO = '/images/logo_1.png'
@@ -7,10 +7,9 @@ const VIDEO_SRC = 'https://d3p1hokpi6aqc3.cloudfront.net/mirai_home_1.mp4'
 
 const Hero = memo(function Hero() {
   const videoRef = useRef<HTMLVideoElement>(null)
-  const [videoReady, setVideoReady] = useState(false)
-  const [isHidden, setIsHidden] = useState(false)
+  const [shouldHide, setShouldHide] = useState(false)
 
-  // Play video on mount
+  // Play video immediately on mount
   useEffect(() => {
     const video = videoRef.current
     if (video) {
@@ -18,27 +17,18 @@ const Hero = memo(function Hero() {
     }
   }, [])
 
-  // Scroll handler with RAF throttling
+  // Hide hero when scrolled past OR near bottom of page
   useEffect(() => {
-    if (typeof window === 'undefined') return
-
-    let ticking = false
-
     const handleScroll = () => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          const scrollY = window.scrollY
-          const windowHeight = window.innerHeight
-          const scrollHeight = document.documentElement.scrollHeight
-          const distanceFromBottom = scrollHeight - (scrollY + windowHeight)
-          const pastHeroSection = scrollY >= windowHeight - 5
-          const nearBottom = distanceFromBottom < 200
+      const scrollY = window.scrollY
+      const windowHeight = window.innerHeight
+      const scrollHeight = document.documentElement.scrollHeight
+      const distanceFromBottom = scrollHeight - (scrollY + windowHeight)
+      
+      const pastHero = scrollY >= windowHeight - 5
+      const nearBottom = distanceFromBottom < windowHeight * 2
 
-          setIsHidden(pastHeroSection || nearBottom)
-          ticking = false
-        })
-        ticking = true
-      }
+      setShouldHide(pastHero || nearBottom)
     }
 
     window.addEventListener('scroll', handleScroll, { passive: true })
@@ -47,51 +37,30 @@ const Hero = memo(function Hero() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  const handleVideoReady = useCallback(() => {
-    setVideoReady(true)
-  }, [])
-
-  // Memoized styles
-  const fullScreenMediaStyle = useMemo<React.CSSProperties>(() => ({
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    width: '101%',
-    height: '101%',
-    transform: 'translate(-50%, -50%) translateZ(0)',
-    objectFit: 'cover',
-    display: 'block',
-    zIndex: 1,
-    backfaceVisibility: 'hidden',
-    WebkitBackfaceVisibility: 'hidden',
-    willChange: 'transform'
-  }), [])
-
-  const videoStyle = useMemo<React.CSSProperties>(() => ({
-    ...fullScreenMediaStyle,
-    opacity: videoReady ? 1 : 0,
-    transition: 'opacity 0.5s ease-in-out'
-  }), [fullScreenMediaStyle, videoReady])
-
-  // Updated z-index to 5 - Hero sits behind the z-10 content
-  // But since we moved Hero outside the z-10 wrapper, this works correctly now
-  const sectionStyle = useMemo<React.CSSProperties>(() => ({
-    zIndex: 5,
-    opacity: isHidden ? 0 : 1,
-    visibility: isHidden ? 'hidden' : 'visible',
-    pointerEvents: isHidden ? 'none' : 'auto'
-  }), [isHidden])
-
-  const placeholderStyle = useMemo<React.CSSProperties>(() => ({
-    backgroundImage: 'linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)'
-  }), [])
-
   return (
     <section
-      className="fixed top-0 left-0 w-full h-screen overflow-hidden bg-black transition-opacity duration-300"
-      style={sectionStyle}
+      className="fixed inset-0 w-full h-screen overflow-hidden"
+      style={{
+        zIndex: 2,
+        opacity: shouldHide ? 0 : 1,
+        visibility: shouldHide ? 'hidden' : 'visible',
+        transition: 'opacity 0.3s ease, visibility 0.3s ease',
+      }}
     >
-      {/* Logo - top center with full-width lines */}
+      {/* Video - full screen background */}
+      <video
+        ref={videoRef}
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="auto"
+        className="absolute inset-0 w-full h-full object-cover"
+      >
+        <source src={VIDEO_SRC} type="video/mp4" />
+      </video>
+
+      {/* Logo overlay */}
       <div className="absolute top-8 left-0 right-0 z-10 flex items-center px-8">
         <div className="flex-1 h-[1px] bg-white/60" />
         <div className="mx-6">
@@ -105,29 +74,6 @@ const Hero = memo(function Hero() {
         </div>
         <div className="flex-1 h-[1px] bg-white/60" />
       </div>
-
-      {/* Loading placeholder - shows while video loads */}
-      {!videoReady && (
-        <div
-          className="absolute inset-0 bg-black z-0"
-          style={placeholderStyle}
-        />
-      )}
-
-      {/* Video Background */}
-      <video
-        ref={videoRef}
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="auto"
-        style={videoStyle}
-        onCanPlayThrough={handleVideoReady}
-        onLoadedData={handleVideoReady}
-      >
-        <source src={VIDEO_SRC} type="video/mp4" />
-      </video>
     </section>
   )
 })
