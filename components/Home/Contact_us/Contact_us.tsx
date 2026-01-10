@@ -7,6 +7,7 @@ const dayViewPath = '/images/day_view.png';
 export default function ContactForm() {
   const [bgError, setBgError] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
+  const [shouldShow, setShouldShow] = useState(false);
 
   useEffect(() => {
     // Load Migra font from Fontshare
@@ -21,11 +22,34 @@ export default function ContactForm() {
     };
     img.src = dayViewPath;
 
+    // Only show ContactForm when scrolled past 80% of the page
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const windowHeight = window.innerHeight;
+      const docHeight = document.documentElement.scrollHeight;
+      const maxScroll = docHeight - windowHeight;
+      
+      // Calculate scroll percentage (0 to 1)
+      const scrollPercent = maxScroll > 0 ? scrollY / maxScroll : 0;
+      
+      // Only show when scrolled past 80% of the page
+      setShouldShow(scrollPercent > 0.8);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+
     return () => {
       img.onerror = null;
       document.head.removeChild(link);
+      window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
+  // Don't render at all if not scrolled far enough
+  if (!shouldShow) {
+    return null;
+  }
 
   const formContent = (
     <div 
