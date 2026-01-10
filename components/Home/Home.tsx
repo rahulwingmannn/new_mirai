@@ -79,7 +79,7 @@ const Home = () => {
       {/* Hero is fixed position with video - z-index 1 */}
       <Hero />
       
-      {/* ContactForm is fixed - z-index 2 (above Hero, below scrolling content) */}
+      {/* ContactForm is fixed - z-index 2, but only visible near the end (controlled internally) */}
       <ContactForm />
       
       {/* Main scrollable content */}
@@ -89,6 +89,7 @@ const Home = () => {
         
         {/* Content sections - z-index 10, scrolls over Hero */}
         <div className="relative" style={{ zIndex: 10 }}>
+          {/* SixthElement - visible right after Hero video */}
           <SixthElement />
           
           <section 
