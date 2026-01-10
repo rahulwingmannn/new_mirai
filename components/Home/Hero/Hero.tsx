@@ -8,28 +8,13 @@ const VIDEO_SRC = 'https://d3p1hokpi6aqc3.cloudfront.net/mirai_home_1.mp4'
 const Hero = memo(function Hero() {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [shouldHide, setShouldHide] = useState(false)
-  const [videoReady, setVideoReady] = useState(false)
 
-  // Preload video on mount
+  // Play video immediately on mount
   useEffect(() => {
     const video = videoRef.current
     if (video) {
-      // Set up event listeners before loading
-      const handleCanPlay = () => {
-        setVideoReady(true)
-        video.play().catch(() => {})
-      }
-      
-      video.addEventListener('canplay', handleCanPlay)
-      video.addEventListener('loadeddata', handleCanPlay)
-      
-      // Force load
-      video.load()
-      
-      return () => {
-        video.removeEventListener('canplay', handleCanPlay)
-        video.removeEventListener('loadeddata', handleCanPlay)
-      }
+      // Play as soon as possible
+      video.play().catch(() => {})
     }
   }, [])
 
@@ -55,16 +40,15 @@ const Hero = memo(function Hero() {
 
   return (
     <section
-      className="fixed inset-0 w-full h-screen overflow-hidden"
+      className="fixed inset-0 w-full h-screen overflow-hidden bg-black"
       style={{
         zIndex: 2,
         opacity: shouldHide ? 0 : 1,
         visibility: shouldHide ? 'hidden' : 'visible',
         transition: 'opacity 0.3s ease, visibility 0.3s ease',
-        backgroundColor: '#000',
       }}
     >
-      {/* Video - full screen background */}
+      {/* Video - full screen background, no transitions */}
       <video
         ref={videoRef}
         autoPlay
@@ -73,15 +57,11 @@ const Hero = memo(function Hero() {
         playsInline
         preload="auto"
         className="absolute inset-0 w-full h-full object-cover"
-        style={{
-          opacity: videoReady ? 1 : 0,
-          transition: 'opacity 0.3s ease',
-        }}
       >
         <source src={VIDEO_SRC} type="video/mp4" />
       </video>
 
-      {/* Logo overlay - always visible immediately */}
+      {/* Logo overlay */}
       <div className="absolute top-8 left-0 right-0 z-10 flex items-center px-8">
         <div className="flex-1 h-[1px] bg-white/60" />
         <div className="mx-6">
@@ -91,8 +71,6 @@ const Hero = memo(function Hero() {
             width={200}
             height={80}
             priority
-            loading="eager"
-            fetchPriority="high"
           />
         </div>
         <div className="flex-1 h-[1px] bg-white/60" />
