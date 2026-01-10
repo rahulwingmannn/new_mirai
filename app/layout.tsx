@@ -33,6 +33,25 @@ export default function RootLayout({
           }}
         />
         
+        {/* CRITICAL: Preload hero assets for faster loading */}
+        <link 
+          rel="preload" 
+          href="/images/logo_1.png" 
+          as="image"
+          fetchPriority="high"
+        />
+        <link 
+          rel="preload" 
+          href="https://d3p1hokpi6aqc3.cloudfront.net/mirai_home_1.mp4" 
+          as="video"
+          type="video/mp4"
+        />
+        <link 
+          rel="preload" 
+          href="/images/sixth_ment.png" 
+          as="image"
+        />
+        
         {/* CRITICAL: Reset scroll position before anything else loads */}
         <script
           dangerouslySetInnerHTML={{
@@ -51,14 +70,29 @@ export default function RootLayout({
         
         {/* Playfair Display from Google */}
         <link 
+          rel="preconnect" 
+          href="https://fonts.googleapis.com" 
+        />
+        <link 
+          rel="preconnect" 
+          href="https://fonts.gstatic.com" 
+          crossOrigin="anonymous"
+        />
+        <link 
           href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" 
           rel="stylesheet" 
+        />
+        
+        {/* Preconnect to video CDN */}
+        <link 
+          rel="preconnect" 
+          href="https://d3p1hokpi6aqc3.cloudfront.net" 
         />
         
         {/* Favicons */}
         <link rel="icon" href="/favicon.png" />
         <link rel="icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png" />
+        <link rel="apple-touch-icon" sizes="32x32" href="/favicon.png" />
       </head>
       <body className="antialiased" style={{ backgroundColor: '#000' }}>
         {/* Server-rendered black overlay to show immediately during initial load */}
