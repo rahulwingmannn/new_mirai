@@ -147,14 +147,6 @@ function Footer() {
     setShowFallbackLogo(true);
   }, []);
 
-  const bgStyle = useMemo(() => ({
-    backgroundImage: "url('/images/night_view.png')",
-    backgroundSize: 'cover',
-    backgroundAttachment: 'fixed',
-    backgroundPosition: 'center',
-    zIndex: -10,
-  }), []);
-
   const visibilityClass = useCallback((delay: string, type: 'translate' | 'scale' = 'translate') => {
     const base = isVisible ? 'opacity-100' : 'opacity-0';
     const transform = type === 'translate' 
@@ -165,21 +157,22 @@ function Footer() {
 
   return (
     <footer
-      className="relative text-[#bfc6cf] h-screen flex items-center bg-[#050505]"
-      style={{ zIndex: 10 }}
+      className="relative text-[#bfc6cf] h-screen flex items-center"
+      style={{ 
+        zIndex: 10,
+        backgroundImage: "url('/images/night_view.png')",
+        backgroundSize: 'cover',
+        backgroundAttachment: 'fixed',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
       role="contentinfo"
       aria-label="Footer - Pavani Mirai"
     >
-      <div
-        className="absolute inset-0 -z-10 bg-center bg-no-repeat"
-        style={bgStyle}
-        aria-hidden="true"
-      />
-
       <div className="absolute inset-0 bg-black/10 pointer-events-none" aria-hidden="true" />
 
       <div 
-        className="absolute inset-0 w-1/2 bg-linear-to-r from-black/80 via-black/50 to-transparent pointer-events-none"
+        className="absolute inset-0 w-1/2 bg-gradient-to-r from-black/80 via-black/50 to-transparent pointer-events-none"
         aria-hidden="true"
       />
 
