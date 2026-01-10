@@ -69,12 +69,12 @@ export default function SixthElement() {
       ref={sectionRef} 
       className="relative w-full overflow-hidden"
       style={{ 
-        backgroundColor: 'transparent',
+        backgroundColor: 'transparent', // Fully transparent container
         zIndex: 10, 
         position: 'relative' 
       }}
     >
-      {/* Background Image */}
+      {/* Background Image: Always opaque to prevent flickering */}
       <img
         src={bgPath}
         alt="Pavani Mirai Background"
@@ -87,22 +87,13 @@ export default function SixthElement() {
         }}
       />
 
-      {/* Bottom gradient overlay to cover white and fade to black */}
-      <div 
-        className="absolute bottom-0 left-0 right-0 pointer-events-none"
-        style={{
-          height: '300px',
-          background: 'linear-gradient(to bottom, transparent 0%, #000000 100%)',
-        }}
-      />
-
       {/* Text Overlay: Content linked to the scroller position */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="max-w-5xl px-6 text-center text-black" style={{ marginTop: '10%' }}>
+      <div className="absolute inset-0 flex items-end justify-center pointer-events-none pb-13">
+        <div className="max-w-5xl px-6 text-center text-black">
           
           {/* Welcome Header: Appears between 15% and 35% of the scroll */}
           <h1 
-            className="tracking-[0.3em] mb-1 md:mb-2 text-black"
+            className="uppercase tracking-[0.3em] mb-2 md:mb-4 text-black"
             style={h1Style}
           >
             Welcome to Pavani Mirai
@@ -119,22 +110,22 @@ export default function SixthElement() {
           <div className="max-w-3xl mx-auto space-y-4 md:space-y-6">
             {/* Paragraph 1: Appears between 35% and 55% of the scroll */}
             <p 
-              className="leading-relaxed text-black"
-              style={{ ...getScrollStyle(0.35, 0.55), fontSize: '20px', fontWeight: 400 }}
+              className="leading-relaxed font-normal text-black"
+              style={{ ...getScrollStyle(0.35, 0.55), fontSize: '20px' }}
             >
-              Nature crafted five elements — Earth that grounds us. 
-              Water that nourishes us. 
-              Fire that warms us. 
-              Air that breathes through us. 
-              Space that holds us.
+              Nature crafted five elements — <span className="font-bold">Earth</span> that grounds us. 
+              <span className="font-bold"> Water</span> that nourishes us. 
+              <span className="font-bold"> Fire</span> that warms us. 
+              <span className="font-bold"> Air</span> that breathes through us. 
+              <span className="font-bold"> Space</span> that holds us.
             </p>
             
             {/* Paragraph 2: Appears between 45% and 65% of the scroll */}
             <p 
-              className="hidden md:block leading-relaxed text-black"
-              style={{ ...getScrollStyle(0.45, 0.65), fontSize: '20px', fontWeight: 400 }}
+              className="hidden md:block leading-relaxed font-normal text-black"
+              style={{ ...getScrollStyle(0.45, 0.65), fontSize: '20px' }}
             >
-              With Pavani as the catalyst, the sixth element takes shape when all the elements are brought together in serene harmony. 
+              With Pavani as the catalyst, the <span className="italic font-medium">sixth element</span> takes shape when all the elements are brought together in serene harmony. 
               This is how Mirai was birthed — to give meaning to all of these elements and to harness their full potential.
             </p>
           </div>
