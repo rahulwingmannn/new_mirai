@@ -74,7 +74,7 @@ export default function SixthElement() {
         position: 'relative' 
       }}
     >
-      {/* Background Image: Always opaque to prevent flickering */}
+      {/* Background Image */}
       <img
         src={bgPath}
         alt="Pavani Mirai Background"
@@ -84,6 +84,15 @@ export default function SixthElement() {
           display: 'block',
           opacity: 1, 
           willChange: 'transform',
+        }}
+      />
+
+      {/* Bottom gradient overlay to cover white and fade to black */}
+      <div 
+        className="absolute bottom-0 left-0 right-0 pointer-events-none"
+        style={{
+          height: '300px',
+          background: 'linear-gradient(to bottom, transparent 0%, #000000 100%)',
         }}
       />
 
