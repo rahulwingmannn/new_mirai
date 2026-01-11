@@ -110,13 +110,13 @@ export function PanoramaViewer({
     let newHfov = currentHfov + (delta > 0 ? zoomStep : -zoomStep);
     newHfov = Math.max(minHfov, Math.min(maxHfov, newHfov));
     
-    // Smooth zoom with animation
-    viewerRef.current.setHfov(newHfov, 200);
+    // Set new zoom level
+    viewerRef.current.setHfov(newHfov);
     
-    // Reset zooming flag after animation completes
+    // Reset zooming flag after a short delay
     zoomTimeoutRef.current = setTimeout(() => {
       isZoomingRef.current = false;
-    }, 250);
+    }, 150);
   }, []);
 
   const createHotspotTooltip = useCallback((hs: HotspotData) => {
