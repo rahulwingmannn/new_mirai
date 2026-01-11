@@ -71,6 +71,21 @@ export default function MiraiAmenities() {
     color: '#78252f'
   };
 
+  const paragraphStyle: React.CSSProperties = {
+    fontSize: '20px',
+    lineHeight: '1.4',
+    fontWeight: 300,
+    fontStyle: 'normal',
+    fontFamily: '"Century Gothic", sans-serif',
+    display: 'block',
+    marginBlockStart: '1em',
+    marginBlockEnd: '1em',
+    marginInlineStart: '0px',
+    marginInlineEnd: '0px',
+    unicodeBidi: 'isolate',
+    color: '#333333'
+  };
+
   return (
     <section className="relative py-8 lg:py-16 bg-white overflow-hidden min-h-screen flex items-center">
       <div className="container max-w-[1100px] mx-auto px-4 lg:px-6 relative z-10 w-full">
@@ -82,51 +97,15 @@ export default function MiraiAmenities() {
           </AnimatedElement>
 
           <AnimatedElement delay={150} className="w-full mx-auto" style={{ marginTop: '30px' }}>
-            <p style={{ 
-              fontSize: '20px',
-              lineHeight: '1.4',
-              fontWeight: 400,
-              fontFamily: 'Century Gothic, sans-serif',
-              display: 'block',
-              marginBlockStart: '1em',
-              marginBlockEnd: '1em',
-              marginInlineStart: '0px',
-              marginInlineEnd: '0px',
-              unicodeBidi: 'isolate',
-              color: '#333333'
-            }}>
+            <p style={paragraphStyle}>
               Experience leisure in every corner at Mirai with 2,00,000 sq. ft. amenities curated just for you.
             </p>
             
-            <p style={{ 
-              fontSize: '20px',
-              lineHeight: '1.4',
-              fontWeight: 400,
-              fontFamily: 'Century Gothic, sans-serif',
-              display: 'block',
-              marginBlockStart: '1em',
-              marginBlockEnd: '1em',
-              marginInlineStart: '0px',
-              marginInlineEnd: '0px',
-              unicodeBidi: 'isolate',
-              color: '#333333'
-            }}>
+            <p style={paragraphStyle}>
               From the podium to the element pods & the gigantic Clubhouse, Mirai has everything you desire to beat moments of monotony and transform them into core memories.
             </p>
             
-            <p style={{ 
-              fontSize: '20px',
-              lineHeight: '1.4',
-              fontWeight: 400,
-              fontFamily: 'Century Gothic, sans-serif',
-              display: 'block',
-              marginBlockStart: '1em',
-              marginBlockEnd: '1em',
-              marginInlineStart: '0px',
-              marginInlineEnd: '0px',
-              unicodeBidi: 'isolate',
-              color: '#333333'
-            }}>
+            <p style={paragraphStyle}>
               The Podium-level amenities comprise varied landscapes and lush gardens to keep you rooted to nature. The lavish Clubhouse spread across 1,01,415 host a myriad of amenities spread across 4 dynamic levels. The Pods on the terrace are an extension of space where one can truly connect and feel one with the different elements that birthed Mirai.
             </p>
           </AnimatedElement>
