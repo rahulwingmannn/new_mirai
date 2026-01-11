@@ -27,16 +27,8 @@ const slides: Slide[] = [
   { id: 5, image: CLOUD_IMG, label: 'Space One', title: 'Beyond the Clouds\nInto the Unknown' },
 ];
 
-function renderBoldIfPyro(label: string, title: string) {
-  if (label === 'Pyro Pod') {
-    const [first, ...rest] = title.split('\n');
-    return {
-      label, // normal weight for label
-      title: <><strong>{first}</strong>{'\n'}<strong>{rest.join(' ')}</strong></>
-    };
-  }
-  return { label, title };
-}
+// Consistent font family for all text
+const FONT_FAMILY = "Migra, var(--font-magra, 'Magra', 'Century Gothic', Arial, sans-serif)";
 
 export default function MiraiPodsSlider() {
   const [layerAIndex, setLayerAIndex] = useState(0);
@@ -242,7 +234,7 @@ export default function MiraiPodsSlider() {
         height: '100vh',
         overflow: 'hidden',
         background: '#000',
-        fontFamily: "Migra, var(--font-magra, 'Magra', 'Century Gothic', Arial, sans-serif)",
+        fontFamily: FONT_FAMILY,
       }}
     >
       {/* Main Frame */}
@@ -316,7 +308,7 @@ export default function MiraiPodsSlider() {
           />
         </div>
 
-        {/* Content - Moved to left side where previous thumbnail was */}
+        {/* Content - Left side */}
         <div
           style={{
             position: 'absolute',
@@ -331,38 +323,35 @@ export default function MiraiPodsSlider() {
             maxWidth: 400,
           }}
         >
-          {(() => {
-            const { label, title } = renderBoldIfPyro(slides[currentIndex].label, slides[currentIndex].title);
-            return <>
-              <p
-                style={{
-                  fontSize: 15,
-                  letterSpacing: 3,
-                  textTransform: 'uppercase',
-                  marginBottom: 16,
-                  opacity: 0.85,
-                }}
-              >
-                {label}
-              </p>
-              <h2
-                style={{
-                  fontSize: '44px',
-                  fontWeight: 400,
-                  lineHeight: 1.15,
-                  whiteSpace: 'pre-line',
-                  fontFamily: ['Space One', 'Avia Pod', 'Terra Pod', 'Sky Pods', 'Aqua Pod', 'Pyro Pod'].includes(slides[currentIndex].label) ? "Migra, var(--font-magra, 'Magra', 'Century Gothic', Arial, sans-serif)" : 'Georgia, serif',
-                  margin: 0,
-                }}
-              >
-                {title}
-              </h2>
-            </>;
-          })()}
+          <p
+            style={{
+              fontSize: 15,
+              fontFamily: FONT_FAMILY,
+              fontWeight: 400,
+              letterSpacing: 3,
+              textTransform: 'uppercase',
+              marginBottom: 16,
+              opacity: 0.85,
+            }}
+          >
+            {slides[currentIndex].label}
+          </p>
+          <h2
+            style={{
+              fontSize: 44,
+              fontFamily: FONT_FAMILY,
+              fontWeight: 400,
+              lineHeight: 1.15,
+              whiteSpace: 'pre-line',
+              margin: 0,
+            }}
+          >
+            {slides[currentIndex].title}
+          </h2>
         </div>
       </div>
 
-      {/* Decorative Shape - Fixed z-index to be visible above the frame */}
+      {/* Decorative Shape */}
       <img
         src={SHAPE_TWO_PODS}
         alt=""
@@ -393,6 +382,7 @@ export default function MiraiPodsSlider() {
           background: 'rgba(255,255,255,0.1)',
           color: '#fff',
           fontSize: 24,
+          fontFamily: FONT_FAMILY,
           cursor: currentIndex === 0 ? 'not-allowed' : 'pointer',
           opacity: currentIndex === 0 ? 0.3 : 0.8,
           zIndex: 30,
@@ -420,6 +410,7 @@ export default function MiraiPodsSlider() {
           background: 'rgba(255,255,255,0.1)',
           color: '#fff',
           fontSize: 24,
+          fontFamily: FONT_FAMILY,
           cursor: 'pointer',
           opacity: 0.8,
           zIndex: 30,
@@ -477,7 +468,9 @@ export default function MiraiPodsSlider() {
             <span
               style={{
                 color: '#fff',
-                fontSize: ['Space One','Sky Pods','Terra Pod','Aqua Pod','Pyro Pod','Avia Pod'].includes(slides[nextIndex].label) ? '12px' : '32px',
+                fontSize: 12,
+                fontFamily: FONT_FAMILY,
+                fontWeight: 400,
                 textTransform: 'uppercase',
                 letterSpacing: 2,
               }}
@@ -491,6 +484,8 @@ export default function MiraiPodsSlider() {
             style={{
               color: 'rgba(255,255,255,0.5)',
               fontSize: 9,
+              fontFamily: FONT_FAMILY,
+              fontWeight: 400,
               textTransform: 'uppercase',
               letterSpacing: 3,
             }}
