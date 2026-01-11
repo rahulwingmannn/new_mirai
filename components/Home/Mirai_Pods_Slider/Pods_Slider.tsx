@@ -336,7 +336,7 @@ export default function MiraiPodsSlider() {
             return <>
               <p
                 style={{
-                  fontSize: 20,
+                  fontSize: 15,
                   letterSpacing: 3,
                   textTransform: 'uppercase',
                   marginBottom: 16,
