@@ -336,7 +336,7 @@ export default function MiraiPodsSlider() {
             return <>
               <p
                 style={{
-                  fontSize: 13,
+                  fontSize: 20,
                   letterSpacing: 3,
                   textTransform: 'uppercase',
                   marginBottom: 16,
@@ -348,7 +348,7 @@ export default function MiraiPodsSlider() {
               <h2
                 style={{
                   fontSize: '44px',
-                  fontWeight: 300,
+                  fontWeight: 400,
                   lineHeight: 1.15,
                   whiteSpace: 'pre-line',
                   fontFamily: ['Space One', 'Avia Pod', 'Terra Pod', 'Sky Pods', 'Aqua Pod', 'Pyro Pod'].includes(slides[currentIndex].label) ? "Migra, var(--font-magra, 'Magra', 'Century Gothic', Arial, sans-serif)" : 'Georgia, serif',
