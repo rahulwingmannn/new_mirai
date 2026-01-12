@@ -218,7 +218,7 @@ export default function MiraiHomesPage() {
 
             {/* Head Text Overlay */}
             <div
-              className={`absolute inset-0 flex flex-col items-center justify-end pb-12 md:pb-16 lg:pb-20 text-center px-4 transition-all duration-700 ${
+              className={`absolute inset-0 flex flex-col items-center justify-center mt-32 md:mt-40 lg:mt-48 text-center px-4 transition-all duration-700 ${
                 showHeadText ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
               }`}
             >
