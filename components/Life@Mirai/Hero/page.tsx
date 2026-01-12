@@ -63,12 +63,19 @@ export default function MiraiHomesPage() {
 
   // Wait for component to be ready
   useEffect(() => {
-    // Scroll to top on mount to prevent jump
+    // Prevent any scroll restoration
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+    
+    // Force scroll to top immediately
     window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
     
     const timer = setTimeout(() => {
       setIsReady(true);
-    }, 50);
+    }, 100);
     
     return () => clearTimeout(timer);
   }, []);
@@ -78,6 +85,9 @@ export default function MiraiHomesPage() {
     if (!isReady) return;
 
     const ctx = gsap.context(() => {
+      // Kill any existing ScrollTriggers
+      ScrollTrigger.getAll().forEach(st => st.kill());
+
       // Smooth parallax animation for clouds and sky
       gsap.utils.toArray([".sky", ".cloud1", ".cloud2", ".cloud3"]).forEach((el) => {
         const yValue = 
@@ -85,20 +95,17 @@ export default function MiraiHomesPage() {
           (el as Element).classList.contains("cloud2") ? -500 :
           (el as Element).classList.contains("cloud1") ? -800 : -650;
 
-        gsap.fromTo(
-          el as Element,
-          { y: 0 },
-          {
-            y: yValue,
-            ease: "none",
-            scrollTrigger: {
-              trigger: heroRef.current,
-              start: "top top",
-              end: "bottom top",
-              scrub: 1.5,
-            },
-          }
-        );
+        gsap.to(el as Element, {
+          y: yValue,
+          ease: "none",
+          scrollTrigger: {
+            trigger: heroRef.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: 1.5,
+            immediateRender: false,
+          },
+        });
       });
 
       // Blog card reveal animations
