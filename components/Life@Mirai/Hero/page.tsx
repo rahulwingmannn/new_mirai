@@ -61,31 +61,8 @@ export default function MiraiHomesPage() {
   const blogRefs = useRef<(HTMLDivElement | null)[]>([]);
   const progressPathRef = useRef<SVGPathElement>(null);
 
-  // Preloader effect
+  // GSAP Parallax and reveal animations
   useEffect(() => {
-    const interval = setInterval(() => {
-      setLoadProgress((prev) => {
-        if (prev >= 99) {
-          clearInterval(interval);
-          return 99;
-        }
-        return prev + 1;
-      });
-    }, 20);
-
-    const timer = setTimeout(() => {
-      setLoadProgress(100);
-      setTimeout(() => setIsLoading(false), 500);
-    }, 2000);
-
-    return () => {
-      clearInterval(interval);
-      clearTimeout(timer);
-    };
-  }, []);
-  useEffect(() => {
-    if (isLoading) return;
-
     const ctx = gsap.context(() => {
       // Smooth parallax animation for clouds and sky
       gsap.timeline({
@@ -170,7 +147,6 @@ export default function MiraiHomesPage() {
 
   return (
     <>
-      {/* ==================== MAIN CONTENT ==================== */}
       <main ref={mainRef} className="bg-white">
         {/* ==================== PARALLAX HERO SECTION ==================== */}
         <section ref={heroRef} className="relative h-screen overflow-hidden bg-white">
