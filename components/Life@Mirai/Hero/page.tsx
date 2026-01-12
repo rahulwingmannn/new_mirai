@@ -54,6 +54,7 @@ export default function MiraiHomesPage() {
   const [showHeadText, setShowHeadText] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [skyImageLoaded, setSkyImageLoaded] = useState(false);
 
   const mainRef = useRef<HTMLElement>(null);
   const scrollDistRef = useRef<HTMLDivElement>(null);
@@ -61,8 +62,17 @@ export default function MiraiHomesPage() {
   const blogRefs = useRef<(HTMLDivElement | null)[]>([]);
   const progressPathRef = useRef<SVGPathElement>(null);
 
+  // Preload the sky background image
+  useEffect(() => {
+    const img = new Image();
+    img.src = "https://azure-baboon-302476.hostingersite.com//mirai_/media/footer_img.png";
+    img.onload = () => setSkyImageLoaded(true);
+  }, []);
+
   // GSAP Parallax and reveal animations
   useEffect(() => {
+    if (!skyImageLoaded) return;
+
     const ctx = gsap.context(() => {
       // Set initial positions for clouds and sky
       gsap.set(".sky", { y: 0 });
@@ -123,7 +133,7 @@ export default function MiraiHomesPage() {
     }, mainRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [skyImageLoaded]);
 
   // Scroll event handlers
   useEffect(() => {
@@ -166,7 +176,16 @@ export default function MiraiHomesPage() {
 
         {/* ==================== PARALLAX HERO SECTION ==================== */}
         <section ref={heroRef} className="relative mb-8 lg:mb-12">
-          <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
+          {/* Loading placeholder with gradient background */}
+          {!skyImageLoaded && (
+            <div className="absolute inset-0 bg-gradient-to-b from-slate-800 via-slate-700 to-blue-900 animate-pulse" />
+          )}
+          
+          <svg 
+            viewBox="0 0 1200 800" 
+            xmlns="http://www.w3.org/2000/svg" 
+            className={`w-full h-auto transition-opacity duration-500 ${skyImageLoaded ? 'opacity-100' : 'opacity-0'}`}
+          >
             <defs>
               <mask id="m">
                 <g className="cloud1">
@@ -256,6 +275,7 @@ export default function MiraiHomesPage() {
                               <img
                                 src={post.image}
                                 alt={post.title}
+                                loading="lazy"
                                 className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                               />
                               <div className="absolute inset-0 bg-amber-600/0 group-hover:bg-amber-600/10 transition-colors duration-500" />
@@ -338,6 +358,7 @@ export default function MiraiHomesPage() {
                               <img
                                 src={post.image}
                                 alt={post.title}
+                                loading="lazy"
                                 className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                               />
                               <div className="absolute inset-0 bg-amber-600/0 group-hover:bg-amber-600/10 transition-colors duration-500" />
