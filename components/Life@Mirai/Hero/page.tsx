@@ -62,27 +62,80 @@ export default function MiraiHomesPage() {
 
   // GSAP Parallax and reveal animations
   useEffect(() => {
-    // Set initial positions to prevent jump
-    gsap.set([".sky", ".cloud1", ".cloud2", ".cloud3"], { y: 0 });
-
     const ctx = gsap.context(() => {
-      // Smooth parallax animation for clouds and sky
-      const parallaxTimeline = gsap.timeline({
-        scrollTrigger: {
-          trigger: heroRef.current,
-          start: "top top",
-          end: "bottom top",
-          scrub: 1.5,
-          markers: false,
-          invalidateOnRefresh: true,
-        },
+      // Ensure elements start at position 0
+      gsap.set([".sky", ".cloud1", ".cloud2", ".cloud3"], { 
+        y: 0,
+        clearProps: "transform"
       });
 
-      parallaxTimeline
-        .to(".sky", { y: -200, ease: "none" }, 0)
-        .to(".cloud2", { y: -500, ease: "none" }, 0)
-        .to(".cloud1", { y: -800, ease: "none" }, 0)
-        .to(".cloud3", { y: -650, ease: "none" }, 0);
+      // Small delay to ensure DOM is ready
+      setTimeout(() => {
+        // Smooth parallax animation for clouds and sky
+        gsap.fromTo(
+          ".sky",
+          { y: 0 },
+          {
+            y: -200,
+            ease: "none",
+            scrollTrigger: {
+              trigger: heroRef.current,
+              start: "top top",
+              end: "bottom top",
+              scrub: 1.5,
+              invalidateOnRefresh: true,
+            },
+          }
+        );
+
+        gsap.fromTo(
+          ".cloud2",
+          { y: 0 },
+          {
+            y: -500,
+            ease: "none",
+            scrollTrigger: {
+              trigger: heroRef.current,
+              start: "top top",
+              end: "bottom top",
+              scrub: 1.5,
+              invalidateOnRefresh: true,
+            },
+          }
+        );
+
+        gsap.fromTo(
+          ".cloud1",
+          { y: 0 },
+          {
+            y: -800,
+            ease: "none",
+            scrollTrigger: {
+              trigger: heroRef.current,
+              start: "top top",
+              end: "bottom top",
+              scrub: 1.5,
+              invalidateOnRefresh: true,
+            },
+          }
+        );
+
+        gsap.fromTo(
+          ".cloud3",
+          { y: 0 },
+          {
+            y: -650,
+            ease: "none",
+            scrollTrigger: {
+              trigger: heroRef.current,
+              start: "top top",
+              end: "bottom top",
+              scrub: 1.5,
+              invalidateOnRefresh: true,
+            },
+          }
+        );
+      }, 100);
 
       // Blog card reveal animations
       blogRefs.current.forEach((container, index) => {
@@ -188,6 +241,7 @@ export default function MiraiHomesPage() {
                 width="1200"
                 height="800"
                 preserveAspectRatio="xMidYMid slice"
+                style={{ transform: 'translateY(0px)', willChange: 'transform' }}
               />
 
               {/* Cloud Layers - visible layers */}
@@ -199,6 +253,7 @@ export default function MiraiHomesPage() {
                 width="1200"
                 height="800"
                 opacity="0.9"
+                style={{ transform: 'translateY(0px)', willChange: 'transform' }}
               />
               <image
                 className="cloud1"
@@ -208,6 +263,7 @@ export default function MiraiHomesPage() {
                 width="1200"
                 height="800"
                 opacity="0.95"
+                style={{ transform: 'translateY(0px)', willChange: 'transform' }}
               />
               <image
                 className="cloud3"
@@ -217,6 +273,7 @@ export default function MiraiHomesPage() {
                 width="1200"
                 height="800"
                 opacity="1"
+                style={{ transform: 'translateY(0px)', willChange: 'transform' }}
               />
 
               {/* White Mask at Bottom */}
