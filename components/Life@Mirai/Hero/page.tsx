@@ -239,7 +239,7 @@ export default function MiraiHomesPage() {
 
           {/* Head Text Overlay */}
           <div
-            className={`absolute inset-0 flex flex-col items-center justify-end pb-12 lg:pb-20 text-center px-4 z-10 transition-opacity duration-700 ${
+            className={`absolute inset-0 flex flex-col items-center justify-start pt-8 lg:pt-12 text-center px-4 z-10 transition-opacity duration-700 ${
               showHeadText ? "opacity-100" : "opacity-0"
             }`}
           >
@@ -254,6 +254,7 @@ export default function MiraiHomesPage() {
               <div className="flex-1 h-[2px] bg-white shadow-lg"></div>
             </div>
             
+            <div className="flex-1 flex flex-col items-center justify-end pb-12 lg:pb-20">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif mb-6 leading-tight drop-shadow-2xl" style={{ color: '#78252f' }}>
               Here&apos;s What Life at the Sixth Element
               <br />
@@ -264,6 +265,7 @@ export default function MiraiHomesPage() {
               traversed. It gives you access to a lifestyle less known, and lesser experienced.
               This is the sort of life that unravels here at Mirai.
             </p>
+            </div>
           </div>
         </section>
 
