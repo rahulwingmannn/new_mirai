@@ -1,17 +1,3 @@
-To make the cloud parallax **smooth**, the best approach is to replace the manual `window.addEventListener('scroll')` calculation with **GSAP's `ScrollTrigger**`.
-
-Currently, your code calculates position strictly on every scroll pixel, which can feel jittery. GSAP's `scrub` feature adds interpolation (lag), giving the movement a "weighty," smooth, and fluid feel.
-
-Here is the optimized, fully integrated code.
-
-### Key Changes Made:
-
-1. **Removed** the manual `window.addEventListener` scroll logic.
-2. **Added** a `gsap.timeline` for the Hero section.
-3. **Enabled `scrub: 1.5**`: This is the secret sauce. It tells the animation to take 1.5 seconds to catch up to the scrollbar, creating that buttery smooth effect.
-4. **Consolidated** all animations into a single `gsap.context` for better performance and React cleanup.
-
-```tsx
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
@@ -83,18 +69,17 @@ export default function MiraiHomesPage() {
       ScrollTrigger.refresh();
 
       // --- 1. SMOOTH CLOUD PARALLAX ---
-      // We create a timeline that is scrubbed by the scroll
       const parallaxTl = gsap.timeline({
         scrollTrigger: {
           trigger: heroRef.current,
           start: "top top",
-          end: "bottom top", // Ends when the 200vh section leaves view
+          end: "bottom top", 
           scrub: 1.5, // THE KEY: Adds a 1.5 second 'lag' smoothing to the movement
         },
-        defaults: { ease: "none" } // Linear movement, let scrubbing handle the easing
+        defaults: { ease: "none" } 
       });
 
-      // Add animations to timeline (values match your original math)
+      // Add animations to timeline
       parallaxTl
         .to(".sky", { y: -200 }, 0)
         .to(".cloud1", { y: -800 }, 0)
@@ -135,7 +120,6 @@ export default function MiraiHomesPage() {
   }, []);
 
   // Standard Scroll event handlers (For UI State: Navbar/Top button/Text fade)
-  // We keep this lightweight for state toggles, but left the heavy animation to GSAP
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.scrollY;
@@ -193,7 +177,6 @@ export default function MiraiHomesPage() {
                 </linearGradient>
               </defs>
 
-              {/* Note: Removed inline styles for transform/will-change as GSAP handles them now */}
               <image
                 className="sky"
                 xlinkHref="https://azure-baboon-302476.hostingersite.com//mirai_/media/footer_img.png"
@@ -414,5 +397,3 @@ export default function MiraiHomesPage() {
     </>
   );
 }
-
-```
