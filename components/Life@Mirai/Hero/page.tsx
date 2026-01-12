@@ -244,6 +244,17 @@ export default function MiraiHomesPage() {
               showHeadText ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}
           >
+            {/* Logo with white lines */}
+            <div className="w-full flex items-center justify-center gap-4 mb-8 lg:mb-12">
+              <div className="flex-1 h-[1px] bg-white"></div>
+              <img 
+                src="https://azure-baboon-302476.hostingersite.com/mirai_latest/media/logo.png" 
+                alt="Mirai Logo" 
+                className="h-16 lg:h-20 w-auto"
+              />
+              <div className="flex-1 h-[1px] bg-white"></div>
+            </div>
+            
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif mb-6 leading-tight drop-shadow-2xl" style={{ color: '#78252f' }}>
               Here&apos;s What Life at the Sixth Element
               <br />
