@@ -148,22 +148,25 @@ export default function MiraiHomesPage() {
   return (
     <>
       <main ref={mainRef} className="bg-white">
+        {/* Scroll Distance Trigger - needs to be outside for GSAP to work */}
+        <div ref={scrollDistRef} className="h-[200vh] absolute w-full top-0 left-0 pointer-events-none z-0" />
+        
         {/* ==================== PARALLAX HERO SECTION ==================== */}
-        <section ref={heroRef} className="relative h-screen overflow-hidden bg-white">
-          {/* Scroll Distance Trigger */}
-          <div ref={scrollDistRef} className="h-[200vh] absolute w-full pointer-events-none" />
+        <section ref={heroRef} className="relative h-screen overflow-hidden bg-gradient-to-b from-blue-400 to-blue-200"
 
-          {/* SVG Parallax Container */}
-          <div className="absolute inset-0 w-full h-full">
+        >
+          {/* SVG Parallax Container - positioned to fill the hero section */}
+          <div className="absolute inset-0 w-full h-full z-0">
             <svg 
               viewBox="0 0 1200 800" 
               xmlns="http://www.w3.org/2000/svg" 
               xmlnsXlink="http://www.w3.org/1999/xlink"
-              className="w-full h-full"
+              className="absolute top-0 left-0 w-full h-full"
               preserveAspectRatio="xMidYMid slice"
+              style={{ minHeight: '100vh' }}
             >
               <defs>
-                <mask id="m">
+                <mask id="cloudMask">
                   <g className="cloud1">
                     <rect fill="#fff" width="100%" height="801" y="799" />
                     <image
@@ -175,37 +178,48 @@ export default function MiraiHomesPage() {
                 </mask>
               </defs>
 
-              {/* Sky Background */}
+              {/* Sky Background - visible layer */}
               <image
                 className="sky"
                 xlinkHref="https://azure-baboon-302476.hostingersite.com//mirai_/media/footer_img.png"
+                x="0"
+                y="0"
                 width="1200"
                 height="800"
                 preserveAspectRatio="xMidYMid slice"
               />
 
-              {/* Cloud Layers */}
+              {/* Cloud Layers - visible layers */}
               <image
                 className="cloud2"
                 xlinkHref="https://assets.codepen.io/721952/cloud2.png"
+                x="0"
+                y="0"
                 width="1200"
                 height="800"
+                opacity="0.9"
               />
               <image
                 className="cloud1"
                 xlinkHref="https://assets.codepen.io/721952/cloud1.png"
+                x="0"
+                y="0"
                 width="1200"
                 height="800"
+                opacity="0.95"
               />
               <image
                 className="cloud3"
                 xlinkHref="https://assets.codepen.io/721952/cloud3.png"
+                x="0"
+                y="0"
                 width="1200"
                 height="800"
+                opacity="1"
               />
 
               {/* White Mask at Bottom */}
-              <g mask="url(#m)">
+              <g mask="url(#cloudMask)">
                 <rect fill="#fff" width="100%" height="100%" />
               </g>
             </svg>
