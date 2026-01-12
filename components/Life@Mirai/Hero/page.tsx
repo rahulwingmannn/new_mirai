@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
@@ -9,6 +9,9 @@ import Link from "next/link";
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
+
+// Fix for Next.js SSR: useLayoutEffect on client, useEffect on server
+const useIsomorphicLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 // Blog data
 const blogPosts = [
@@ -60,37 +63,48 @@ export default function MiraiHomesPage() {
   const blogRefs = useRef<(HTMLDivElement | null)[]>([]);
   const progressPathRef = useRef<SVGPathElement>(null);
 
-  // Cloud parallax using native scroll event (no GSAP for clouds)
-  useEffect(() => {
+  // Cloud parallax using useLayoutEffect to prevent jump on refresh
+  useIsomorphicLayoutEffect(() => {
     const handleParallax = () => {
       if (!heroRef.current) return;
       
       const heroRect = heroRef.current.getBoundingClientRect();
       const heroHeight = heroRef.current.offsetHeight;
+      
+      // Calculate progress relative to the hero section
       const scrolled = -heroRect.top;
+      
+      // Ensure we don't calculate if we are way past the section (optimization)
+      // but allow negative top to ensure smooth exit
       const progress = Math.max(0, Math.min(1, scrolled / heroHeight));
       
-      // Apply transforms directly - starts from 0, moves up based on scroll
+      // Select elements
       const sky = document.querySelector('.sky') as SVGImageElement;
       const cloud1 = document.querySelector('.cloud1') as SVGImageElement;
       const cloud2 = document.querySelector('.cloud2') as SVGImageElement;
       const cloud3 = document.querySelector('.cloud3') as SVGImageElement;
       
-      if (sky) sky.style.transform = `translateY(${progress * -200}px)`;
-      if (cloud1) cloud1.style.transform = `translateY(${progress * -800}px)`;
-      if (cloud2) cloud2.style.transform = `translateY(${progress * -500}px)`;
-      if (cloud3) cloud3.style.transform = `translateY(${progress * -650}px)`;
+      // Apply transforms
+      if (sky) sky.style.transform = `translate3d(0, ${progress * -200}px, 0)`;
+      if (cloud1) cloud1.style.transform = `translate3d(0, ${progress * -800}px, 0)`;
+      if (cloud2) cloud2.style.transform = `translate3d(0, ${progress * -500}px, 0)`;
+      if (cloud3) cloud3.style.transform = `translate3d(0, ${progress * -650}px, 0)`;
     };
 
     window.addEventListener('scroll', handleParallax, { passive: true });
-    handleParallax(); // Call once on mount
+    
+    // Force immediate calculation before paint
+    handleParallax();
     
     return () => window.removeEventListener('scroll', handleParallax);
   }, []);
 
   // GSAP for blog card animations only
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const ctx = gsap.context(() => {
+      // Refresh ScrollTrigger to ensure positions are correct after load
+      ScrollTrigger.refresh();
+
       blogRefs.current.forEach((container, index) => {
         if (!container) return;
 
@@ -122,7 +136,7 @@ export default function MiraiHomesPage() {
     return () => ctx.revert();
   }, []);
 
-  // Scroll event handlers
+  // Scroll event handlers (Navbar/Top button logic)
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.scrollY;
@@ -135,6 +149,7 @@ export default function MiraiHomesPage() {
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
+    // Initial check
     handleScroll();
 
     return () => window.removeEventListener("scroll", handleScroll);
