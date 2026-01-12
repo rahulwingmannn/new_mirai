@@ -209,60 +209,72 @@ export default function MiraiHomesPage() {
         ref={mainRef}
         className={`transition-opacity duration-1000 ${isLoading ? "opacity-0" : "opacity-100"}`}
       >
-        {/* Scroll Distance Trigger */}
-        <div ref={scrollDistRef} className="h-[200vh] absolute w-full" />
-
         {/* ==================== PARALLAX HERO SECTION ==================== */}
-        <section ref={heroRef} className="relative mb-8 lg:mb-12">
-          <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
-            <defs>
-              <mask id="m">
-                <g className="cloud1">
-                  <rect fill="#fff" width="100%" height="801" y="799" />
-                  <image
-                    xlinkHref="https://assets.codepen.io/721952/cloud1Mask.jpg"
-                    width="1200"
-                    height="800"
-                  />
-                </g>
-              </mask>
-            </defs>
+        <section ref={heroRef} className="relative h-screen overflow-hidden bg-white">
+          {/* Scroll Distance Trigger */}
+          <div ref={scrollDistRef} className="h-[200vh] absolute w-full pointer-events-none" />
 
-            <image
-              className="sky"
-              xlinkHref="https://azure-baboon-302476.hostingersite.com//mirai_/media/footer_img.png"
-              width="1200"
-              height="679"
+          {/* SVG Parallax Container */}
+          <div className="absolute inset-0 w-full h-full">
+            <svg 
+              viewBox="0 0 1200 800" 
+              xmlns="http://www.w3.org/2000/svg" 
+              xmlnsXlink="http://www.w3.org/1999/xlink"
+              className="w-full h-full"
               preserveAspectRatio="xMidYMid slice"
-            />
+            >
+              <defs>
+                <mask id="m">
+                  <g className="cloud1">
+                    <rect fill="#fff" width="100%" height="801" y="799" />
+                    <image
+                      xlinkHref="https://assets.codepen.io/721952/cloud1Mask.jpg"
+                      width="1200"
+                      height="800"
+                    />
+                  </g>
+                </mask>
+              </defs>
 
-            <image
-              className="cloud2"
-              xlinkHref="https://assets.codepen.io/721952/cloud2.png"
-              width="1200"
-              height="800"
-            />
-            <image
-              className="cloud1"
-              xlinkHref="https://assets.codepen.io/721952/cloud1.png"
-              width="1200"
-              height="800"
-            />
-            <image
-              className="cloud3"
-              xlinkHref="https://assets.codepen.io/721952/cloud3.png"
-              width="1200"
-              height="800"
-            />
+              {/* Sky Background */}
+              <image
+                className="sky"
+                xlinkHref="https://azure-baboon-302476.hostingersite.com//mirai_/media/footer_img.png"
+                width="1200"
+                height="800"
+                preserveAspectRatio="xMidYMid slice"
+              />
 
-            <g mask="url(#m)">
-              <rect fill="#fff" width="100%" height="90%" />
-            </g>
-          </svg>
+              {/* Cloud Layers */}
+              <image
+                className="cloud2"
+                xlinkHref="https://assets.codepen.io/721952/cloud2.png"
+                width="1200"
+                height="800"
+              />
+              <image
+                className="cloud1"
+                xlinkHref="https://assets.codepen.io/721952/cloud1.png"
+                width="1200"
+                height="800"
+              />
+              <image
+                className="cloud3"
+                xlinkHref="https://assets.codepen.io/721952/cloud3.png"
+                width="1200"
+                height="800"
+              />
+
+              {/* White Mask at Bottom */}
+              <g mask="url(#m)">
+                <rect fill="#fff" width="100%" height="100%" />
+              </g>
+            </svg>
+          </div>
 
           {/* Head Text Overlay */}
           <div
-            className={`absolute inset-0 flex flex-col items-center justify-center text-center px-4 transition-all duration-700 ${
+            className={`absolute inset-0 flex flex-col items-center justify-center text-center px-4 z-10 transition-all duration-700 ${
               showHeadText ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}
           >
