@@ -244,14 +244,14 @@ export default function MiraiHomesPage() {
             }`}
           >
             {/* Logo with white lines */}
-            <div className="w-full max-w-7xl flex items-center justify-center gap-4 mb-8 lg:mb-12 px-4">
-              <div className="flex-1 h-[2px] bg-white shadow-lg"></div>
+            <div className="w-full flex items-center justify-center gap-6 lg:gap-8 mb-8 lg:mb-12 px-4">
+              <div className="flex-1 h-[3px] bg-white shadow-lg"></div>
               <img 
                 src="https://azure-baboon-302476.hostingersite.com/mirai_latest/media/logo.png" 
                 alt="Mirai Logo" 
-                className="h-20 lg:h-24 w-auto drop-shadow-2xl"
+                className="h-12 lg:h-16 w-auto drop-shadow-2xl"
               />
-              <div className="flex-1 h-[2px] bg-white shadow-lg"></div>
+              <div className="flex-1 h-[3px] bg-white shadow-lg"></div>
             </div>
             
             <div className="flex-1 flex flex-col items-center justify-end pb-12 lg:pb-20">
