@@ -58,7 +58,6 @@ export default function MiraiHomesPage() {
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   const mainRef = useRef<HTMLElement>(null);
-  const scrollDistRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const blogRefs = useRef<(HTMLDivElement | null)[]>([]);
   const progressPathRef = useRef<SVGPathElement>(null);
@@ -90,51 +89,67 @@ export default function MiraiHomesPage() {
   useEffect(() => {
     if (isLoading) return;
 
-    const ctx = gsap.context(() => {
-      // Parallax animation for clouds and sky
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: scrollDistRef.current,
-          start: "0 0",
-          end: "100% 100%",
-          scrub: 1,
-        },
-      })
-        .fromTo(".sky", { y: 0 }, { y: -200 }, 0)
-        .fromTo(".cloud1", { y: 100 }, { y: -800 }, 0)
-        .fromTo(".cloud2", { y: -150 }, { y: -500 }, 0)
-        .fromTo(".cloud3", { y: -50 }, { y: -650 }, 0);
+    // Small delay to ensure DOM is ready
+    const initTimeout = setTimeout(() => {
+      const ctx = gsap.context(() => {
+        // Set initial positions for clouds to ensure they're visible
+        gsap.set(".sky", { y: 0 });
+        gsap.set(".cloud1", { y: 0 });
+        gsap.set(".cloud2", { y: 0 });
+        gsap.set(".cloud3", { y: 0 });
 
-      // Blog card reveal animations
-      blogRefs.current.forEach((container, index) => {
-        if (!container) return;
-
-        const imageContainer = container.querySelector(".image-container");
-        const imageInner = container.querySelector(".image-inner");
-        const isLeft = blogPosts[index].imagePosition === "left";
-
-        const tl = gsap.timeline({
+        // Parallax animation for clouds and sky
+        // Using the hero section as trigger instead of a separate scroll distance div
+        gsap.timeline({
           scrollTrigger: {
-            trigger: container,
-            start: "top 80%",
-            toggleActions: "play none none reverse",
+            trigger: heroRef.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: 1,
+            // markers: true, // Uncomment for debugging
           },
+        })
+          .to(".sky", { y: -100 }, 0)
+          .to(".cloud1", { y: -400 }, 0)
+          .to(".cloud2", { y: -250 }, 0)
+          .to(".cloud3", { y: -350 }, 0);
+
+        // Blog card reveal animations
+        blogRefs.current.forEach((container, index) => {
+          if (!container) return;
+
+          const imageContainer = container.querySelector(".image-container");
+          const imageInner = container.querySelector(".image-inner");
+          const isLeft = blogPosts[index].imagePosition === "left";
+
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: container,
+              start: "top 80%",
+              toggleActions: "play none none reverse",
+            },
+          });
+
+          tl.fromTo(
+            imageContainer,
+            { xPercent: isLeft ? -100 : 100, opacity: 0 },
+            { xPercent: 0, opacity: 1, duration: 1.2, ease: "power2.out" }
+          ).fromTo(
+            imageInner,
+            { xPercent: isLeft ? 100 : -100, scale: 1.3 },
+            { xPercent: 0, scale: 1, duration: 1.2, ease: "power2.out" },
+            "<"
+          );
         });
 
-        tl.fromTo(
-          imageContainer,
-          { xPercent: isLeft ? -100 : 100, opacity: 0 },
-          { xPercent: 0, opacity: 1, duration: 1.2, ease: "power2.out" }
-        ).fromTo(
-          imageInner,
-          { xPercent: isLeft ? 100 : -100, scale: 1.3 },
-          { xPercent: 0, scale: 1, duration: 1.2, ease: "power2.out" },
-          "<"
-        );
-      });
-    }, mainRef);
+        // Refresh ScrollTrigger after setup
+        ScrollTrigger.refresh();
+      }, mainRef);
 
-    return () => ctx.revert();
+      return () => ctx.revert();
+    }, 100);
+
+    return () => clearTimeout(initTimeout);
   }, [isLoading]);
 
   // Scroll event handlers
@@ -142,7 +157,7 @@ export default function MiraiHomesPage() {
     const handleScroll = () => {
       const scrollTop = window.scrollY;
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const scrollPercent = (scrollTop / docHeight) * 100;
+      const scrollPercent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
 
       setScrollProgress(scrollPercent);
       setShowScrollTop(scrollTop > 50);
@@ -208,61 +223,75 @@ export default function MiraiHomesPage() {
         ref={mainRef}
         className={`transition-opacity duration-1000 ${isLoading ? "opacity-0" : "opacity-100"}`}
       >
-        {/* Scroll Distance Trigger */}
-        <div ref={scrollDistRef} className="h-[200vh] absolute w-full" />
-
         {/* ==================== PARALLAX HERO SECTION ==================== */}
-        <section ref={heroRef} className="relative mb-8 lg:mb-12">
-          <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
-            <defs>
-              <mask id="m">
-                <g className="cloud1">
-                  <rect fill="#fff" width="100%" height="801" y="799" />
-                  <image
-                    xlinkHref="https://assets.codepen.io/721952/cloud1Mask.jpg"
-                    width="1200"
-                    height="800"
-                  />
-                </g>
-              </mask>
-              <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#1a365d" />
-                <stop offset="50%" stopColor="#2c5282" />
-                <stop offset="100%" stopColor="#4299e1" />
-              </linearGradient>
-            </defs>
-
-            <image
-              className="sky"
-              xlinkHref="https://azure-baboon-302476.hostingersite.com//mirai_/media/footer_img.png"
-              width="1200"
-              height="679"
+        <section 
+          ref={heroRef} 
+          className="relative mb-8 lg:mb-12 min-h-[50vh] md:min-h-[70vh] lg:min-h-screen overflow-hidden"
+        >
+          {/* SVG Container with proper sizing */}
+          <div className="relative w-full h-full">
+            <svg 
+              viewBox="0 0 1200 800" 
+              xmlns="http://www.w3.org/2000/svg" 
+              className="w-full h-auto min-h-[50vh] md:min-h-[70vh] lg:min-h-screen"
               preserveAspectRatio="xMidYMid slice"
-            />
+            >
+              <defs>
+                <mask id="m">
+                  <g className="cloud1">
+                    <rect fill="#fff" width="100%" height="801" y="799" />
+                    <image
+                      xlinkHref="https://assets.codepen.io/721952/cloud1Mask.jpg"
+                      width="1200"
+                      height="800"
+                    />
+                  </g>
+                </mask>
+                <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="#1a365d" />
+                  <stop offset="50%" stopColor="#2c5282" />
+                  <stop offset="100%" stopColor="#4299e1" />
+                </linearGradient>
+              </defs>
 
-            <image
-              className="cloud2"
-              xlinkHref="https://assets.codepen.io/721952/cloud2.png"
-              width="1200"
-              height="800"
-            />
-            <image
-              className="cloud1"
-              xlinkHref="https://assets.codepen.io/721952/cloud1.png"
-              width="1200"
-              height="800"
-            />
-            <image
-              className="cloud3"
-              xlinkHref="https://assets.codepen.io/721952/cloud3.png"
-              width="1200"
-              height="800"
-            />
+              {/* Background sky image - positioned to be visible initially */}
+              <image
+                className="sky"
+                xlinkHref="https://azure-baboon-302476.hostingersite.com//mirai_/media/footer_img.png"
+                width="1200"
+                height="800"
+                preserveAspectRatio="xMidYMid slice"
+                style={{ willChange: 'transform' }}
+              />
 
-            <g mask="url(#m)">
-              <rect fill="#fff" width="100%" height="90%" />
-            </g>
-          </svg>
+              {/* Cloud layers - all visible initially */}
+              <image
+                className="cloud2"
+                xlinkHref="https://assets.codepen.io/721952/cloud2.png"
+                width="1200"
+                height="800"
+                style={{ willChange: 'transform' }}
+              />
+              <image
+                className="cloud1"
+                xlinkHref="https://assets.codepen.io/721952/cloud1.png"
+                width="1200"
+                height="800"
+                style={{ willChange: 'transform' }}
+              />
+              <image
+                className="cloud3"
+                xlinkHref="https://assets.codepen.io/721952/cloud3.png"
+                width="1200"
+                height="800"
+                style={{ willChange: 'transform' }}
+              />
+
+              <g mask="url(#m)">
+                <rect fill="#fff" width="100%" height="100%" />
+              </g>
+            </svg>
+          </div>
 
           {/* Head Text Overlay */}
           <div
