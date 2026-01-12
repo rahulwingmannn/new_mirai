@@ -163,7 +163,7 @@ function Footer() {
         backgroundImage: "url('https://d3p1hokpi6aqc3.cloudfront.net/039_PM_EXT_CAM68_LANDSCAPE%20AERIAL.png')",
         backgroundSize: 'cover',
         backgroundAttachment: 'fixed',
-        backgroundPosition: 'center',
+        backgroundPosition: 'right bottom',
         backgroundRepeat: 'no-repeat'
       }}
       role="contentinfo"
