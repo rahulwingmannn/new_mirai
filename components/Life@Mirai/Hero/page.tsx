@@ -54,88 +54,52 @@ export default function MiraiHomesPage() {
   const [showHeadText, setShowHeadText] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [isReady, setIsReady] = useState(false);
 
   const mainRef = useRef<HTMLElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const blogRefs = useRef<(HTMLDivElement | null)[]>([]);
   const progressPathRef = useRef<SVGPathElement>(null);
 
+  // Wait for component to be ready
+  useEffect(() => {
+    // Scroll to top on mount to prevent jump
+    window.scrollTo(0, 0);
+    
+    const timer = setTimeout(() => {
+      setIsReady(true);
+    }, 50);
+    
+    return () => clearTimeout(timer);
+  }, []);
+
   // GSAP Parallax and reveal animations
   useEffect(() => {
+    if (!isReady) return;
+
     const ctx = gsap.context(() => {
-      // Ensure elements start at position 0
-      gsap.set([".sky", ".cloud1", ".cloud2", ".cloud3"], { 
-        y: 0,
-        clearProps: "transform"
+      // Smooth parallax animation for clouds and sky
+      gsap.utils.toArray([".sky", ".cloud1", ".cloud2", ".cloud3"]).forEach((el) => {
+        const yValue = 
+          (el as Element).classList.contains("sky") ? -200 :
+          (el as Element).classList.contains("cloud2") ? -500 :
+          (el as Element).classList.contains("cloud1") ? -800 : -650;
+
+        gsap.fromTo(
+          el as Element,
+          { y: 0 },
+          {
+            y: yValue,
+            ease: "none",
+            scrollTrigger: {
+              trigger: heroRef.current,
+              start: "top top",
+              end: "bottom top",
+              scrub: 1.5,
+            },
+          }
+        );
       });
-
-      // Small delay to ensure DOM is ready
-      setTimeout(() => {
-        // Smooth parallax animation for clouds and sky
-        gsap.fromTo(
-          ".sky",
-          { y: 0 },
-          {
-            y: -200,
-            ease: "none",
-            scrollTrigger: {
-              trigger: heroRef.current,
-              start: "top top",
-              end: "bottom top",
-              scrub: 1.5,
-              invalidateOnRefresh: true,
-            },
-          }
-        );
-
-        gsap.fromTo(
-          ".cloud2",
-          { y: 0 },
-          {
-            y: -500,
-            ease: "none",
-            scrollTrigger: {
-              trigger: heroRef.current,
-              start: "top top",
-              end: "bottom top",
-              scrub: 1.5,
-              invalidateOnRefresh: true,
-            },
-          }
-        );
-
-        gsap.fromTo(
-          ".cloud1",
-          { y: 0 },
-          {
-            y: -800,
-            ease: "none",
-            scrollTrigger: {
-              trigger: heroRef.current,
-              start: "top top",
-              end: "bottom top",
-              scrub: 1.5,
-              invalidateOnRefresh: true,
-            },
-          }
-        );
-
-        gsap.fromTo(
-          ".cloud3",
-          { y: 0 },
-          {
-            y: -650,
-            ease: "none",
-            scrollTrigger: {
-              trigger: heroRef.current,
-              start: "top top",
-              end: "bottom top",
-              scrub: 1.5,
-              invalidateOnRefresh: true,
-            },
-          }
-        );
-      }, 100);
 
       // Blog card reveal animations
       blogRefs.current.forEach((container, index) => {
@@ -170,7 +134,7 @@ export default function MiraiHomesPage() {
     }, mainRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [isReady]);
 
   // Scroll event handlers
   useEffect(() => {
@@ -241,7 +205,6 @@ export default function MiraiHomesPage() {
                 width="1200"
                 height="800"
                 preserveAspectRatio="xMidYMid slice"
-                style={{ transform: 'translateY(0px)', willChange: 'transform' }}
               />
 
               {/* Cloud Layers - visible layers */}
@@ -253,7 +216,6 @@ export default function MiraiHomesPage() {
                 width="1200"
                 height="800"
                 opacity="0.9"
-                style={{ transform: 'translateY(0px)', willChange: 'transform' }}
               />
               <image
                 className="cloud1"
@@ -263,7 +225,6 @@ export default function MiraiHomesPage() {
                 width="1200"
                 height="800"
                 opacity="0.95"
-                style={{ transform: 'translateY(0px)', willChange: 'transform' }}
               />
               <image
                 className="cloud3"
@@ -273,7 +234,6 @@ export default function MiraiHomesPage() {
                 width="1200"
                 height="800"
                 opacity="1"
-                style={{ transform: 'translateY(0px)', willChange: 'transform' }}
               />
 
               {/* White Mask at Bottom */}
