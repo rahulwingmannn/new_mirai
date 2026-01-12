@@ -249,7 +249,7 @@ export default function MiraiHomesPage() {
               <br />
               Feels Like
             </h2>
-            <p className="max-w-2xl text-white/90 text-base md:text-lg leading-relaxed drop-shadow-lg">
+            <p className="max-w-2xl text-black text-base md:text-lg leading-relaxed drop-shadow-lg">
               When you choose Mirai, you choose a benchmark of opulence that&apos;s seldom
               traversed. It gives you access to a lifestyle less known, and lesser experienced.
               This is the sort of life that unravels here at Mirai.
