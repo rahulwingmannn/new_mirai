@@ -240,19 +240,19 @@ export default function MiraiHomesPage() {
 
           {/* Head Text Overlay */}
           <div
-            className={`absolute inset-0 flex flex-col items-center justify-end pb-12 lg:pb-20 text-center px-4 transition-all duration-700 ${
+            className={`absolute inset-0 flex flex-col items-center justify-end pb-12 lg:pb-20 text-center px-4 transition-all duration-700 z-10 ${
               showHeadText ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}
           >
             {/* Logo with white lines */}
-            <div className="w-full flex items-center justify-center gap-4 mb-8 lg:mb-12">
-              <div className="flex-1 h-[1px] bg-white"></div>
+            <div className="w-full max-w-7xl flex items-center justify-center gap-4 mb-8 lg:mb-12 px-4">
+              <div className="flex-1 h-[2px] bg-white shadow-lg"></div>
               <img 
                 src="https://azure-baboon-302476.hostingersite.com/mirai_latest/media/logo.png" 
                 alt="Mirai Logo" 
-                className="h-16 lg:h-20 w-auto"
+                className="h-20 lg:h-24 w-auto drop-shadow-2xl"
               />
-              <div className="flex-1 h-[1px] bg-white"></div>
+              <div className="flex-1 h-[2px] bg-white shadow-lg"></div>
             </div>
             
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif mb-6 leading-tight drop-shadow-2xl" style={{ color: '#78252f' }}>
