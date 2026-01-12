@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
@@ -9,9 +9,6 @@ import Link from "next/link";
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
-
-// Fix for Next.js SSR: useLayoutEffect on client, useEffect on server
-const useIsomorphicLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 // Blog data
 const blogPosts = [
@@ -63,31 +60,37 @@ export default function MiraiHomesPage() {
   const blogRefs = useRef<(HTMLDivElement | null)[]>([]);
   const progressPathRef = useRef<SVGPathElement>(null);
 
-  // Consolidated GSAP Logic (Cloud Parallax + Blog Animations)
-  useIsomorphicLayoutEffect(() => {
+  // Cloud parallax using native scroll event (no GSAP for clouds)
+  useEffect(() => {
+    const handleParallax = () => {
+      if (!heroRef.current) return;
+      
+      const heroRect = heroRef.current.getBoundingClientRect();
+      const heroHeight = heroRef.current.offsetHeight;
+      const scrolled = -heroRect.top;
+      const progress = Math.max(0, Math.min(1, scrolled / heroHeight));
+      
+      // Apply transforms directly - starts from 0, moves up based on scroll
+      const sky = document.querySelector('.sky') as SVGImageElement;
+      const cloud1 = document.querySelector('.cloud1') as SVGImageElement;
+      const cloud2 = document.querySelector('.cloud2') as SVGImageElement;
+      const cloud3 = document.querySelector('.cloud3') as SVGImageElement;
+      
+      if (sky) sky.style.transform = `translateY(${progress * -200}px)`;
+      if (cloud1) cloud1.style.transform = `translateY(${progress * -800}px)`;
+      if (cloud2) cloud2.style.transform = `translateY(${progress * -500}px)`;
+      if (cloud3) cloud3.style.transform = `translateY(${progress * -650}px)`;
+    };
+
+    window.addEventListener('scroll', handleParallax, { passive: true });
+    handleParallax(); // Call once on mount
+    
+    return () => window.removeEventListener('scroll', handleParallax);
+  }, []);
+
+  // GSAP for blog card animations only
+  useEffect(() => {
     const ctx = gsap.context(() => {
-      ScrollTrigger.refresh();
-
-      // --- 1. SMOOTH CLOUD PARALLAX ---
-      const parallaxTl = gsap.timeline({
-        scrollTrigger: {
-          trigger: heroRef.current,
-          start: "top top",
-          end: "bottom top", 
-          scrub: 1.5, // THE KEY: Adds a 1.5 second 'lag' smoothing to the movement
-        },
-        defaults: { ease: "none" } 
-      });
-
-      // Add animations to timeline
-      parallaxTl
-        .to(".sky", { y: -200 }, 0)
-        .to(".cloud1", { y: -800 }, 0)
-        .to(".cloud2", { y: -500 }, 0)
-        .to(".cloud3", { y: -650 }, 0);
-
-
-      // --- 2. BLOG CARD ANIMATIONS ---
       blogRefs.current.forEach((container, index) => {
         if (!container) return;
 
@@ -119,7 +122,7 @@ export default function MiraiHomesPage() {
     return () => ctx.revert();
   }, []);
 
-  // Standard Scroll event handlers (For UI State: Navbar/Top button/Text fade)
+  // Scroll event handlers
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.scrollY;
@@ -183,6 +186,7 @@ export default function MiraiHomesPage() {
                 width="1200"
                 height="800"
                 preserveAspectRatio="xMidYMid slice"
+                style={{ willChange: 'transform' }}
               />
 
               <image
@@ -190,18 +194,21 @@ export default function MiraiHomesPage() {
                 xlinkHref="https://assets.codepen.io/721952/cloud2.png"
                 width="1200"
                 height="800"
+                style={{ willChange: 'transform' }}
               />
               <image
                 className="cloud1"
                 xlinkHref="https://assets.codepen.io/721952/cloud1.png"
                 width="1200"
                 height="800"
+                style={{ willChange: 'transform' }}
               />
               <image
                 className="cloud3"
                 xlinkHref="https://assets.codepen.io/721952/cloud3.png"
                 width="1200"
                 height="800"
+                style={{ willChange: 'transform' }}
               />
 
               <g mask="url(#m)">
