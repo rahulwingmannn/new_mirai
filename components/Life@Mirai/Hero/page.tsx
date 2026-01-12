@@ -51,8 +51,6 @@ const blogPosts = [
 ];
 
 export default function MiraiHomesPage() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [loadProgress, setLoadProgress] = useState(0);
   const [showHeadText, setShowHeadText] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -63,33 +61,8 @@ export default function MiraiHomesPage() {
   const blogRefs = useRef<(HTMLDivElement | null)[]>([]);
   const progressPathRef = useRef<SVGPathElement>(null);
 
-  // Preloader effect
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setLoadProgress((prev) => {
-        if (prev >= 99) {
-          clearInterval(interval);
-          return 99;
-        }
-        return prev + 1;
-      });
-    }, 20);
-
-    const timer = setTimeout(() => {
-      setLoadProgress(100);
-      setTimeout(() => setIsLoading(false), 500);
-    }, 2000);
-
-    return () => {
-      clearInterval(interval);
-      clearTimeout(timer);
-    };
-  }, []);
-
   // GSAP Parallax and reveal animations
   useEffect(() => {
-    if (isLoading) return;
-
     const ctx = gsap.context(() => {
       // Parallax animation for clouds and sky - exact same as reference
       gsap.timeline({
@@ -135,7 +108,7 @@ export default function MiraiHomesPage() {
     }, mainRef);
 
     return () => ctx.revert();
-  }, [isLoading]);
+  }, []);
 
   // Scroll event handlers
   useEffect(() => {
@@ -171,43 +144,8 @@ export default function MiraiHomesPage() {
 
   return (
     <>
-      {/* ==================== PRELOADER ==================== */}
-      <div
-        className={`fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900 transition-opacity duration-1000 ${
-          !isLoading ? "opacity-0 pointer-events-none" : "opacity-100"
-        }`}
-      >
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-amber-600/10 rounded-full blur-3xl animate-pulse" />
-        </div>
-
-        <div className="relative flex flex-col items-center gap-8">
-          <div className="relative">
-            <div className="w-24 h-24 border border-amber-500/30 rotate-45 animate-[spin_8s_linear_infinite]" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-3xl font-serif text-amber-500 tracking-widest">M</span>
-            </div>
-          </div>
-
-          <div className="w-48 h-[1px] bg-slate-700 overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-amber-600 to-amber-400 transition-all duration-100 ease-out"
-              style={{ width: `${loadProgress}%` }}
-            />
-          </div>
-
-          <span className="text-amber-500/80 text-sm tracking-[0.3em] font-light">
-            {loadProgress}%
-          </span>
-        </div>
-      </div>
-
       {/* ==================== MAIN CONTENT ==================== */}
-      <main
-        ref={mainRef}
-        className={`transition-opacity duration-1000 bg-white ${isLoading ? "opacity-0" : "opacity-100"}`}
-      >
+      <main ref={mainRef} className="bg-white">
         {/* Scroll Distance Trigger */}
         <div ref={scrollDistRef} className="h-[200vh] absolute w-full" />
 
