@@ -4,11 +4,11 @@ import MiraiHomesPage from '@/components/Life@Mirai/Hero/page'
 
 const page = () => {
   return (
-    <MiraiHomesPage />
-    <Footer />
+    <>
+      <MiraiHomesPage />
+      <Footer />
+    </>
   )
 }
 
 export default page
-
-
