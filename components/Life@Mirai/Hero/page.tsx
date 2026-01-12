@@ -185,12 +185,11 @@ export default function MiraiHomesPage() {
             viewBox="0 0 1200 800" 
             xmlns="http://www.w3.org/2000/svg" 
             className={`w-full h-auto block transition-opacity duration-500 ${skyImageLoaded ? 'opacity-100' : 'opacity-0'}`}
-            preserveAspectRatio="xMidYMid slice"
           >
             <defs>
               <mask id="m">
                 <g className="cloud1">
-                  <rect fill="#fff" width="1200" height="801" y="0" />
+                  <rect fill="#fff" width="100%" height="801" y="799" />
                   <image
                     xlinkHref="https://assets.codepen.io/721952/cloud1Mask.jpg"
                     width="1200"
@@ -209,7 +208,7 @@ export default function MiraiHomesPage() {
               className="sky"
               xlinkHref="https://azure-baboon-302476.hostingersite.com//mirai_/media/footer_img.png"
               width="1200"
-              height="679"
+              height="800"
               preserveAspectRatio="xMidYMid slice"
             />
 
