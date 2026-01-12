@@ -240,8 +240,8 @@ export default function MiraiHomesPage() {
 
           {/* Head Text Overlay */}
           <div
-            className={`absolute inset-0 flex flex-col items-center justify-end pb-12 lg:pb-20 text-center px-4 transition-all duration-700 z-10 ${
-              showHeadText ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+            className={`absolute inset-0 flex flex-col items-center justify-end pb-12 lg:pb-20 text-center px-4 z-10 transition-opacity duration-700 ${
+              showHeadText ? "opacity-100" : "opacity-0"
             }`}
           >
             {/* Logo with white lines */}
