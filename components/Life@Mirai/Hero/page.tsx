@@ -51,7 +51,7 @@ const blogPosts = [
 ];
 
 export default function MiraiHomesPage() {
-  const [showHeadText, setShowHeadText] = useState(false);
+  const [showHeadText, setShowHeadText] = useState(true);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [skyImageLoaded, setSkyImageLoaded] = useState(false);
@@ -144,7 +144,6 @@ export default function MiraiHomesPage() {
 
       setScrollProgress(scrollPercent);
       setShowScrollTop(scrollTop > 50);
-      setShowHeadText(scrollTop > 100);
     };
 
     window.addEventListener("scroll", handleScroll);
