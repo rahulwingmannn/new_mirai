@@ -51,40 +51,59 @@ const blogPosts = [
 ];
 
 export default function MiraiHomesPage() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadProgress, setLoadProgress] = useState(0);
   const [showHeadText, setShowHeadText] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
 
   const mainRef = useRef<HTMLElement>(null);
+  const scrollDistRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const blogRefs = useRef<(HTMLDivElement | null)[]>([]);
   const progressPathRef = useRef<SVGPathElement>(null);
 
-  // Set loaded state after mount
+  // Preloader effect
   useEffect(() => {
-    setIsLoaded(true);
+    const interval = setInterval(() => {
+      setLoadProgress((prev) => {
+        if (prev >= 99) {
+          clearInterval(interval);
+          return 99;
+        }
+        return prev + 1;
+      });
+    }, 20);
+
+    const timer = setTimeout(() => {
+      setLoadProgress(100);
+      setTimeout(() => setIsLoading(false), 500);
+    }, 2000);
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timer);
+    };
   }, []);
 
   // GSAP Parallax and reveal animations
   useEffect(() => {
-    if (!isLoaded) return;
+    if (isLoading) return;
 
     const ctx = gsap.context(() => {
-      // Smooth parallax animation for clouds and sky
-      const tl = gsap.timeline({
+      // Parallax animation for clouds and sky - exact same as reference
+      gsap.timeline({
         scrollTrigger: {
-          trigger: heroRef.current,
-          start: "top top",
-          end: "bottom top",
-          scrub: 0.5, // Smoother scrub
+          trigger: scrollDistRef.current,
+          start: "0 0",
+          end: "100% 100%",
+          scrub: 1,
         },
-      });
-
-      tl.to(".parallax-sky", { y: -50, ease: "none" }, 0)
-        .to(".parallax-cloud-back", { y: -120, ease: "none" }, 0)
-        .to(".parallax-cloud-mid", { y: -200, ease: "none" }, 0)
-        .to(".parallax-cloud-front", { y: -280, ease: "none" }, 0);
+      })
+        .fromTo(".sky", { y: 0 }, { y: -200 }, 0)
+        .fromTo(".cloud1", { y: 100 }, { y: -800 }, 0)
+        .fromTo(".cloud2", { y: -150 }, { y: -500 }, 0)
+        .fromTo(".cloud3", { y: -50 }, { y: -650 }, 0);
 
       // Blog card reveal animations
       blogRefs.current.forEach((container, index) => {
@@ -94,45 +113,43 @@ export default function MiraiHomesPage() {
         const imageInner = container.querySelector(".image-inner");
         const isLeft = blogPosts[index].imagePosition === "left";
 
-        const cardTl = gsap.timeline({
+        const tl = gsap.timeline({
           scrollTrigger: {
             trigger: container,
-            start: "top 85%",
+            start: "top 80%",
             toggleActions: "play none none reverse",
           },
         });
 
-        cardTl.fromTo(
+        tl.fromTo(
           imageContainer,
           { xPercent: isLeft ? -100 : 100, opacity: 0 },
-          { xPercent: 0, opacity: 1, duration: 1, ease: "power3.out" }
+          { xPercent: 0, opacity: 1, duration: 1.2, ease: "power2.out" }
         ).fromTo(
           imageInner,
-          { xPercent: isLeft ? 100 : -100, scale: 1.2 },
-          { xPercent: 0, scale: 1, duration: 1, ease: "power3.out" },
+          { xPercent: isLeft ? 100 : -100, scale: 1.3 },
+          { xPercent: 0, scale: 1, duration: 1.2, ease: "power2.out" },
           "<"
         );
       });
-
-      ScrollTrigger.refresh();
     }, mainRef);
 
     return () => ctx.revert();
-  }, [isLoaded]);
+  }, [isLoading]);
 
   // Scroll event handlers
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.scrollY;
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const scrollPercent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      const scrollPercent = (scrollTop / docHeight) * 100;
 
       setScrollProgress(scrollPercent);
       setShowScrollTop(scrollTop > 50);
       setShowHeadText(scrollTop > 100);
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("scroll", handleScroll);
     handleScroll();
 
     return () => window.removeEventListener("scroll", handleScroll);
@@ -154,93 +171,114 @@ export default function MiraiHomesPage() {
 
   return (
     <>
-      {/* ==================== MAIN CONTENT ==================== */}
-      <main ref={mainRef} className="bg-white">
-        {/* ==================== PARALLAX HERO SECTION ==================== */}
-        <section 
-          ref={heroRef} 
-          className="relative h-screen overflow-hidden"
-        >
-          {/* Parallax Container */}
-          <div className="absolute inset-0 w-full h-full">
-            {/* Sky/Background Layer - slowest movement */}
-            <div 
-              className="parallax-sky absolute inset-0 w-full h-[120%] -top-[10%]"
-              style={{ willChange: 'transform' }}
-            >
-              <img
-                src="https://azure-baboon-302476.hostingersite.com//mirai_/media/footer_img.png"
-                alt="Sky background"
-                className="w-full h-full object-cover"
-              />
-            </div>
+      {/* ==================== PRELOADER ==================== */}
+      <div
+        className={`fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900 transition-opacity duration-1000 ${
+          !isLoading ? "opacity-0 pointer-events-none" : "opacity-100"
+        }`}
+      >
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-amber-600/10 rounded-full blur-3xl animate-pulse" />
+        </div>
 
-            {/* Cloud Layer - Back (slower) */}
-            <div 
-              className="parallax-cloud-back absolute inset-0 w-full h-[130%] -top-[5%]"
-              style={{ willChange: 'transform' }}
-            >
-              <img
-                src="https://assets.codepen.io/721952/cloud2.png"
-                alt=""
-                className="w-full h-full object-cover opacity-90"
-              />
+        <div className="relative flex flex-col items-center gap-8">
+          <div className="relative">
+            <div className="w-24 h-24 border border-amber-500/30 rotate-45 animate-[spin_8s_linear_infinite]" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="text-3xl font-serif text-amber-500 tracking-widest">M</span>
             </div>
+          </div>
 
-            {/* Cloud Layer - Middle */}
-            <div 
-              className="parallax-cloud-mid absolute inset-0 w-full h-[140%] top-0"
-              style={{ willChange: 'transform' }}
-            >
-              <img
-                src="https://assets.codepen.io/721952/cloud1.png"
-                alt=""
-                className="w-full h-full object-cover"
-              />
-            </div>
-
-            {/* Cloud Layer - Front (fastest) */}
-            <div 
-              className="parallax-cloud-front absolute inset-0 w-full h-[150%] top-[5%]"
-              style={{ willChange: 'transform' }}
-            >
-              <img
-                src="https://assets.codepen.io/721952/cloud3.png"
-                alt=""
-                className="w-full h-full object-cover opacity-95"
-              />
-            </div>
-
-            {/* Bottom Fade Overlay - smooth transition to white */}
-            <div 
-              className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none"
+          <div className="w-48 h-[1px] bg-slate-700 overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-amber-600 to-amber-400 transition-all duration-100 ease-out"
+              style={{ width: `${loadProgress}%` }}
             />
           </div>
 
+          <span className="text-amber-500/80 text-sm tracking-[0.3em] font-light">
+            {loadProgress}%
+          </span>
+        </div>
+      </div>
+
+      {/* ==================== MAIN CONTENT ==================== */}
+      <main
+        ref={mainRef}
+        className={`transition-opacity duration-1000 bg-white ${isLoading ? "opacity-0" : "opacity-100"}`}
+      >
+        {/* Scroll Distance Trigger */}
+        <div ref={scrollDistRef} className="h-[200vh] absolute w-full" />
+
+        {/* ==================== PARALLAX HERO SECTION ==================== */}
+        <section ref={heroRef} className="relative">
+          <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
+            <defs>
+              <mask id="m">
+                <g className="cloud1">
+                  <rect fill="#fff" width="100%" height="801" y="799" />
+                  <image
+                    xlinkHref="https://assets.codepen.io/721952/cloud1Mask.jpg"
+                    width="1200"
+                    height="800"
+                  />
+                </g>
+              </mask>
+              <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#1a365d" />
+                <stop offset="50%" stopColor="#2c5282" />
+                <stop offset="100%" stopColor="#4299e1" />
+              </linearGradient>
+            </defs>
+
+            <image
+              className="sky"
+              xlinkHref="https://azure-baboon-302476.hostingersite.com//mirai_/media/footer_img.png"
+              width="1200"
+              height="679"
+              preserveAspectRatio="xMidYMid slice"
+            />
+
+            <image
+              className="cloud2"
+              xlinkHref="https://assets.codepen.io/721952/cloud2.png"
+              width="1200"
+              height="800"
+            />
+            <image
+              className="cloud1"
+              xlinkHref="https://assets.codepen.io/721952/cloud1.png"
+              width="1200"
+              height="800"
+            />
+            <image
+              className="cloud3"
+              xlinkHref="https://assets.codepen.io/721952/cloud3.png"
+              width="1200"
+              height="800"
+            />
+
+            <g mask="url(#m)">
+              <rect fill="#fff" width="100%" height="100%" />
+            </g>
+          </svg>
+
           {/* Head Text Overlay */}
           <div
-            className={`absolute inset-0 flex flex-col items-center justify-end pb-40 md:pb-48 lg:pb-56 text-center px-4 transition-all duration-1000 ease-out ${
-              showHeadText ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
+            className={`absolute inset-0 flex flex-col items-center justify-end pb-24 md:pb-32 lg:pb-40 text-center px-4 transition-all duration-700 ${
+              showHeadText ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}
           >
             <h2 
-              className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-serif mb-6 leading-tight"
-              style={{ 
-                color: '#78252f',
-                textShadow: '0 2px 20px rgba(255,255,255,0.8)'
-              }}
+              className="text-3xl md:text-4xl lg:text-5xl font-serif mb-6 leading-tight drop-shadow-2xl"
+              style={{ color: '#78252f' }}
             >
               Here&apos;s What Life at the Sixth Element
               <br />
               Feels Like
             </h2>
-            <p 
-              className="max-w-2xl text-base md:text-lg lg:text-xl leading-relaxed"
-              style={{ 
-                color: '#1a1a1a',
-                textShadow: '0 1px 10px rgba(255,255,255,0.9)'
-              }}
-            >
+            <p className="max-w-2xl text-black text-base md:text-lg leading-relaxed drop-shadow-lg">
               When you choose Mirai, you choose a benchmark of opulence that&apos;s seldom
               traversed. It gives you access to a lifestyle less known, and lesser experienced.
               This is the sort of life that unravels here at Mirai.
@@ -249,28 +287,28 @@ export default function MiraiHomesPage() {
         </section>
 
         {/* ==================== BLOG ITEMS SECTION ==================== */}
-        <section className="py-16 lg:py-24 bg-white">
+        <section className="py-12 lg:py-20 bg-white">
           <div className="container mx-auto px-4 lg:px-8 max-w-7xl">
-            <div className="space-y-20 lg:space-y-32">
+            <div className="space-y-16 lg:space-y-24">
               {blogPosts.map((post, index) => (
                 <div
                   key={post.id}
                   ref={(el) => { blogRefs.current[index] = el; }}
-                  className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center"
+                  className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center"
                 >
                   {post.imagePosition === "left" ? (
                     <>
                       {/* Image Left */}
                       <div className="image-container overflow-hidden">
                         <Link href={post.href} className="block group">
-                          <div className="relative overflow-hidden rounded-2xl shadow-2xl">
+                          <div className="relative overflow-hidden rounded-lg shadow-xl">
                             <div className="image-inner relative aspect-[4/3] lg:aspect-[16/10] overflow-hidden">
                               <img
                                 src={post.image}
                                 alt={post.title}
-                                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                               />
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                              <div className="absolute inset-0 bg-amber-600/0 group-hover:bg-amber-600/10 transition-colors duration-500" />
                             </div>
                           </div>
                         </Link>
@@ -278,8 +316,8 @@ export default function MiraiHomesPage() {
 
                       {/* Content Right */}
                       <div className="flex flex-col justify-center px-4 lg:px-8">
-                        <div className="space-y-5 lg:space-y-6 lg:pl-8">
-                          <h3 className="text-2xl lg:text-3xl xl:text-4xl font-serif text-slate-800 leading-tight hover:text-amber-700 transition-colors duration-300">
+                        <div className="space-y-4 lg:space-y-6 lg:pl-8">
+                          <h3 className="text-2xl lg:text-3xl font-serif text-slate-800 leading-tight hover:text-amber-700 transition-colors duration-300">
                             <Link href={post.href}>{post.title}</Link>
                           </h3>
                           <p className="text-slate-600 leading-relaxed text-base lg:text-lg">
@@ -288,10 +326,10 @@ export default function MiraiHomesPage() {
                           <div className="pt-4 text-right">
                             <Link
                               href={post.href}
-                              className="inline-flex items-center justify-center w-14 h-14 rounded-full border-2 border-amber-600 text-amber-600 hover:bg-amber-600 hover:text-white transition-all duration-300 group shadow-lg hover:shadow-xl"
+                              className="inline-flex items-center justify-center w-12 h-12 rounded-full border-2 border-amber-600 text-amber-600 hover:bg-amber-600 hover:text-white transition-all duration-300 group"
                             >
                               <svg
-                                className="w-6 h-6 transform group-hover:translate-x-1 transition-transform duration-300"
+                                className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -312,8 +350,8 @@ export default function MiraiHomesPage() {
                     <>
                       {/* Content Left */}
                       <div className="order-2 lg:order-1 flex flex-col justify-center px-4 lg:px-8">
-                        <div className="space-y-5 lg:space-y-6 lg:pr-8">
-                          <h3 className="text-2xl lg:text-3xl xl:text-4xl font-serif text-slate-800 leading-tight hover:text-amber-700 transition-colors duration-300">
+                        <div className="space-y-4 lg:space-y-6 lg:pr-8">
+                          <h3 className="text-2xl lg:text-3xl font-serif text-slate-800 leading-tight hover:text-amber-700 transition-colors duration-300">
                             <Link href={post.href}>{post.title}</Link>
                           </h3>
                           <p className="text-slate-600 leading-relaxed text-base lg:text-lg">
@@ -322,10 +360,10 @@ export default function MiraiHomesPage() {
                           <div className="pt-4 text-right">
                             <Link
                               href={post.href}
-                              className="inline-flex items-center justify-center w-14 h-14 rounded-full border-2 border-amber-600 text-amber-600 hover:bg-amber-600 hover:text-white transition-all duration-300 group shadow-lg hover:shadow-xl"
+                              className="inline-flex items-center justify-center w-12 h-12 rounded-full border-2 border-amber-600 text-amber-600 hover:bg-amber-600 hover:text-white transition-all duration-300 group"
                             >
                               <svg
-                                className="w-6 h-6 transform group-hover:translate-x-1 transition-transform duration-300"
+                                className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -345,14 +383,14 @@ export default function MiraiHomesPage() {
                       {/* Image Right */}
                       <div className="order-1 lg:order-2 image-container overflow-hidden">
                         <Link href={post.href} className="block group">
-                          <div className="relative overflow-hidden rounded-2xl shadow-2xl">
+                          <div className="relative overflow-hidden rounded-lg shadow-xl">
                             <div className="image-inner relative aspect-[4/3] lg:aspect-[16/10] overflow-hidden">
                               <img
                                 src={post.image}
                                 alt={post.title}
-                                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                               />
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                              <div className="absolute inset-0 bg-amber-600/0 group-hover:bg-amber-600/10 transition-colors duration-500" />
                             </div>
                           </div>
                         </Link>
@@ -364,8 +402,8 @@ export default function MiraiHomesPage() {
             </div>
 
             {/* More Button */}
-            <div className="text-center pt-16 lg:pt-24">
-              <button className="group inline-flex items-center gap-4 text-lg font-light tracking-widest text-slate-600 hover:text-amber-700 transition-colors duration-300 px-8 py-4 border border-slate-200 rounded-full hover:border-amber-600 hover:shadow-lg">
+            <div className="text-center pt-12 lg:pt-20">
+              <button className="group inline-flex items-center gap-3 text-lg font-light tracking-widest text-slate-600 hover:text-amber-700 transition-colors duration-300">
                 <span className="text-amber-600 group-hover:-translate-x-1 transition-transform duration-300">
                   «
                 </span>
@@ -381,30 +419,21 @@ export default function MiraiHomesPage() {
         {/* ==================== SCROLL TO TOP BUTTON ==================== */}
         <button
           onClick={scrollToTop}
-          className={`fixed bottom-8 right-8 z-50 w-14 h-14 rounded-full bg-white shadow-xl transition-all duration-500 hover:shadow-2xl hover:scale-110 ${
+          className={`fixed bottom-8 right-8 z-50 w-12 h-12 rounded-full bg-white shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-110 ${
             showScrollTop
               ? "opacity-100 translate-y-0"
-              : "opacity-0 translate-y-8 pointer-events-none"
+              : "opacity-0 translate-y-4 pointer-events-none"
           }`}
           aria-label="Scroll to top"
         >
           <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="-1 -1 102 102">
-            <circle
-              cx="50"
-              cy="50"
-              r="49"
-              fill="none"
-              stroke="#f3f4f6"
-              strokeWidth="3"
-            />
             <path
               ref={progressPathRef}
               d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98"
               fill="none"
               stroke="#d97706"
               strokeWidth="3"
-              strokeLinecap="round"
-              className="transition-all duration-150"
+              className="transition-all duration-100"
             />
           </svg>
           <span className="absolute inset-0 flex items-center justify-center text-amber-600">
