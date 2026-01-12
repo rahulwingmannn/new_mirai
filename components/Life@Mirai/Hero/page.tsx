@@ -345,7 +345,8 @@ export default function MiraiHomesPage() {
                           <div className="pt-8 text-right">
                             <Link
                               href={post.href}
-                              className="inline-flex items-center justify-center text-amber-600 transition-all duration-300 group"
+                              className="inline-flex items-center justify-center transition-all duration-300 group"
+                              style={{ color: '#78252f' }}
                             >
                               <svg
                                 className="w-8 h-8 transform group-hover:translate-x-1 transition-transform duration-300"
