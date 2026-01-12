@@ -54,94 +54,95 @@ export default function MiraiHomesPage() {
   const [showHeadText, setShowHeadText] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [isReady, setIsReady] = useState(false);
 
   const mainRef = useRef<HTMLElement>(null);
   const scrollDistRef = useRef<HTMLDivElement>(null);
-  const heroRef = useRef<HTMLDivElement>(null);
   const blogRefs = useRef<(HTMLDivElement | null)[]>([]);
   const progressPathRef = useRef<SVGPathElement>(null);
 
-  // GSAP Parallax and reveal animations
+  // Initialize on mount
   useEffect(() => {
-    // Reset scroll position on page load
+    // Force scroll to top and prevent scroll restoration
     if (typeof window !== "undefined") {
       window.history.scrollRestoration = "manual";
       window.scrollTo(0, 0);
     }
+    
+    // Mark as ready after a brief delay
+    const timer = setTimeout(() => {
+      setIsReady(true);
+    }, 100);
 
-    // Small delay to ensure DOM is fully ready
-    const initTimer = setTimeout(() => {
-      const ctx = gsap.context(() => {
-        // Reset cloud positions first
-        gsap.set(".sky", { y: 0 });
-        gsap.set(".cloud1", { y: 100 });
-        gsap.set(".cloud2", { y: -150 });
-        gsap.set(".cloud3", { y: -50 });
+    return () => clearTimeout(timer);
+  }, []);
 
-        // Parallax animation for clouds and sky
-        gsap.timeline({
+  // GSAP Parallax and reveal animations
+  useEffect(() => {
+    if (!isReady) return;
+
+    const ctx = gsap.context(() => {
+      // Parallax animation for clouds and sky
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: scrollDistRef.current,
+          start: "top top",
+          end: "bottom bottom",
+          scrub: true,
+        },
+      })
+        .to(".sky", { y: -200, ease: "none" }, 0)
+        .to(".cloud1", { y: -900, ease: "none" }, 0)
+        .to(".cloud2", { y: -350, ease: "none" }, 0)
+        .to(".cloud3", { y: -600, ease: "none" }, 0);
+
+      // Blog card reveal animations
+      blogRefs.current.forEach((container, index) => {
+        if (!container) return;
+
+        const imageContainer = container.querySelector(".image-container");
+        const imageInner = container.querySelector(".image-inner");
+        const isLeft = blogPosts[index].imagePosition === "left";
+
+        const tl = gsap.timeline({
           scrollTrigger: {
-            trigger: scrollDistRef.current,
-            start: "0 0",
-            end: "100% 100%",
-            scrub: 1,
+            trigger: container,
+            start: "top 80%",
+            toggleActions: "play none none reverse",
           },
-        })
-          .to(".sky", { y: -200 }, 0)
-          .to(".cloud1", { y: -800 }, 0)
-          .to(".cloud2", { y: -500 }, 0)
-          .to(".cloud3", { y: -650 }, 0);
-
-        // Blog card reveal animations
-        blogRefs.current.forEach((container, index) => {
-          if (!container) return;
-
-          const imageContainer = container.querySelector(".image-container");
-          const imageInner = container.querySelector(".image-inner");
-          const isLeft = blogPosts[index].imagePosition === "left";
-
-          const tl = gsap.timeline({
-            scrollTrigger: {
-              trigger: container,
-              start: "top 80%",
-              toggleActions: "play none none reverse",
-            },
-          });
-
-          tl.fromTo(
-            imageContainer,
-            { xPercent: isLeft ? -100 : 100, opacity: 0 },
-            { xPercent: 0, opacity: 1, duration: 1.2, ease: "power2.out" }
-          ).fromTo(
-            imageInner,
-            { xPercent: isLeft ? 100 : -100, scale: 1.3 },
-            { xPercent: 0, scale: 1, duration: 1.2, ease: "power2.out" },
-            "<"
-          );
         });
 
-        ScrollTrigger.refresh();
-      }, mainRef);
+        tl.fromTo(
+          imageContainer,
+          { xPercent: isLeft ? -100 : 100, opacity: 0 },
+          { xPercent: 0, opacity: 1, duration: 1.2, ease: "power2.out" }
+        ).fromTo(
+          imageInner,
+          { xPercent: isLeft ? 100 : -100, scale: 1.3 },
+          { xPercent: 0, scale: 1, duration: 1.2, ease: "power2.out" },
+          "<"
+        );
+      });
 
-      return () => ctx.revert();
-    }, 50);
+      ScrollTrigger.refresh();
+    }, mainRef);
 
-    return () => clearTimeout(initTimer);
-  }, []);
+    return () => ctx.revert();
+  }, [isReady]);
 
   // Scroll event handlers
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.scrollY;
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const scrollPercent = (scrollTop / docHeight) * 100;
+      const scrollPercent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
 
       setScrollProgress(scrollPercent);
       setShowScrollTop(scrollTop > 50);
       setShowHeadText(scrollTop > 100);
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
 
     return () => window.removeEventListener("scroll", handleScroll);
@@ -166,14 +167,14 @@ export default function MiraiHomesPage() {
       {/* ==================== MAIN CONTENT ==================== */}
       <main ref={mainRef} className="bg-white">
         {/* Scroll Distance Trigger */}
-        <div ref={scrollDistRef} className="h-[200vh] absolute w-full" />
+        <div ref={scrollDistRef} className="h-[200vh] absolute w-full pointer-events-none" />
 
         {/* ==================== PARALLAX HERO SECTION ==================== */}
-        <section ref={heroRef} className="relative">
+        <section className="relative">
           <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
             <defs>
               <mask id="m">
-                <g className="cloud1">
+                <g className="cloud1" style={{ transform: 'translateY(100px)' }}>
                   <rect fill="#fff" width="100%" height="801" y="799" />
                   <image
                     xlinkHref="https://assets.codepen.io/721952/cloud1Mask.jpg"
@@ -189,31 +190,41 @@ export default function MiraiHomesPage() {
               </linearGradient>
             </defs>
 
+            {/* Sky - starts at y=0 */}
             <image
               className="sky"
               xlinkHref="https://azure-baboon-302476.hostingersite.com//mirai_/media/footer_img.png"
               width="1200"
-              height="679"
+              height="800"
               preserveAspectRatio="xMidYMid slice"
+              style={{ transform: 'translateY(0px)' }}
             />
 
+            {/* Cloud2 - starts at y=-150 */}
             <image
               className="cloud2"
               xlinkHref="https://assets.codepen.io/721952/cloud2.png"
               width="1200"
               height="800"
+              style={{ transform: 'translateY(-150px)' }}
             />
+            
+            {/* Cloud1 - starts at y=100 */}
             <image
               className="cloud1"
               xlinkHref="https://assets.codepen.io/721952/cloud1.png"
               width="1200"
               height="800"
+              style={{ transform: 'translateY(100px)' }}
             />
+            
+            {/* Cloud3 - starts at y=-50 */}
             <image
               className="cloud3"
               xlinkHref="https://assets.codepen.io/721952/cloud3.png"
               width="1200"
               height="800"
+              style={{ transform: 'translateY(-50px)' }}
             />
 
             <g mask="url(#m)">
