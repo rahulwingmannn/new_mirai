@@ -549,9 +549,9 @@ export function RevealZoom({
           <div ref={pointer1InnerRef} className="opacity-0 scale-90 origin-center">
             <Hotspot 
               title="SkyPods" 
-              subtitle="Floors 29-32" 
+              subtitle="54th-55th Floor" 
               position="left" 
-              description="The top floors of the Mirai building are a collection of 16 exclusive SkyPods 100 metres above the ground." 
+              description="The 4 Sky Pods, inspired by the elements, elevate everyday moments and transform them into something truly spectacular." 
             />
           </div>
         </div>
@@ -560,9 +560,9 @@ export function RevealZoom({
           <div ref={pointer2InnerRef} className="opacity-0 scale-90 origin-center">
             <Hotspot 
               title="Residencies" 
-              subtitle="Level 35" 
+              subtitle="5th-53rd Floor" 
               position="left" 
-              description="An exclusive rooftop sanctuary featuring panoramic 360-degree views of the city skyline." 
+              description="Live uninhibited at our magnificent residences that stretch out at 8,000+ sft each, with eight sprawling duplexes that soar even higher. " 
             />
           </div>
         </div>
@@ -571,9 +571,9 @@ export function RevealZoom({
           <div ref={pointer3InnerRef} className="opacity-0 scale-90 origin-center">
             <Hotspot 
               title="Clubhouse" 
-              subtitle="Levels 3-4" 
+              subtitle="G-4th Floor" 
               position="left" 
-              description="A world-class wellness destination spanning two floors featuring infinity pools and private suites." 
+              description="The first 4 floors of Mirai are a part of its spectacular Clubhouse. Each level offers a retreat of indulgence unlike any other, accessible only to a privileged few." 
             />
           </div>
         </div>
@@ -582,9 +582,10 @@ export function RevealZoom({
           <div ref={pointer4InnerRef} className="opacity-0 scale-90 origin-center">
             <Hotspot 
               title="Podium Level" 
-              subtitle="Gardens" 
+              subtitle="Ground Floor" 
               position="left" 
-              description="Landscaped terraces and secret gardens create tranquil retreats within the urban landscape." 
+              description="Discover mesmerising terrains & unique amenities at the podium of Mirai, where you experience a whole new world in itself."
+" 
             />
           </div>
         </div>
