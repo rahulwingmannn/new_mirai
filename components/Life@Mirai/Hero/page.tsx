@@ -51,8 +51,6 @@ const blogPosts = [
 ];
 
 export default function MiraiHomesPage() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [loadProgress, setLoadProgress] = useState(0);
   const [showHeadText, setShowHeadText] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -63,79 +61,73 @@ export default function MiraiHomesPage() {
   const blogRefs = useRef<(HTMLDivElement | null)[]>([]);
   const progressPathRef = useRef<SVGPathElement>(null);
 
-  // Preloader effect
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setLoadProgress((prev) => {
-        if (prev >= 99) {
-          clearInterval(interval);
-          return 99;
-        }
-        return prev + 1;
-      });
-    }, 20);
-
-    const timer = setTimeout(() => {
-      setLoadProgress(100);
-      setTimeout(() => setIsLoading(false), 500);
-    }, 2000);
-
-    return () => {
-      clearInterval(interval);
-      clearTimeout(timer);
-    };
-  }, []);
-
   // GSAP Parallax and reveal animations
   useEffect(() => {
-    if (isLoading) return;
+    // Reset scroll position on page load
+    if (typeof window !== "undefined") {
+      window.history.scrollRestoration = "manual";
+      window.scrollTo(0, 0);
+    }
 
-    const ctx = gsap.context(() => {
-      // Parallax animation for clouds and sky
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: scrollDistRef.current,
-          start: "0 0",
-          end: "100% 100%",
-          scrub: 1,
-        },
-      })
-        .fromTo(".sky", { y: 0 }, { y: -200 }, 0)
-        .fromTo(".cloud1", { y: 100 }, { y: -800 }, 0)
-        .fromTo(".cloud2", { y: -150 }, { y: -500 }, 0)
-        .fromTo(".cloud3", { y: -50 }, { y: -650 }, 0);
+    // Small delay to ensure DOM is fully ready
+    const initTimer = setTimeout(() => {
+      const ctx = gsap.context(() => {
+        // Reset cloud positions first
+        gsap.set(".sky", { y: 0 });
+        gsap.set(".cloud1", { y: 100 });
+        gsap.set(".cloud2", { y: -150 });
+        gsap.set(".cloud3", { y: -50 });
 
-      // Blog card reveal animations
-      blogRefs.current.forEach((container, index) => {
-        if (!container) return;
-
-        const imageContainer = container.querySelector(".image-container");
-        const imageInner = container.querySelector(".image-inner");
-        const isLeft = blogPosts[index].imagePosition === "left";
-
-        const tl = gsap.timeline({
+        // Parallax animation for clouds and sky
+        gsap.timeline({
           scrollTrigger: {
-            trigger: container,
-            start: "top 80%",
-            toggleActions: "play none none reverse",
+            trigger: scrollDistRef.current,
+            start: "0 0",
+            end: "100% 100%",
+            scrub: 1,
           },
+        })
+          .to(".sky", { y: -200 }, 0)
+          .to(".cloud1", { y: -800 }, 0)
+          .to(".cloud2", { y: -500 }, 0)
+          .to(".cloud3", { y: -650 }, 0);
+
+        // Blog card reveal animations
+        blogRefs.current.forEach((container, index) => {
+          if (!container) return;
+
+          const imageContainer = container.querySelector(".image-container");
+          const imageInner = container.querySelector(".image-inner");
+          const isLeft = blogPosts[index].imagePosition === "left";
+
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: container,
+              start: "top 80%",
+              toggleActions: "play none none reverse",
+            },
+          });
+
+          tl.fromTo(
+            imageContainer,
+            { xPercent: isLeft ? -100 : 100, opacity: 0 },
+            { xPercent: 0, opacity: 1, duration: 1.2, ease: "power2.out" }
+          ).fromTo(
+            imageInner,
+            { xPercent: isLeft ? 100 : -100, scale: 1.3 },
+            { xPercent: 0, scale: 1, duration: 1.2, ease: "power2.out" },
+            "<"
+          );
         });
 
-        tl.fromTo(
-          imageContainer,
-          { xPercent: isLeft ? -100 : 100, opacity: 0 },
-          { xPercent: 0, opacity: 1, duration: 1.2, ease: "power2.out" }
-        ).fromTo(
-          imageInner,
-          { xPercent: isLeft ? 100 : -100, scale: 1.3 },
-          { xPercent: 0, scale: 1, duration: 1.2, ease: "power2.out" },
-          "<"
-        );
-      });
-    }, mainRef);
+        ScrollTrigger.refresh();
+      }, mainRef);
 
-    return () => ctx.revert();
-  }, [isLoading]);
+      return () => ctx.revert();
+    }, 50);
+
+    return () => clearTimeout(initTimer);
+  }, []);
 
   // Scroll event handlers
   useEffect(() => {
@@ -171,43 +163,8 @@ export default function MiraiHomesPage() {
 
   return (
     <>
-      {/* ==================== PRELOADER ==================== */}
-      <div
-        className={`fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900 transition-opacity duration-1000 ${
-          !isLoading ? "opacity-0 pointer-events-none" : "opacity-100"
-        }`}
-      >
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-amber-600/10 rounded-full blur-3xl animate-pulse" />
-        </div>
-
-        <div className="relative flex flex-col items-center gap-8">
-          <div className="relative">
-            <div className="w-24 h-24 border border-amber-500/30 rotate-45 animate-[spin_8s_linear_infinite]" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-3xl font-serif text-amber-500 tracking-widest">M</span>
-            </div>
-          </div>
-
-          <div className="w-48 h-[1px] bg-slate-700 overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-amber-600 to-amber-400 transition-all duration-100 ease-out"
-              style={{ width: `${loadProgress}%` }}
-            />
-          </div>
-
-          <span className="text-amber-500/80 text-sm tracking-[0.3em] font-light">
-            {loadProgress}%
-          </span>
-        </div>
-      </div>
-
       {/* ==================== MAIN CONTENT ==================== */}
-      <main
-        ref={mainRef}
-        className={`transition-opacity duration-1000 bg-white ${isLoading ? "opacity-0" : "opacity-100"}`}
-      >
+      <main ref={mainRef} className="bg-white">
         {/* Scroll Distance Trigger */}
         <div ref={scrollDistRef} className="h-[200vh] absolute w-full" />
 
