@@ -175,17 +175,18 @@ export default function MiraiHomesPage() {
         <div ref={scrollDistRef} className="h-[200vh] absolute w-full" />
 
         {/* ==================== PARALLAX HERO SECTION ==================== */}
-        <section ref={heroRef} className="relative mb-8 lg:mb-12 bg-white">
+        <section ref={heroRef} className="relative mb-8 lg:mb-12 bg-white overflow-hidden">
           {/* Loading placeholder with gradient background */}
           {!skyImageLoaded && (
             <div className="absolute inset-0 bg-gradient-to-b from-slate-800 via-slate-700 to-blue-900 animate-pulse" />
           )}
           
-          <svg 
-            viewBox="0 0 1200 800" 
-            xmlns="http://www.w3.org/2000/svg" 
-            className={`w-full h-auto block transition-opacity duration-500 ${skyImageLoaded ? 'opacity-100' : 'opacity-0'}`}
-          >
+          <div className="relative w-full" style={{ paddingBottom: '66.67%' }}>
+            <svg 
+              viewBox="0 0 1200 800" 
+              xmlns="http://www.w3.org/2000/svg" 
+              className={`absolute top-0 left-0 w-full h-full transition-opacity duration-500 ${skyImageLoaded ? 'opacity-100' : 'opacity-0'}`}
+            >
             <defs>
               <mask id="m">
                 <g className="cloud1">
@@ -235,6 +236,7 @@ export default function MiraiHomesPage() {
               <rect fill="#fff" width="100%" height="100%" />
             </g>
           </svg>
+          </div>
 
           {/* Head Text Overlay */}
           <div
