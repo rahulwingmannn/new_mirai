@@ -175,7 +175,7 @@ export default function MiraiHomesPage() {
         <div ref={scrollDistRef} className="h-[200vh] absolute w-full" />
 
         {/* ==================== PARALLAX HERO SECTION ==================== */}
-        <section ref={heroRef} className="relative mb-8 lg:mb-12 bg-white overflow-hidden">
+        <section ref={heroRef} className="relative bg-white overflow-hidden">
           {/* Loading placeholder with gradient background */}
           {!skyImageLoaded && (
             <div className="absolute inset-0 bg-gradient-to-b from-slate-800 via-slate-700 to-blue-900 animate-pulse" />
