@@ -5,7 +5,10 @@ import MiraiHomesPage from '@/components/Life@Mirai/Hero/page'
 const page = () => {
   return (
     <>
-      <MiraiHomesPage />
+      <main className="relative z-10 bg-white mb-[100vh]">
+        <MiraiHomesPage />
+      </main>
+      
       <Footer />
     </>
   )
