@@ -7,8 +7,10 @@ const page = () => {
   return (
     <PavaniMiraiBlog />
     <Footer />
+  </>
   )
 }
 
 export default page
+
 
