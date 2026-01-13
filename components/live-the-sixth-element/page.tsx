@@ -283,13 +283,13 @@ export default function MiraiHomesPage() {
             <h3 className="text-2xl md:text-3xl font-serif text-white mb-6">
               2,00,000 sq. ft. of Elemental Indulgence
             </h3>
-            <p className="mb-4 text-black">
+            <p className="mb-4 text-white">
               The grandeur of Pavani Mirai extends beyond design into scale and substance. With over 2,00,000 sq. ft. of amenities, every aspect of leisure and lifestyle has been reimagined for the discerning few.
             </p>
-            <p className="mb-4 text-black">
+            <p className="mb-4 text-white">
               From the podium amenities to the four-level clubhouse and the rooftop pods, each layer unfolds a new facet of refined living. Whether it's wellness, recreation, or relaxation, Mirai ensures that every experience resonates with sophistication and sensory delight.
             </p>
-            <p className="text-black">
+            <p className="text-white">
               The clubhouse serves as a contemporary sanctuary featuring luxury lounges, spa retreats, indoor courts, and fine dining spaces that blend seamlessly into their natural surroundings. Here, indulgence finds balance in design that feels alive.
             </p>
           </div>
