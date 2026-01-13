@@ -345,7 +345,7 @@ export default function MiraiHomesPage() {
               <p className="text-xl font-light text-black">
                 Because when Earth, Water, Fire, Air, and Space come together in harmony, they create a higher state of being.
               </p>
-              <p className="mt-4 font-serif text-2xl text-[#78252f] font-bold">
+              <p className="mt-4 font-serif text-2xl text-[#78252f] font-normal">
                 That is the Sixth Element.<br/>
                 That is Pavani Mirai.
               </p>
