@@ -225,7 +225,7 @@ export default function MiraiHomesPage() {
             <p className="text-black/80">
               Mirai draws from this universal truth to create something the Sixth Element. It is the point where these forces converge to form a new dimension of luxury living, one that balances physical indulgence with emotional and spiritual well-being.
             </p>
-            <blockquote className="mt-6 text-xl text-black/50 font-serif text-center font-bold">
+            <blockquote className="mt-6 text-xl text-black font-serif text-center font-bold">
               &quot;The Sixth Element represents harmony in motion. It is where architecture breathes, materials speak, and every detail flows with the rhythm of nature.&quot;
             </blockquote>
           </div>
@@ -273,7 +273,7 @@ export default function MiraiHomesPage() {
               </div>
             </div>
             
-            <p className="mt-8 text-center text-black/50 italic font-bold">
+            <p className="mt-8 text-center text-black italic font-bold">
               Together, these four pods represent the living expression of the elements, while the helipad, symbolizing Space, completes the cycle, culminating in the Sixth Element: Mirai itself.
             </p>
           </div>
