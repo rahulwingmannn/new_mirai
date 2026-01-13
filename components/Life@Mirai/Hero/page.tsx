@@ -301,8 +301,8 @@ export default function MiraiHomesPage() {
                       {/* Content Right */}
                       <div className="flex flex-col justify-center px-4 lg:px-8">
                         <div className="space-y-4 lg:space-y-6 lg:pl-8">
-                          <h3 className="text-2xl lg:text-3xl font-serif text-slate-800 leading-tight hover:text-amber-700 transition-colors duration-300">
-                            <Link href={post.href}>{post.title}</Link>
+                          <h3 className="text-2xl lg:text-3xl font-serif leading-tight transition-colors duration-300" style={{ color: '#78252f' }}>
+                            <Link href={post.href} className="hover:text-black">{post.title}</Link>
                           </h3>
                           <p className="text-slate-600 leading-relaxed text-base lg:text-lg">
                             {post.excerpt}
@@ -336,8 +336,8 @@ export default function MiraiHomesPage() {
                       {/* Content Left */}
                       <div className="order-2 lg:order-1 flex flex-col justify-center px-4 lg:px-8">
                         <div className="space-y-4 lg:space-y-6 lg:pr-8">
-                          <h3 className="text-2xl lg:text-3xl font-serif text-slate-800 leading-tight hover:text-amber-700 transition-colors duration-300">
-                            <Link href={post.href}>{post.title}</Link>
+                          <h3 className="text-2xl lg:text-3xl font-serif leading-tight transition-colors duration-300" style={{ color: '#78252f' }}>
+                            <Link href={post.href} className="hover:text-black">{post.title}</Link>
                           </h3>
                           <p className="text-slate-600 leading-relaxed text-base lg:text-lg">
                             {post.excerpt}
