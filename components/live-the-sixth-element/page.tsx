@@ -175,7 +175,7 @@ export default function MiraiHomesPage() {
             Live the Sixth Element: How Pavani Mirai Redefines Luxury by
             Harmonizing Nature&apos;s Forces
           </h2>
-          <p className="text-[#78252f]/90 text-sm md:text-base tracking-[0.2em] uppercase font-light drop-shadow-lg">
+          <p className="text-[#78252f]/90 text-sm md:text-lg tracking-[0.2em] uppercase font-light drop-shadow-lg">
             The Sixth Element
           </p>
         </div>
