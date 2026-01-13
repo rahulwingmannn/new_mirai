@@ -242,7 +242,7 @@ export default function MiraiHomesPage() {
             <div className="grid gap-8 md:grid-cols-2">
               {/* Air Pod */}
               <div className="border-t-2 border-black/20 pt-4">
-                <h4 className="text-xl font-bold text-[#78252f] mb-2">1. The Air Pod – Freedom Above the Horizon</h4>
+                <h4 className="text-xl font-normal text-[#78252f] mb-2">1. The Air Pod – Freedom Above the Horizon</h4>
                 <p className="text-sm text-black/70">
                   The Air Pod is a sanctuary of openness. Floating high above the city, it invites residents into tranquil spaces where gentle breezes and panoramic views awaken the senses. Meditation decks, yoga zones, and open lounges create an atmosphere of calm, which reminds you that true luxury is space to breathe freely.
                 </p>
@@ -250,7 +250,7 @@ export default function MiraiHomesPage() {
 
               {/* Water Pod */}
               <div className="border-t-2 border-black/20 pt-4">
-                <h4 className="text-xl font-bold text-[#78252f] mb-2">2. The Water Pod – Tranquillity in Motion</h4>
+                <h4 className="text-xl font-normal text-[#78252f] mb-2">2. The Water Pod – Tranquillity in Motion</h4>
                 <p className="text-sm text-black/70">
                   Water brings fluidity and serenity to Mirai. The Water Pod, adorned with reflective pools and calming cascades, embodies the meditative essence of flow. It is where time slows down, and the ripples of water mirror the stillness within.
                 </p>
@@ -258,7 +258,7 @@ export default function MiraiHomesPage() {
 
               {/* Fire Pod */}
               <div className="border-t-2 border-black/20 pt-4">
-                <h4 className="text-xl font-bold text-[#78252f] mb-2">3. The Fire Pod – The Energy of Celebration</h4>
+                <h4 className="text-xl font-normal text-[#78252f] mb-2">3. The Fire Pod – The Energy of Celebration</h4>
                 <p className="text-sm text-black/70">
                   The Fire Pod symbolizes vitality and passion. Designed as the social heart of Mirai, it features ambient lounges, BBQ spots, sunset decks, and event spaces that radiate warmth. It's where energy gathers for conversation, connection, and celebration.
                 </p>
@@ -266,7 +266,7 @@ export default function MiraiHomesPage() {
 
               {/* Earth Pod */}
               <div className="border-t-2 border-black/20 pt-4">
-                <h4 className="text-xl font-bold text-[#78252f] mb-2">4. The Earth Pod – Grounded in Green</h4>
+                <h4 className="text-xl font-normal text-[#78252f] mb-2">4. The Earth Pod – Grounded in Green</h4>
                 <p className="text-sm text-black/70">
                   Lush greenscapes and tactile natural materials define the Earth Pod, creating a sanctuary of grounded elegance. It connects residents back to the roots of existence by offering a haven of calm amidst life's momentum.
                 </p>
@@ -315,15 +315,15 @@ export default function MiraiHomesPage() {
             <h3 className="text-2xl md:text-3xl font-serif text-[#78252f] mb-8 text-center">FAQs</h3>
             <div className="space-y-8">
               <div>
-                <h5 className="font-bold text-lg text-[#78252f] mb-2">1. What is the "Sixth Element" concept at Pavani Mirai?</h5>
+                <h5 className="font-normal text-lg text-[#78252f] mb-2">1. What is the "Sixth Element" concept at Pavani Mirai?</h5>
                 <p className="text-black/70">The Sixth Element at Pavani Mirai represents the fusion of the five natural elements - Earth, Water, Fire, Air, and Space - into a singular, harmonious living experience. It symbolizes the point where design transcends aesthetics to embody emotional and environmental balance. Pavani Mirai itself becomes this Sixth Element, a living, breathing masterpiece that harmonizes nature's energies with modern luxury.</p>
               </div>
               <div>
-                <h5 className="font-bold text-lg text-[#78252f] mb-2">2. How are the five elements integrated into the architectural design?</h5>
+                <h5 className="font-normal text-lg text-[#78252f] mb-2">2. How are the five elements integrated into the architectural design?</h5>
                 <p className="text-black/70">Each of the five elements finds its expression in Mirai's architectural framework. The four rooftop pods are dedicated to Air, Water, Fire, and Earth, each offering themed experiential zones that stimulate the senses and elevate well-being. The helipad, symbolizing Space, completes this elemental integration, together giving rise to the Sixth Element: the project as a whole.</p>
               </div>
               <div>
-                <h5 className="font-bold text-lg text-[#78252f] mb-2">3. Does this philosophy improve the residents' well-being?</h5>
+                <h5 className="font-normal text-lg text-[#78252f] mb-2">3. Does this philosophy improve the residents' well-being?</h5>
                 <p className="text-black/70">Absolutely. Pavani Mirai's design philosophy goes beyond aesthetics. It aims to enhance holistic well-being. By integrating natural elements into everyday living, it fosters emotional balance, physical comfort, and mental clarity. From air flow and daylight optimization to the sensory experiences created by water and greenery, every aspect of Mirai's design contributes to a calmer, more centered lifestyle.</p>
               </div>
             </div>
