@@ -171,7 +171,7 @@ export default function MiraiHomesPage() {
       {/* ==================== MAIN CONTENT ==================== */}
       <main ref={mainRef}>
         {/* Scroll Distance Trigger */}
-        <div ref={scrollDistRef} className="h-[200vh] absolute w-full" />
+        <div ref={scrollDistRef} className="h-[200vh] absolute w-full pointer-events-none" />
 
         {/* ==================== PARALLAX HERO SECTION ==================== */}
         <section ref={heroRef} className="relative bg-white overflow-hidden">
