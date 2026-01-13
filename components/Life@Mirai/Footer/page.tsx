@@ -156,114 +156,106 @@ function Footer() {
   }, [isVisible]);
 
   return (
-    <>
-      {/* Spacer div to create space for the fixed footer */}
-      <div className="h-screen" aria-hidden="true" />
-      
-      <footer
-        className="fixed bottom-0 left-0 right-0 text-[#bfc6cf] h-screen flex items-center overflow-hidden"
-        style={{ 
-          zIndex: -1,
-        }}
-        role="contentinfo"
-        aria-label="Footer - Pavani Mirai"
-      >
-        {/* Background Image Container */}
-        <div className="absolute inset-0 z-0 overflow-hidden bg-black">
-          <Image
-            src="https://d3p1hokpi6aqc3.cloudfront.net/039_PM_EXT_CAM68_LANDSCAPE%20AERIAL.jpg"
-            alt="Footer background"
-            fill
-            className="object-cover"
-            style={{
-              objectPosition: 'center center',
-            }}
-            priority
-          />
-        </div>
-        <div className="absolute inset-0 bg-black/10 pointer-events-none" aria-hidden="true" />
-
-        <div 
-          className="absolute inset-0 w-1/2 bg-gradient-to-r from-black/80 via-black/50 to-transparent pointer-events-none"
-          aria-hidden="true"
+    <footer
+      className="fixed bottom-0 left-0 right-0 text-[#bfc6cf] h-screen flex items-center overflow-hidden -z-10"
+      role="contentinfo"
+      aria-label="Footer - Pavani Mirai"
+    >
+      {/* Background Image Container */}
+      <div className="absolute inset-0 z-0 overflow-hidden bg-black">
+        <Image
+          src="https://d3p1hokpi6aqc3.cloudfront.net/039_PM_EXT_CAM68_LANDSCAPE%20AERIAL.jpg"
+          alt="Footer background"
+          fill
+          className="object-cover"
+          style={{
+            objectPosition: 'center center',
+          }}
+          priority
         />
+      </div>
+      <div className="absolute inset-0 bg-black/10 pointer-events-none" aria-hidden="true" />
 
-        <section className="relative z-10 h-full px-6 lg:px-12">
-          <div className="flex items-center h-full">
-            <div className="max-w-md">
-              {/* Logo */}
-              <div className={`mb-8 ${visibilityClass('')}`}>
-                <Image
-                  src={showFallbackLogo ? HELPER_LOGO_PATH : FOOTER_LOGO_PATH}
-                  alt={showFallbackLogo ? 'Fallback logo' : 'Mirai Footer Logo'}
-                  width={160}
-                  height={48}
-                  className="w-auto h-auto max-w-50 lg:max-w-60 drop-shadow-md block"
-                  priority
-                  onError={handleLogoError}
-                  style={{ filter: 'none' }}
-                />
-              </div>
+      <div 
+        className="absolute inset-0 w-1/2 bg-gradient-to-r from-black/80 via-black/50 to-transparent pointer-events-none"
+        aria-hidden="true"
+      />
 
-              {/* Description */}
-              <p className={`mb-8 text-base lg:text-lg ${visibilityClass('delay-100')}`}>
-                Here Earth, Water, Fire, Air and Space come together to catalyse <br className="hidden lg:block" /> 
-                a sixth element of life that feels like it was built for you.
+      <section className="relative z-10 h-full px-6 lg:px-12">
+        <div className="flex items-center h-full">
+          <div className="max-w-md">
+            {/* Logo */}
+            <div className={`mb-8 ${visibilityClass('')}`}>
+              <Image
+                src={showFallbackLogo ? HELPER_LOGO_PATH : FOOTER_LOGO_PATH}
+                alt={showFallbackLogo ? 'Fallback logo' : 'Mirai Footer Logo'}
+                width={160}
+                height={48}
+                className="w-auto h-auto max-w-50 lg:max-w-60 drop-shadow-md block"
+                priority
+                onError={handleLogoError}
+                style={{ filter: 'none' }}
+              />
+            </div>
+
+            {/* Description */}
+            <p className={`mb-8 text-base lg:text-lg ${visibilityClass('delay-100')}`}>
+              Here Earth, Water, Fire, Air and Space come together to catalyse <br className="hidden lg:block" /> 
+              a sixth element of life that feels like it was built for you.
+            </p>
+
+            {/* Contact Section */}
+            <div className={`flex flex-col gap-2 py-2 mb-8 ${visibilityClass('delay-200', 'scale')}`}>
+              <p className="mb-2 font-bold text-[#f5f5f5] tracking-wide">
+                <span>Contact Us :</span>
               </p>
+              <ContactLink href="tel:+919876543212" icon="phone">
+                +91 9876543212
+              </ContactLink>
+              <ContactLink href="mailto:info@pavanimirai.com" icon="envelope">
+                info@pavanimirai.com
+              </ContactLink>
+              <ContactLink href="#" icon="geo-alt" alignTop>
+                <span>4th Floor, Road No.36, Jubilee Hills, Hyderabad-500 033</span>
+              </ContactLink>
+            </div>
 
-              {/* Contact Section */}
-              <div className={`flex flex-col gap-2 py-2 mb-8 ${visibilityClass('delay-200', 'scale')}`}>
-                <p className="mb-2 font-bold text-[#f5f5f5] tracking-wide">
-                  <span>Contact Us :</span>
+            {/* Social Links */}
+            <div className={`mb-6 ${visibilityClass('delay-300', 'scale')}`}>
+              <div className="flex gap-4 pt-2">
+                <SocialLink href="#" label="Facebook" icon="facebook" />
+                <SocialLink href="#" label="Instagram" icon="instagram" />
+                <SocialLink href="#" label="LinkedIn" icon="linkedin" />
+                <SocialLink href="#" label="YouTube" icon="youtube" />
+              </div>
+            </div>
+
+            {/* Footer Bottom */}
+            <div className={`pt-3 text-xs lg:text-sm ${visibilityClass('delay-400')}`}>
+              <div className="flex flex-col gap-1">
+                <p className="text-[#bfc6cf]">
+                  Copyright © <span>{CURRENT_YEAR}</span> PAVANI MIRAI. All Rights Reserved.
                 </p>
-                <ContactLink href="tel:+919876543212" icon="phone">
-                  +91 9876543212
-                </ContactLink>
-                <ContactLink href="mailto:info@pavanimirai.com" icon="envelope">
-                  info@pavanimirai.com
-                </ContactLink>
-                <ContactLink href="#" icon="geo-alt" alignTop>
-                  <span>4th Floor, Road No.36, Jubilee Hills, Hyderabad-500 033</span>
-                </ContactLink>
-              </div>
-
-              {/* Social Links */}
-              <div className={`mb-6 ${visibilityClass('delay-300', 'scale')}`}>
-                <div className="flex gap-4 pt-2">
-                  <SocialLink href="#" label="Facebook" icon="facebook" />
-                  <SocialLink href="#" label="Instagram" icon="instagram" />
-                  <SocialLink href="#" label="LinkedIn" icon="linkedin" />
-                  <SocialLink href="#" label="YouTube" icon="youtube" />
-                </div>
-              </div>
-
-              {/* Footer Bottom */}
-              <div className={`pt-3 text-xs lg:text-sm ${visibilityClass('delay-400')}`}>
-                <div className="flex flex-col gap-1">
-                  <p className="text-[#bfc6cf]">
-                    Copyright © <span>{CURRENT_YEAR}</span> PAVANI MIRAI. All Rights Reserved.
-                  </p>
-                  <Link 
-                    href="https://www.wingmanbrandworks.com/" 
-                    className="text-[#bfc6cf] hover:text-[#f5f5f5] transition-colors duration-200"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Design &amp; Developed By Wingman Brandworks LLP
-                  </Link>
-                </div>
+                <Link 
+                  href="https://www.wingmanbrandworks.com/" 
+                  className="text-[#bfc6cf] hover:text-[#f5f5f5] transition-colors duration-200"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Design &amp; Developed By Wingman Brandworks LLP
+                </Link>
               </div>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <BackToTopButton 
-          show={showBackToTop} 
-          progress={scrollProgress} 
-          onClick={scrollToTop} 
-        />
-      </footer>
-    </>
+      <BackToTopButton 
+        show={showBackToTop} 
+        progress={scrollProgress} 
+        onClick={scrollToTop} 
+      />
+    </footer>
   );
 }
 
