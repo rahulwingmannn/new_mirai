@@ -341,19 +341,18 @@ export default function MiraiHomesPage() {
               At Pavani Mirai, the elements don't just surround you, they live with you. They breathe through every space, whisper through every texture, and resonate through every sunrise and sunset.
             </p>
           </div>
-        </div>
-        
-        {/* Full width border section */}
-        <div className="w-screen relative left-1/2 right-1/2 -mx-[50vw] border-y-2 border-[#78252f] py-8 mt-4">
-          <div className="max-w-4xl mx-auto px-4 text-center">
-            <p className="text-xl font-light text-black">
-              Because when Earth, Water, Fire, Air, and Space come together in harmony, they create a higher state of being.
-            </p>
-            <p className="mt-4 font-serif text-2xl text-[#78252f] font-bold">
-              That is the Sixth Element.<br/>
-              That is Pavani Mirai.
-            </p>
+            
+            <div className="inline-block border-y-2 border-[#78252f] py-4 px-8 mt-4">
+              <p className="text-xl font-light text-black">
+                Because when Earth, Water, Fire, Air, and Space come together in harmony, they create a higher state of being.
+              </p>
+              <p className="mt-4 font-serif text-2xl text-[#78252f] font-bold">
+                That is the Sixth Element.<br/>
+                That is Pavani Mirai.
+              </p>
+            </div>
           </div>
+
         </div>
         
         <div className="pb-24"></div>
