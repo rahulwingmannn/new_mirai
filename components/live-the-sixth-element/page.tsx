@@ -193,7 +193,7 @@ export default function MiraiHomesPage() {
             <p className="mt-6 text-black/80">
               Drawing inspiration from the five classical elements - Earth, Water, Fire, Air, and Space, Pavani Mirai unites them to give rise to the <strong>Sixth Element</strong>, a realm where design, nature, and emotion coexist in perfect equilibrium.
             </p>
-            <p className="mt-4 italic border-l-4 border-[#78252f] pl-4 text-black/60">
+            <p className="mt-4 italic border-l-4 border-[#78252f] pl-4 text-[#78252f]">
               This is not merely about creating Luxury Apartments in Hyderabad, it's about redefining what luxury itself stands for.
             </p>
           </div>
