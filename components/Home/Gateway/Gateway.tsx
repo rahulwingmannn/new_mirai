@@ -585,7 +585,6 @@ export function RevealZoom({
               subtitle="Ground Floor" 
               position="left" 
               description="Discover mesmerising terrains & unique amenities at the podium of Mirai, where you experience a whole new world in itself."
-" 
             />
           </div>
         </div>

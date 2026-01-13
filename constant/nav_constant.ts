@@ -30,7 +30,7 @@ export const NAV_LINKS: NavLink[] = [
     id: 4, 
     label: 'Map', 
     href: './Maps',
-    description: 'Explore the detailed layout of our community with interactive maps that show you just how close you are to the city's soul.'
+    description: "Explore the detailed layout of our community with interactive maps that show you just how close you are to the city's soul."
   },
   { 
     id: 5, 

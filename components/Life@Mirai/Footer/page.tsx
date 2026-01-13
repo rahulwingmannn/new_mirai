@@ -164,13 +164,16 @@ function Footer() {
       role="contentinfo"
       aria-label="Footer - Pavani Mirai"
     >
-      {/* Background Image */}
-      <div className="absolute inset-0 z-0 overflow-hidden">
+      {/* Background Image Container - Added bg-black as fallback */}
+      <div className="absolute inset-0 z-0 overflow-hidden bg-black">
         <Image
           src="https://d3p1hokpi6aqc3.cloudfront.net/039_PM_EXT_CAM68_LANDSCAPE%20AERIAL.jpg"
           alt="Footer background"
           fill
-          className="object-cover scale-110 translate-x-[10%] translate-y-[10%]"
+          className="object-cover"
+          style={{
+            objectPosition: 'center center',
+          }}
           priority
         />
       </div>
