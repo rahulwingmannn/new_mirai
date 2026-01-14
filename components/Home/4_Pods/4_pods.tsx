@@ -1,8 +1,6 @@
 'use client';
-
 import React, { useEffect, useRef, useState, memo, useCallback } from 'react';
 import Image from 'next/image';
-import BlurText from '../BlurText';
 
 interface AnimatedElementProps {
   delay?: number;
@@ -85,15 +83,10 @@ const MiraiPodsIntro: React.FC = memo(() => {
               Perfected for your Well-being
             </h2>
           </AnimatedElement>
-
           <AnimatedElement delay={150} className="max-w-200 mx-auto">
-            <BlurText
-              text={BLUR_TEXT_CONTENT}
-              delay={300}
-              animateBy="words"
-              direction="top"
-              className="block text-[#6b6b6b] text-base lg:text-lg leading-relaxed"
-            />
+            <p className="text-[#6b6b6b] text-base lg:text-lg leading-relaxed">
+              {BLUR_TEXT_CONTENT}
+            </p>
           </AnimatedElement>
         </div>
       </div>
