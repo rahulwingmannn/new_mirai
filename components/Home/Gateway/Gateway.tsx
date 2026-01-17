@@ -567,7 +567,7 @@ export function RevealZoom({
           </div>
         </div>
 
-        <div ref={pointer3Ref} className="absolute" style={{ zIndex: 20, top: '203%', right: '40%', willChange: 'transform' }}>
+        <div ref={pointer3Ref} className="absolute" style={{ zIndex: 20, top: '203%', right: '38%', willChange: 'transform' }}>
           <div ref={pointer3InnerRef} className="opacity-0 scale-90 origin-center">
             <Hotspot 
               title="Clubhouse" 
