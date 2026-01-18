@@ -158,6 +158,7 @@ interface ZoomRevealProps {
   buildingZoomScale?: number;
   windowZoomScale?: number;
   windowMoveDistance?: number;
+  windowInitialOffset?: number;
 }
 
 export function RevealZoom({
@@ -168,6 +169,7 @@ export function RevealZoom({
   buildingZoomScale = 16,
   windowZoomScale = 2.5,
   windowMoveDistance = 1,
+  windowInitialOffset = 0.15,  // Start window image slightly lower
 }: ZoomRevealProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -202,9 +204,9 @@ export function RevealZoom({
   // Smooth animation state with interpolation
   const animState = useRef({
     targetScale: 1,
-    targetPanY: 0,
+    targetPanY: windowInitialOffset,  // Start with initial offset
     currentScale: 1,
-    currentPanY: 0,
+    currentPanY: windowInitialOffset,
     lastScale: -1,
     lastPanY: -1,
   });
@@ -303,7 +305,7 @@ export function RevealZoom({
     const state = animState.current;
     
     // Smooth interpolation - lerp towards target
-    const lerpFactor = 0.12; // Lower = smoother but slower
+    const lerpFactor = 0.12;
     state.currentScale = lerp(state.currentScale, state.targetScale, lerpFactor);
     state.currentPanY = lerp(state.currentPanY, state.targetPanY, lerpFactor);
 
@@ -312,7 +314,6 @@ export function RevealZoom({
       Math.abs(state.currentScale - state.lastScale) < 0.0001 && 
       Math.abs(state.currentPanY - state.lastPanY) < 0.0001
     ) {
-      // Check if we need to continue rendering
       if (
         Math.abs(state.currentScale - state.targetScale) > 0.0001 ||
         Math.abs(state.currentPanY - state.targetPanY) > 0.0001
@@ -350,7 +351,6 @@ export function RevealZoom({
 
     ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight, drawX, drawY, drawWidth, drawHeight);
 
-    // Continue smooth rendering if needed
     if (
       Math.abs(state.currentScale - state.targetScale) > 0.0001 ||
       Math.abs(state.currentPanY - state.targetPanY) > 0.0001
@@ -393,7 +393,6 @@ export function RevealZoom({
       canvasCtxRef.current = ctx;
     }
     
-    // Reset canvas dimensions for drawing calculations
     canvas.width = rect.width;
     canvas.height = rect.height;
     
@@ -443,7 +442,7 @@ export function RevealZoom({
   }, []);
 
   // ============================================
-  // ANIMATION TIMELINE (Buttery Smooth)
+  // ANIMATION TIMELINE
   // ============================================
   useEffect(() => {
     if (typeof window === 'undefined' || !allImagesLoaded || !isReady) return;
@@ -458,17 +457,17 @@ export function RevealZoom({
       scrollTriggerRef.current = null;
     }
 
-    // Reset animation state
+    // Reset animation state with initial offset
     animState.current = {
       targetScale: 1,
-      targetPanY: 0,
+      targetPanY: windowInitialOffset,
       currentScale: 1,
-      currentPanY: 0,
+      currentPanY: windowInitialOffset,
       lastScale: -1,
       lastPanY: -1,
     };
 
-    // Initial States with smooth defaults
+    // Initial States
     gsap.set(shapeRef.current, { opacity: 1, force3D: true });
     gsap.set(buildingRef.current, { scale: 1, opacity: 1, force3D: true, z: 0.01 }); 
     gsap.set(textRef.current, { opacity: 0, y: 60, force3D: true });
@@ -483,14 +482,14 @@ export function RevealZoom({
     const tl = gsap.timeline({ 
       paused: true, 
       defaults: { 
-        ease: "none",  // Let scrub handle the easing
+        ease: "none",
         force3D: true,
       } 
     });
     timelineRef.current = tl;
 
-    // Proxy object for smooth canvas updates
-    const canvasProxy = { scale: 1, panY: 0 };
+    // Proxy object for smooth canvas updates - start with initial offset
+    const canvasProxy = { scale: 1, panY: windowInitialOffset };
 
     // --- PHASE 1: BUILDING ZOOM (0 - 2.5) ---
     tl.to(shapeRef.current, { opacity: 0, duration: 0.6 }, 0);
@@ -516,7 +515,7 @@ export function RevealZoom({
 
     // --- PHASE 4: PAN & HOTSPOTS (3.5 - 11) ---
     tl.to(canvasProxy, {
-      panY: windowMoveDistance,
+      panY: windowInitialOffset + windowMoveDistance,  // Add to initial offset
       duration: 7.5,
       onUpdate: () => {
         updateCanvasTarget(canvasProxy.scale, canvasProxy.panY);
@@ -545,13 +544,14 @@ export function RevealZoom({
           const transformStyle = `translate3d(0, ${-panOffset}px, 0)`;
           
           if (pointer1Ref.current) pointer1Ref.current.style.transform = transformStyle;
+          if (pointer2Ref.current) pointer2Ref.current.style.transform = transformStyle;
           if (pointer3Ref.current) pointer3Ref.current.style.transform = transformStyle;
           if (pointer4Ref.current) pointer4Ref.current.style.transform = transformStyle;
         }
       },
     }, 3.5);
 
-    // Hotspot reveal helper with smoother easing
+    // Hotspot reveal helper
     const revealHotspot = (ref: React.RefObject<HTMLDivElement | null>, time: number) => {
       tl.to(ref.current, { 
         opacity: 1, 
@@ -567,42 +567,41 @@ export function RevealZoom({
       }, time + 1.8);
     };
 
-    // Hotspot 1: appears at 4
+    // Hotspot 1 (SkyPods): appears at 4
     revealHotspot(pointer1InnerRef, 4);
     
-    // Hotspot 2: appears at 5, stays longer
+    // Hotspot 2 (Residencies): appears at 4.8 - right after SkyPods
     tl.to(pointer2InnerRef.current, { 
       opacity: 1, 
       scale: 1, 
       duration: 0.7, 
       ease: "power2.out" 
-    }, 5);
+    }, 4.8);
     tl.to(pointer2InnerRef.current, { 
       opacity: 0, 
       scale: 0.95, 
       duration: 0.5, 
       ease: "power2.in" 
-    }, 8);
+    }, 7.5);
     
-    // Hotspot 3: appears at 8.5
-    revealHotspot(pointer3InnerRef, 8.5);
+    // Hotspot 3 (Clubhouse): appears at 8
+    revealHotspot(pointer3InnerRef, 8);
     
-    // Hotspot 4: appears at 10
-    revealHotspot(pointer4InnerRef, 10);
+    // Hotspot 4 (Podium): appears at 9.5
+    revealHotspot(pointer4InnerRef, 9.5);
 
-    // Create ScrollTrigger with maximum smoothness
+    // Create ScrollTrigger
     const stTimer = setTimeout(() => {
       scrollTriggerRef.current = ScrollTrigger.create({
         trigger: wrapperRef.current,
         start: "top top",
         end: scrollDistance,
         pin: true,
-        scrub: 3,  // Higher = smoother catch-up
-        anticipatePin: 1,  // Prevents jank when pinning
-        fastScrollEnd: true,  // Smoother end
+        scrub: 3,
+        anticipatePin: 1,
+        fastScrollEnd: true,
         onUpdate: (self) => {
           if (!isLockedRef.current && timelineRef.current) {
-            // Use GSAP's smooth progress update
             gsap.to(timelineRef.current, {
               progress: self.progress,
               duration: 0.3,
@@ -631,7 +630,7 @@ export function RevealZoom({
         cancelAnimationFrame(smoothRenderRef.current);
       }
     };
-  }, [allImagesLoaded, isReady, buildingZoomScale, windowZoomScale, windowMoveDistance, scrollDistance, updateCanvasTarget]);
+  }, [allImagesLoaded, isReady, buildingZoomScale, windowZoomScale, windowMoveDistance, windowInitialOffset, scrollDistance, updateCanvasTarget]);
 
   // Show loading state until ready
   if (!isReady) {
@@ -660,21 +659,21 @@ export function RevealZoom({
         }}
       >
         
-        {/* Shape Overlay */}
+        {/* Shape Overlay - FULL SCREEN */}
         <img
           ref={shapeRef}
           src={resolvedShapeSrc}
           alt=""
           decoding="async"
           loading="eager"
-          className="absolute top-0 left-1/2 w-full max-w-[100vw] -translate-x-1/2 pointer-events-none"
+          className="absolute inset-0 w-full h-full pointer-events-none"
           style={{ 
             zIndex: 100, 
-            height: 'auto', 
-            objectFit: 'contain', 
+            objectFit: 'cover',
+            objectPosition: 'center',
             willChange: 'opacity', 
             backfaceVisibility: 'hidden',
-            transform: 'translate3d(-50%,0,0)',
+            transform: 'translate3d(0,0,0)',
           }}
         />
         
@@ -716,7 +715,7 @@ export function RevealZoom({
           className="absolute" 
           style={{ 
             zIndex: 20, 
-            top: '30%', 
+            top: '35%',  // Adjusted position
             right: '40%', 
             willChange: 'transform',
             backfaceVisibility: 'hidden',
