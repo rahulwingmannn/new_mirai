@@ -359,7 +359,7 @@ export function RevealZoom({
   }, [allImagesLoaded, setupCanvas]);
 
   // ============================================
-  // ANIMATION TIMELINE (Near-instant transition)
+  // ANIMATION TIMELINE (Instant transition - overlapping)
   // ============================================
   useEffect(() => {
     if (typeof window === 'undefined' || !allImagesLoaded || !isReady) return;
@@ -408,19 +408,19 @@ export function RevealZoom({
       force3D: true
     }, 0);
 
-    // --- PHASE 2: TRANSITION (5.5 - 5.55) - INSTANT ---
-    tl.to(buildingRef.current, { opacity: 0, duration: 0.05, ease: "none" }, 5.5);
-    tl.to(textRef.current, { opacity: 0, duration: 0.05, ease: "none" }, 5.5);
+    // --- PHASE 2: TRANSITION - Starts slightly before building zoom ends (overlapping) ---
+    tl.to(buildingRef.current, { opacity: 0, duration: 0.01, ease: "none" }, 5.49);
+    tl.to(textRef.current, { opacity: 0, duration: 0.01, ease: "none" }, 5.49);
 
-    // --- PHASE 3: WINDOW ZOOM (5.55 - 6.55) ---
+    // --- PHASE 3: WINDOW ZOOM (5.5 - 6.5) - Starts immediately ---
     tl.to(animState.current, {
       scale: windowZoomScale,
       duration: 1.0,
       ease: "power1.inOut",
       onUpdate: scheduleCanvasDraw,
-    }, 5.55);
+    }, 5.5);
 
-    // --- PHASE 4: PAN & HOTSPOTS (6.55 - 14.05) ---
+    // --- PHASE 4: PAN & HOTSPOTS (6.5 - 14) ---
     tl.to(animState.current, {
       panY: windowMoveDistance,
       duration: 7.5,
@@ -456,7 +456,7 @@ export function RevealZoom({
           if (pointer4Ref.current) pointer4Ref.current.style.transform = transformStyle;
         }
       },
-    }, 6.55);
+    }, 6.5);
 
     // Hotspot reveal helper
     const revealHotspot = (ref: React.RefObject<HTMLDivElement | null>, time: number) => {
@@ -464,18 +464,18 @@ export function RevealZoom({
       tl.to(ref.current, { opacity: 0, scale: 0.95, duration: 0.5, ease: "power1.in" }, time + 1.8);
     };
 
-    // Hotspot 1: appears at 7.05
-    revealHotspot(pointer1InnerRef, 7.05);
+    // Hotspot 1: appears at 7
+    revealHotspot(pointer1InnerRef, 7);
     
-    // Hotspot 2: appears at 8.05, stays longer
-    tl.to(pointer2InnerRef.current, { opacity: 1, scale: 1, duration: 0.7, ease: "back.out(1.4)" }, 8.05);
-    tl.to(pointer2InnerRef.current, { opacity: 0, scale: 0.95, duration: 0.5, ease: "power1.in" }, 11.05);
+    // Hotspot 2: appears at 8, stays longer
+    tl.to(pointer2InnerRef.current, { opacity: 1, scale: 1, duration: 0.7, ease: "back.out(1.4)" }, 8);
+    tl.to(pointer2InnerRef.current, { opacity: 0, scale: 0.95, duration: 0.5, ease: "power1.in" }, 11);
     
-    // Hotspot 3: appears at 11.55
-    revealHotspot(pointer3InnerRef, 11.55);
+    // Hotspot 3: appears at 11.5
+    revealHotspot(pointer3InnerRef, 11.5);
     
-    // Hotspot 4: appears at 13.05
-    revealHotspot(pointer4InnerRef, 13.05);
+    // Hotspot 4: appears at 13
+    revealHotspot(pointer4InnerRef, 13);
 
     // Create ScrollTrigger after a small delay to ensure DOM is ready
     const stTimer = setTimeout(() => {
