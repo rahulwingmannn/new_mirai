@@ -285,18 +285,18 @@ const EraSeasons: React.FC = () => {
         }
 
         .scrollbar-thin::-webkit-scrollbar {
-          width: 6px;
+          width: 2px !important;
         }
         .scrollbar-track-white\/10::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.1);
-          border-radius: 3px;
+          background: rgba(255, 255, 255, 0.1) !important;
+          border-radius: 1px !important;
         }
         .scrollbar-thumb-\[rgba\(212\,165\,116\,0\.5\)\]::-webkit-scrollbar-thumb {
-          background: rgba(212, 165, 116, 0.5);
-          border-radius: 3px;
+          background: rgba(212, 165, 116, 0.6) !important;
+          border-radius: 1px !important;
         }
         .hover\:scrollbar-thumb-\[rgba\(212\,165\,116\,0\.7\)\]::-webkit-scrollbar-thumb:hover {
-          background: rgba(212, 165, 116, 0.7);
+          background: rgba(212, 165, 116, 0.9) !important;
         }
         
         .scale-98 {
