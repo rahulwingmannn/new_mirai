@@ -121,3 +121,34 @@ h3,h4,h5,h6{
 	-webkit-font-smoothing: antialiased;
 	unicode-bidi: isolate;
 }
+
+/* ========== SCROLLBAR STYLES ========== */
+
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #78252f transparent;
+}
+
+/* Chrome, Edge, Safari (Webkit) */
+::-webkit-scrollbar {
+    width: 1px !important;
+    height: 1px !important;
+    background: transparent !important;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent !important;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #78252f !important;
+    border-radius: 0 !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #a3323f !important;
+}
+
+/* ========== END SCROLLBAR STYLES ========== */
+
