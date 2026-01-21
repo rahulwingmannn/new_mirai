@@ -13,7 +13,7 @@ import InteractiveMap from './Interative_Map/Interative_Map'
 import ContactForm from './Contact_us/Contact_us'
 import Footer from './Footer/Footer'
 // Updated import - use the responsive version
-import SixthElementResponsive from './Sixth_Element/SixthElementResponsive'
+import SixthElementResponsive from './Sixth_Element/Sixthelementresponsive'
 
 // Critical images to preload
 const CRITICAL_IMAGES = [
