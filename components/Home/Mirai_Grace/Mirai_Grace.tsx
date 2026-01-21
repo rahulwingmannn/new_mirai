@@ -5,7 +5,7 @@ const Mirai_Grace = () => {
     <div className="bg-white text-black w-full flex justify-center items-center h-screen overflow-hidden">
       <video
         src="/highlight.mp4"
-        className="block min-h-full min-w-full object-cover translate-y-12"
+        className="block min-h-full min-w-full object-cover translate-y-11"
         autoPlay
         loop
         muted
