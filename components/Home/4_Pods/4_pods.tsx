@@ -73,7 +73,7 @@ const BLUR_TEXT_CONTENT = "At 720 Ft, the elements rise and shape themselves int
 
 const MiraiPodsIntro: React.FC = memo(() => {
   return (
-    <section className="relative -mt-16 lg:-mt-32 py-16 lg:py-32 bg-white overflow-hidden z-20">
+    <section className="relative -mt-12 lg:-mt-24 py-16 lg:py-32 bg-white overflow-hidden z-20">
       <div className="container max-w-275 mx-auto px-4 lg:px-6 relative z-10">
         <div className="text-center lg:px-20">
           <AnimatedElement delay={0} className="mb-6 pt-3">
