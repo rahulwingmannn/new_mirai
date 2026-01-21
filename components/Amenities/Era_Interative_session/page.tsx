@@ -200,7 +200,7 @@ const EraSeasons: React.FC = () => {
           }`}
           style={{ 
             backgroundImage: `url(${currentBgImage})`,
-            backgroundSize: 'cover',
+            backgroundSize: 'contain',
             backgroundPosition: 'center center',
             backgroundRepeat: 'no-repeat'
           }}
