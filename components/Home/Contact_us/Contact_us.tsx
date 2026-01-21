@@ -1,151 +1,188 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import Image from 'next/image';
-const dayViewPath = '/images/day_view.png';
+import React, { useEffect, useState } from 'react'
+import VideoPreloader from './Preloader/Preloader'
+import Hero from './Hero/Hero'
+import { RevealZoom } from './Gateway/Gateway' 
+import Mirai_Grace from './Mirai_Grace/Mirai_Grace'
+import MiraiPodsIntro from './4_Pods/4_pods'
+import MiraiPodsSlider from './Mirai_Pods_Slider/Pods_Slider'
+import ClubhouseIntro from './4_Level_Clubhouse/4_Level_Clubhouse'
+import MiraiClubhouse from './ClubeHouse_Img_controller/ClubeHouse_Controller'
+import InteractiveMap from './Interative_Map/Interative_Map'
+import ContactForm from './Contact_us/Contact_us'
+import Footer from './Footer/Footer'
+import SixthElement from './Sixth_Element/Sixth_element'
 
-export default function ContactForm() {
-  const [bgError, setBgError] = useState(false);
-  const [acceptTerms, setAcceptTerms] = useState(false);
-  const [shouldShow, setShouldShow] = useState(false);
+// Critical images to preload
+const CRITICAL_IMAGES = [
+  '/images/logo_1.png',
+  '/images/sixth_ment.png',
+  '/images/gateway/reveal.png',
+  '/images/gateway/mirai.png',
+  '/images/gateway/shape-two.png',
+];
 
+const Home = () => {
+  const [isPreloaderComplete, setIsPreloaderComplete] = useState(false);
+  const [hasCheckedSession, setHasCheckedSession] = useState(false);
+  const [isPageReady, setIsPageReady] = useState(false);
+  const [assetsLoaded, setAssetsLoaded] = useState(false);
+
+  // Check session and preload critical assets
   useEffect(() => {
-    // Load Migra font from Fontshare
-    const link = document.createElement('link');
-    link.href = 'https://api.fontshare.com/v2/css?f[]=migra@400,500,600,700&display=swap';
-    link.rel = 'stylesheet';
-    document.head.appendChild(link);
+    const hasSeenPreloader = sessionStorage.getItem('preloaderShown');
+    
+    if (hasSeenPreloader) {
+      setIsPreloaderComplete(true);
+    }
+    setHasCheckedSession(true);
 
-    const img = new window.Image();
-    img.onerror = () => {
-      setBgError(true);
-    };
-    img.src = dayViewPath;
+    // Preload critical images
+    let loadedCount = 0;
+    const totalImages = CRITICAL_IMAGES.length;
 
-    // Only show ContactForm when scrolled past 80% of the page
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const windowHeight = window.innerHeight;
-      const docHeight = document.documentElement.scrollHeight;
-      const maxScroll = docHeight - windowHeight;
-      
-      // Calculate scroll percentage (0 to 1)
-      const scrollPercent = maxScroll > 0 ? scrollY / maxScroll : 0;
-      
-      // Only show when scrolled past 80% of the page
-      setShouldShow(scrollPercent > 0.8);
+    const checkAllLoaded = () => {
+      loadedCount++;
+      if (loadedCount >= totalImages) {
+        setAssetsLoaded(true);
+      }
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
+    CRITICAL_IMAGES.forEach((src) => {
+      const img = new Image();
+      img.onload = checkAllLoaded;
+      img.onerror = checkAllLoaded; // Continue even if image fails
+      img.src = src;
+    });
 
-    return () => {
-      img.onerror = null;
-      document.head.removeChild(link);
-      window.removeEventListener('scroll', handleScroll);
-    };
+    // Fallback - if images take too long, proceed anyway after 3 seconds
+    const fallbackTimer = setTimeout(() => {
+      setAssetsLoaded(true);
+    }, 3000);
+
+    return () => clearTimeout(fallbackTimer);
   }, []);
 
-  // Don't render at all if not scrolled far enough
-  if (!shouldShow) {
-    return null;
+  // Disable scrolling until page is ready
+  useEffect(() => {
+    if (!isPreloaderComplete || !assetsLoaded) {
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+      return;
+    }
+
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+
+    const enableScroll = () => {
+      // Wait for window load + small delay
+      setTimeout(() => {
+        document.body.style.overflow = '';
+        document.documentElement.style.overflow = '';
+        setIsPageReady(true);
+      }, 500);
+    };
+
+    if (document.readyState === 'complete') {
+      enableScroll();
+    } else {
+      window.addEventListener('load', enableScroll);
+      return () => window.removeEventListener('load', enableScroll);
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+    };
+  }, [isPreloaderComplete, assetsLoaded]);
+
+  const handlePreloaderComplete = () => {
+    sessionStorage.setItem('preloaderShown', 'true');
+    setIsPreloaderComplete(true);
+  };
+
+  // Wait until session is checked
+  if (!hasCheckedSession) {
+    return <div className="w-full h-screen bg-black" />;
   }
 
-  const formContent = (
-    <div 
-      className="w-auto rounded-2xl p-8 md:p-10 border border-white/30"
-      style={{ 
-        maxWidth: '400px',
-        background: 'rgba(255, 255, 255, 0.25)',
-        backdropFilter: 'blur(16px)',
-        WebkitBackdropFilter: 'blur(16px)',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.4)',
-        fontFamily: '"Migra", Georgia, serif'
-      }}
-    >
-      <h2 
-        className="text-2xl mb-8 text-gray-900 tracking-[0.3em] uppercase"
-        style={{ fontFamily: '"Migra", Georgia, serif', fontWeight: 400 }}
-      >
-        Contact Us
-      </h2>
-      <div className="space-y-6">
-        <input 
-          placeholder="Name" 
-          className="w-full px-0 py-3 border-b border-gray-400/50 outline-none bg-transparent transition-colors placeholder:text-[#8B4A5E] placeholder:opacity-100 text-gray-800 focus:border-[#8B4A5E]"
-          style={{ fontFamily: '"Migra", Georgia, serif', fontStyle: 'italic' }}
-        />
-        <input 
-          placeholder="Email" 
-          type="email"
-          className="w-full px-0 py-3 border-b border-gray-400/50 outline-none bg-transparent transition-colors placeholder:text-[#8B4A5E] placeholder:opacity-100 text-gray-800 focus:border-[#8B4A5E]"
-          style={{ fontFamily: '"Migra", Georgia, serif', fontStyle: 'italic' }}
-        />
-        <input 
-          placeholder="Number" 
-          type="tel"
-          className="w-full px-0 py-3 border-b border-gray-400/50 outline-none bg-transparent transition-colors placeholder:text-[#8B4A5E] placeholder:opacity-100 text-gray-800 focus:border-[#8B4A5E]"
-          style={{ fontFamily: '"Migra", Georgia, serif', fontStyle: 'italic' }}
-        />
-        <label className="flex items-center gap-3 cursor-pointer pt-2">
-          <input 
-            type="checkbox"
-            checked={acceptTerms}
-            onChange={(e) => setAcceptTerms(e.target.checked)}
-            className="w-4 h-4 border border-gray-400 rounded-none accent-[#6B2C3E] cursor-pointer"
-          />
-          <span 
-            className="text-sm text-gray-700"
-            style={{ fontFamily: '"Migra", Georgia, serif', fontStyle: 'italic' }}
-          >
-            I accept the terms and conditions
-          </span>
-        </label>
-        <button 
-          className="w-full py-4 rounded-lg font-medium tracking-wider transition-all mt-4 hover:opacity-90"
-          style={{ 
-            fontFamily: '"Migra", Georgia, serif',
-            backgroundColor: '#6B2C3E',
-            color: 'white',
-            letterSpacing: '0.15em'
-          }}
-        >
-          Submit Form
-        </button>
-      </div>
-    </div>
-  );
+  // Show preloader if not seen
+  if (!isPreloaderComplete) {
+    return <VideoPreloader onComplete={handlePreloaderComplete} />;
+  }
+
+  // Wait for assets to load
+  if (!assetsLoaded) {
+    return <div className="w-full h-screen bg-black" />;
+  }
 
   return (
-    <section
-      id="contact-section"
-      className="fixed inset-0 w-full h-screen flex items-center justify-start overflow-hidden"
-      style={{ zIndex: 1 }}
-    >
-      {/* Background Image */}
-      <div className="absolute inset-0">
-        {!bgError && (
-          <Image
-            src={dayViewPath}
-            alt="Day view"
-            fill
-            priority
-            unoptimized
-            className="object-cover object-center"
-          />
-        )}
-        {/* Fallback gradient if image fails */}
-        {bgError && (
-          <div className="absolute inset-0 bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100" />
-        )}
-      </div>
-      
-      {/* Form content */}
-      <div className="relative z-10 h-full pl-6 lg:pl-12">
-        <div className="flex items-center justify-start h-full">
-          {formContent}
+    <>
+      {/* Hero is fixed position with video - z-index 2 */}
+      <Hero />
+
+      {/* ContactForm is fixed - z-index 5, revealed when scrolling past content */}
+      <ContactForm />
+
+      {/* Main scrollable content */}
+      <div className="relative w-full overflow-x-hidden">
+        {/* Spacer for Hero section */}
+        <div className="h-screen" aria-hidden="true" />
+
+        {/* Content sections - z-index 10, scrolls over Hero and ContactForm */}
+        {/* pointer-events-none on wrapper, pointer-events-auto on children */}
+        <div
+          className="relative pointer-events-none"
+          style={{
+            zIndex: 10,
+            opacity: isPageReady ? 1 : 0,
+            transition: 'opacity 0.5s ease'
+          }}
+        >
+          {/* SixthElement - transparent background, shows Hero video behind */}
+          <div className="pointer-events-auto">
+            <SixthElement />
+          </div>
+
+          {/* RevealZoom - negative margin to overlap any gap from SixthElement */}
+          <section
+            aria-label="Reveal zoom"
+            className="relative bg-black pointer-events-auto"
+            style={{
+              isolation: 'isolate',
+              marginTop: '-2px'
+            }}
+          >
+            <RevealZoom />
+          </section>
+
+          <section
+            aria-label="Scroll video"
+            className="relative bg-black pointer-events-auto"
+          >
+            <Mirai_Grace />
+          </section>
+
+          <div className="relative bg-black pointer-events-auto">
+            <MiraiPodsIntro />
+            <MiraiPodsSlider />
+            <ClubhouseIntro />
+            <MiraiClubhouse />
+            <InteractiveMap />
+          </div>
+
+          {/* Spacer to reveal fixed ContactForm behind - no pointer-events-auto so clicks pass through */}
+          <div className="h-screen" aria-hidden="true" />
+
+          {/* Footer scrolls over ContactForm */}
+          <div className="pointer-events-auto">
+            <Footer />
+          </div>
         </div>
       </div>
-    </section>
-  );
+    </>
+  )
 }
+
+export default Home
