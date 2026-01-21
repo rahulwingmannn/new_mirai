@@ -135,7 +135,7 @@ export default function MiraiHomesPage() {
 
           <image
             className="sky"
-            xlinkHref="https://azure-baboon-302476.hostingersite.com//mirai_/media/footer_img.png"
+            xlinkHref="https://azure-baboon-302476.hostingersite.com//mirai_/media/blog-four.jpg"
             width="1200"
             height="800"
             preserveAspectRatio="xMidYMid slice"
@@ -353,3 +353,4 @@ export default function MiraiHomesPage() {
     </main>
   );
 }
+
