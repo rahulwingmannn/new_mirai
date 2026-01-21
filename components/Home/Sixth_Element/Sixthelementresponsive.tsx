@@ -3,7 +3,7 @@
 import React from 'react'
 import useScreenSize from '@/hooks/useScreenSize'
 import SixthElement from './Sixth_element'
-import SixthElementMobile from './SixthElementMobile'
+import SixthElementMobile from './Sixthelementmobile'
 
 const SixthElementResponsive = () => {
   const { isMobile, isClient } = useScreenSize()
