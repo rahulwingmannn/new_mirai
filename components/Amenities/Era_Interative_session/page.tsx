@@ -195,12 +195,12 @@ const EraSeasons: React.FC = () => {
       <div className="relative w-full h-full flex items-center justify-center">
         {/* Background Image */}
         <div 
-          className={`absolute inset-0 w-full h-full bg-cover bg-center transition-all duration-700 ${
+          className={`absolute inset-0 w-full h-full transition-all duration-700 ${
             isTransitioning ? 'opacity-0 scale-105' : 'opacity-100 scale-100'
           }`}
           style={{ 
             backgroundImage: `url(${currentBgImage})`,
-            backgroundSize: '100% 100%',
+            backgroundSize: 'cover',
             backgroundPosition: 'center center',
             backgroundRepeat: 'no-repeat'
           }}
