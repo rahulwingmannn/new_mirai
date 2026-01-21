@@ -169,8 +169,8 @@ const Home = () => {
             <InteractiveMap />
           </div>
 
-          {/* Spacer to reveal fixed ContactForm behind */}
-          <div className="h-screen" aria-hidden="true" />
+          {/* Spacer to reveal fixed ContactForm behind - pointer-events-none allows clicking through */}
+          <div className="h-screen pointer-events-none" aria-hidden="true" />
           
           {/* Footer scrolls over ContactForm */}
           <Footer />
