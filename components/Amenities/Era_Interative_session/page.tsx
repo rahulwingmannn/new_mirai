@@ -259,7 +259,7 @@ const EraSeasons: React.FC = () => {
                   <img
                     src={seasonIcons[season]}
                     alt={seasons[season].title}
-                    className="w-6 h-6 object-contain transition-transform duration-300 group-hover:scale-110"
+                    className={`object-contain transition-transform duration-300 group-hover:scale-110 ${season === 'winter' ? 'w-5 h-5' : 'w-6 h-6'}`}
                     style={{ filter: 'brightness(0) invert(1)' }}
                   />
                   {/* Tooltip */}
