@@ -137,7 +137,7 @@ const EraSeasons: React.FC = () => {
     // Terra images
     'bg-terra-1': 'https://d3p1hokpi6aqc3.cloudfront.net/Aminites_Tera_Pods_1.jpg',
     'bg-terra-2': 'https://d3p1hokpi6aqc3.cloudfront.net/Aminites_Tera_Pods_2.jpg',
-    'bg-terra-3': 'https://azure-baboon-302476.hostingersite.com/mirai_latest/media/pods/terravantage.jpg',
+    'bg-terra-3': 'https://d3p1hokpi6aqc3.cloudfront.net/Aminites_Tera_Pods_3.jpg',
     // Aqua images
     'bg-aqua-1': 'https://d3p1hokpi6aqc3.cloudfront.net/AQUA%20POD_1.jpg',
     'bg-aqua-2': 'https://d3p1hokpi6aqc3.cloudfront.net/AQUA%20POD_2.jpg',
