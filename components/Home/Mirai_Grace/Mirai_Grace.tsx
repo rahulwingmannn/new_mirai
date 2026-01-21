@@ -2,10 +2,10 @@ import React from 'react'
 
 const Mirai_Grace = () => {
   return (
-    <div className="bg-white text-black w-full flex justify-center items-center h-screen">
+    <div className="bg-white text-black w-full flex justify-center items-center h-screen overflow-hidden">
       <video
         src="/highlight.mp4"
-        className="block h-full w-auto"
+        className="block min-h-full min-w-full object-cover"
         autoPlay
         loop
         muted
