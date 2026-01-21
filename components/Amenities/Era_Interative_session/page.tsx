@@ -184,9 +184,9 @@ const EraSeasons: React.FC = () => {
   }, []);
 
   const seasonIcons: { [key: string]: string } = {
-    spring: 'https://azure-baboon-302476.hostingersite.com/mirai_latest/media/terra-w.png',
-    summer: 'https://azure-baboon-302476.hostingersite.com/mirai_latest/media/aqua-w.png',
-    autumn: 'https://azure-baboon-302476.hostingersite.com/mirai_latest/media/pyro-w.png',
+    spring: 'https://azure-baboon-302476.hostingersite.com/mirai_latest/media/terra-w.jpg',
+    summer: 'https://azure-baboon-302476.hostingersite.com/mirai_latest/media/aqua-w.jpg',
+    autumn: 'https://azure-baboon-302476.hostingersite.com/mirai_latest/media/pyro-w.jpg',
     winter: 'https://azure-baboon-302476.hostingersite.com/mirai_latest/media/pods-01.png'
   };
 
@@ -260,6 +260,7 @@ const EraSeasons: React.FC = () => {
                     src={seasonIcons[season]}
                     alt={seasons[season].title}
                     className="w-6 h-6 object-contain transition-transform duration-300 group-hover:scale-110"
+                    style={{ filter: 'brightness(0) invert(1)' }}
                   />
                   {/* Tooltip */}
                   <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-black/80 text-white text-xs px-3 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none">
