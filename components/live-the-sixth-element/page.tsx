@@ -137,7 +137,7 @@ export default function MiraiHomesPage() {
             className="sky"
             xlinkHref="https://d3p1hokpi6aqc3.cloudfront.net/Aminites_Tera_Pods_3.jpg"
             width="1200"
-            height="500"
+            height="550"
             preserveAspectRatio="xMidYMid slice"
           />
 
@@ -389,6 +389,7 @@ export default function MiraiHomesPage() {
     </main>
   );
 }
+
 
 
 
