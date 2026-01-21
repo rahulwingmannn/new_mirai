@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 
 const textDropLines = [
   { text: 'Indulgence', image: 'https://d3p1hokpi6aqc3.cloudfront.net/AQUA%20POD_1.png' },
-  { text: 'That Helps', image: 'https://d3p1hokpi6aqc3.cloudfront.net/Avia_Pod_1.png' },
+  { text: 'That Helps', image: 'https://d3p1hokpi6aqc3.cloudfront.net/Avia_Pod_1.jpg' },
   { text: 'You to Stay in', image: 'https://d3p1hokpi6aqc3.cloudfront.net/Pyro_Pod_1.png' },
   { text: 'Your Element', image: 'https://d3p1hokpi6aqc3.cloudfront.net/Aminites_Tera_Pods_1.png' },
 ];
