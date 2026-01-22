@@ -331,18 +331,21 @@ export function RevealZoomMobile({
     const drawWidth = baseWidth * scale;
     const drawHeight = baseHeight * scale;
     
-    // Center the image horizontally and vertically
+    // Center horizontally
     const drawX = (displayWidth - drawWidth) / 2;
-    const drawY = (displayHeight - drawHeight) / 2;
     
-    // Apply vertical pan offset (for scrolling down the building)
+    // Start with image at top (showing top of image), pan reveals bottom
+    // Position image so top aligns with canvas top initially
     const extraHeight = drawHeight - displayHeight;
     const panOffset = extraHeight * panY;
+    
+    // drawY starts at 0 (top aligned) and moves up (negative) as panY increases
+    const drawY = -panOffset;
 
     ctx.drawImage(
       img, 
       0, 0, img.naturalWidth, img.naturalHeight, 
-      drawX, drawY - panOffset, drawWidth, drawHeight
+      drawX, drawY, drawWidth, drawHeight
     );
   }, []);
 
@@ -502,6 +505,7 @@ export function RevealZoomMobile({
           const extraHeight = drawHeight - displayHeight;
           const panOffset = extraHeight * panY;
           
+          // Match canvas positioning - image moves up as panY increases
           const transformStyle = `translate3d(0, ${-panOffset}px, 0)`;
           
           if (pointer1Ref.current) pointer1Ref.current.style.transform = transformStyle;
