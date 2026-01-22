@@ -467,75 +467,17 @@ export function RevealZoomMobile({
       ease: "power1.inOut"
     }, 2.2);
 
-    // PHASE 3: WINDOW ZOOM (2.8 - 3.8)
-    tl.to(animState.current, {
-      scale: windowZoomScale,
-      duration: 1.0,
-      ease: "sine.inOut",
-      onUpdate: scheduleCanvasDraw,
-      onReverseComplete: () => {
-        // Reset scale when fully reversed back
-        animState.current.scale = 1;
-        animState.current.panY = 0;
-        scheduleCanvasDraw();
-      }
-    }, 2.8);
-
-    // PHASE 4: PAN & HOTSPOTS (3.8 - 9.3)
-    tl.to(animState.current, {
-      panY: windowMoveDistance,
-      duration: 5.5,
-      ease: "sine.inOut",
-      onUpdate: () => {
-        scheduleCanvasDraw();
-        
-        if (canvasRef.current && imageRef.current) {
-          const canvas = canvasRef.current;
-          const img = imageRef.current;
-          const displayWidth = canvas.clientWidth;
-          const displayHeight = canvas.clientHeight;
-          const scale = animState.current.scale;
-          const panY = animState.current.panY;
-          
-          const imgAspect = img.naturalWidth / img.naturalHeight;
-          const canvasAspect = displayWidth / displayHeight;
-          
-          // Match the drawCanvas calculation
-          let baseWidth: number, baseHeight: number;
-          if (imgAspect > canvasAspect) {
-            baseHeight = displayHeight;
-            baseWidth = baseHeight * imgAspect;
-          } else {
-            baseWidth = displayWidth;
-            baseHeight = baseWidth / imgAspect;
-          }
-          
-          const drawHeight = baseHeight * scale;
-          const extraHeight = drawHeight - displayHeight;
-          
-          // Match canvas: start cropped from top, pan down
-          const topCropOffset = extraHeight * 0.3;
-          const panOffset = (extraHeight - topCropOffset) * panY;
-          
-          const transformStyle = `translate3d(0, ${-panOffset}px, 0)`;
-          
-          if (pointer1Ref.current) pointer1Ref.current.style.transform = transformStyle;
-          if (pointer3Ref.current) pointer3Ref.current.style.transform = transformStyle;
-          if (pointer4Ref.current) pointer4Ref.current.style.transform = transformStyle;
-        }
-      },
-    }, 3.8);
-
-    // Hotspot reveals for mobile
+    // PHASE 3: HOTSPOT REVEALS (2.8 - 8.0)
+    // Show hotspots one by one without zooming the window
     const revealHotspot = (ref: React.RefObject<HTMLDivElement | null>, time: number, duration: number = 2.0) => {
       tl.to(ref.current, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.2)" }, time);
-      tl.to(ref.current, { opacity: 0, scale: 0.95, duration: 0.4, ease: "power1.in" }, time + duration);
+      tl.to(ref.current, { opacity: 1, scale: 1, duration: duration }, time + 0.5); // Keep visible
     };
 
-    revealHotspot(pointer1InnerRef, 4.1, 1.8);
-    revealHotspot(pointer2InnerRef, 5.3, 2.5);
-    revealHotspot(pointer3InnerRef, 7.3, 1.8);
-    revealHotspot(pointer4InnerRef, 8.5, 1.8);
+    revealHotspot(pointer1InnerRef, 2.8, 1.5);
+    revealHotspot(pointer2InnerRef, 3.5, 1.5);
+    revealHotspot(pointer3InnerRef, 4.5, 1.5);
+    revealHotspot(pointer4InnerRef, 5.5, 1.5);
 
     // ScrollTrigger - optimized for smooth bidirectional touch scrolling
     const stTimer = setTimeout(() => {
