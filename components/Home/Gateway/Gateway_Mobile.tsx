@@ -195,8 +195,8 @@ interface ZoomRevealProps {
 }
 
 export function RevealZoomMobile({
-  buildingImage = '/images/gateway/reveal.png',
-  windowImage = '/images/gateway/mirai.png',
+  buildingImage = '/images/gateway/girlmobile.png',
+  windowImage = '/images/gateway/Buildingmobile.png',
   shapeImage = '/images/gateway/shape-two.png',
   scrollDistance = "+=500%", // Shorter scroll for mobile
   buildingZoomScale = 12, // Slightly less zoom for mobile
