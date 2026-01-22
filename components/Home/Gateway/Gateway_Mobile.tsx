@@ -11,8 +11,16 @@ if (typeof window !== 'undefined') {
 }
 
 // ============================================
-// 1. Mobile Hotspot Component
+// 1. Types & Interfaces
 // ============================================
+interface ZoomRevealProps {
+  buildingImage?: string | StaticImageData;
+  windowImage?: string | StaticImageData;
+  shapeImage?: string | StaticImageData;
+  scrollDistance?: string;
+  buildingZoomScale?: number;
+}
+
 interface HotspotProps {
   title: string;
   subtitle: string;
@@ -20,6 +28,15 @@ interface HotspotProps {
   position: 'left' | 'right' | 'center';
 }
 
+// Helper to handle Next.js StaticImageData vs String
+const getImageSrc = (img: string | StaticImageData): string => {
+  if (typeof img === 'string') return img;
+  return img.src;
+};
+
+// ============================================
+// 2. Mobile Hotspot Component
+// ============================================
 function MobileHotspot({ title, subtitle, description, position }: HotspotProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -81,7 +98,7 @@ function MobileHotspot({ title, subtitle, description, position }: HotspotProps)
 }
 
 // ============================================
-// 2. Main Mobile Zoom Component
+// 3. Main Mobile Zoom Component
 // ============================================
 export function RevealZoomMobile({
   buildingImage = '/images/gateway/girlmobile.png',
@@ -89,7 +106,7 @@ export function RevealZoomMobile({
   shapeImage = '/images/gateway/shape-two.png',
   scrollDistance = "+=400%",
   buildingZoomScale = 12,
-}) {
+}: ZoomRevealProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const buildingRef = useRef<HTMLImageElement>(null);
@@ -102,7 +119,7 @@ export function RevealZoomMobile({
   const imageRef = useRef<HTMLImageElement | null>(null);
   const [allImagesLoaded, setAllImagesLoaded] = useState(false);
 
-  // Canvas setup and drawing
+  // Canvas drawing logic
   const drawCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     const ctx = canvasCtxRef.current;
@@ -132,7 +149,8 @@ export function RevealZoomMobile({
       }
       setAllImagesLoaded(true);
     };
-    windowImg.src = typeof windowImage === 'string' ? windowImage : windowImage.src;
+    // Use the helper function here to fix the "never" error
+    windowImg.src = getImageSrc(windowImage);
   }, [windowImage, drawCanvas]);
 
   // Animation Timeline
@@ -146,14 +164,14 @@ export function RevealZoomMobile({
         end: scrollDistance,
         pin: true,
         scrub: 1,
-        onUpdate: () => drawCanvas() // Ensure canvas stays visible
+        onUpdate: () => drawCanvas()
       }
     });
 
     // Reset initial states
     gsap.set(hotspotRefs.map(r => r.current), { opacity: 0, scale: 0.5 });
 
-    // 1. Zoom and Fade Building (Explicit fromTo for reverse scroll)
+    // 1. Zoom and Fade Building
     tl.to(shapeRef.current, { opacity: 0, duration: 1 }, 0);
     tl.to(textRef.current, { opacity: 1, y: 0, duration: 1 }, 0.2);
     
@@ -163,12 +181,7 @@ export function RevealZoomMobile({
       0
     );
 
-    tl.fromTo(buildingRef.current,
-      { opacity: 1 },
-      { opacity: 0, duration: 1, ease: "power1.inOut" },
-      2.5
-    );
-
+    tl.to(buildingRef.current, { opacity: 0, duration: 1, ease: "power1.inOut" }, 2.5);
     tl.to(textRef.current, { opacity: 0, duration: 1 }, 2.5);
 
     // 2. Reveal Hotspots
@@ -184,19 +197,16 @@ export function RevealZoomMobile({
 
   return (
     <section ref={wrapperRef} className="relative w-full h-screen bg-black overflow-hidden" style={{ opacity: allImagesLoaded ? 1 : 0 }}>
-      {/* Background Layer: Window View */}
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full z-0" />
 
-      {/* Foreground Layer: Building */}
       <img
         ref={buildingRef}
-        src={typeof buildingImage === 'string' ? buildingImage : buildingImage.src}
+        src={getImageSrc(buildingImage)}
         alt="Building"
         className="absolute inset-0 w-full h-full object-cover z-10 pointer-events-none"
       />
 
-      {/* Overlays */}
-      <img ref={shapeRef} src={typeof shapeImage === 'string' ? shapeImage : shapeImage.src} className="absolute top-0 left-0 w-full z-50 pointer-events-none" alt="" />
+      <img ref={shapeRef} src={getImageSrc(shapeImage)} className="absolute top-0 left-0 w-full z-50 pointer-events-none" alt="" />
 
       <div ref={textRef} className="absolute top-1/4 left-0 w-full px-6 z-20 opacity-0 translate-y-10 text-center">
         <h2 className="text-white text-3xl uppercase font-light tracking-tighter">
@@ -204,7 +214,6 @@ export function RevealZoomMobile({
         </h2>
       </div>
 
-      {/* Hotspots - Adjusted positioning to stay on screen */}
       <div className="absolute inset-0 z-30 pointer-events-none">
         <div ref={hotspotRefs[0]} className="absolute top-[20%] right-[10%] pointer-events-auto">
           <MobileHotspot title="SkyPods" subtitle="54th Floor" position="right" description="Elevate everyday moments into something spectacular." />
