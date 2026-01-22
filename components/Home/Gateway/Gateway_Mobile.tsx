@@ -331,14 +331,15 @@ export function RevealZoomMobile({
     const drawWidth = baseWidth * scale;
     const drawHeight = baseHeight * scale;
     
-    // Center horizontally
-    const drawX = (displayWidth - drawWidth) / 2;
+    // Shift image to the right (adjust this value as needed)
+    const rightShift = displayWidth * 0.15; // 15% shift to right
+    const drawX = ((displayWidth - drawWidth) / 2) + rightShift;
     
-    // Start centered vertically, then pan to show bottom of image
+    // Start cropped from top (showing upper portion), pan down to reveal bottom
     const extraHeight = drawHeight - displayHeight;
-    const centerY = (displayHeight - drawHeight) / 2; // Centered position (negative)
-    const panOffset = (extraHeight / 2) * panY; // Pan from center towards bottom
-    const drawY = centerY - panOffset;
+    const topCropOffset = extraHeight * 0.3; // Start 30% cropped from top
+    const panOffset = (extraHeight - topCropOffset) * panY; // Pan the remaining distance
+    const drawY = -topCropOffset - panOffset;
 
     ctx.drawImage(
       img, 
@@ -502,8 +503,9 @@ export function RevealZoomMobile({
           const drawHeight = baseHeight * scale;
           const extraHeight = drawHeight - displayHeight;
           
-          // Match canvas: pan from center towards bottom
-          const panOffset = (extraHeight / 2) * panY;
+          // Match canvas: start cropped from top, pan down
+          const topCropOffset = extraHeight * 0.3;
+          const panOffset = (extraHeight - topCropOffset) * panY;
           
           const transformStyle = `translate3d(0, ${-panOffset}px, 0)`;
           
