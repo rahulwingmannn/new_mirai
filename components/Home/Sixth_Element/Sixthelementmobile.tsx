@@ -74,7 +74,7 @@ export default function SixthElementMobile() {
       style={{
         position: 'relative',
         minHeight: '100vh',
-        height: '95vh',
+        height: '88vh',
         width: '100%',
         overflow: 'hidden',
       }}
