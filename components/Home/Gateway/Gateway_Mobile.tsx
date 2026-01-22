@@ -456,8 +456,24 @@ export function RevealZoomMobile({
     }, 0);
 
     // PHASE 2: TRANSITION - smoother crossfade
-    tl.to(buildingRef.current, { opacity: 0, duration: 0.3, ease: "power1.inOut" }, 2.2);
-    tl.to(textRef.current, { opacity: 0, duration: 0.3, ease: "power1.inOut" }, 2.2);
+    tl.to(buildingRef.current, { 
+      opacity: 0, 
+      duration: 0.3, 
+      ease: "power1.inOut",
+      onReverseComplete: () => {
+        // Ensure building is visible when scrolling back up
+        gsap.set(buildingRef.current, { opacity: 1 });
+      }
+    }, 2.2);
+    tl.to(textRef.current, { 
+      opacity: 0, 
+      duration: 0.3, 
+      ease: "power1.inOut",
+      onReverseComplete: () => {
+        // Ensure text is visible when scrolling back up
+        gsap.set(textRef.current, { opacity: 1 });
+      }
+    }, 2.2);
 
     // PHASE 3: WINDOW ZOOM (2.5 - 3.5)
     tl.to(animState.current, {
