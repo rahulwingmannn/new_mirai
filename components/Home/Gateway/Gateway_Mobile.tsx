@@ -467,7 +467,7 @@ export function RevealZoomMobile({
       ease: "power1.inOut"
     }, 2.2);
 
-    // PHASE 3: WINDOW ZOOM (2.5 - 3.5)
+    // PHASE 3: WINDOW ZOOM (2.8 - 3.8)
     tl.to(animState.current, {
       scale: windowZoomScale,
       duration: 1.0,
@@ -479,9 +479,9 @@ export function RevealZoomMobile({
         animState.current.panY = 0;
         scheduleCanvasDraw();
       }
-    }, 2.5);
+    }, 2.8);
 
-    // PHASE 4: PAN & HOTSPOTS (3.5 - 9)
+    // PHASE 4: PAN & HOTSPOTS (3.8 - 9.3)
     tl.to(animState.current, {
       panY: windowMoveDistance,
       duration: 5.5,
@@ -524,7 +524,7 @@ export function RevealZoomMobile({
           if (pointer4Ref.current) pointer4Ref.current.style.transform = transformStyle;
         }
       },
-    }, 3.5);
+    }, 3.8);
 
     // Hotspot reveals for mobile
     const revealHotspot = (ref: React.RefObject<HTMLDivElement | null>, time: number, duration: number = 2.0) => {
@@ -532,10 +532,10 @@ export function RevealZoomMobile({
       tl.to(ref.current, { opacity: 0, scale: 0.95, duration: 0.4, ease: "power1.in" }, time + duration);
     };
 
-    revealHotspot(pointer1InnerRef, 3.8, 1.8);
-    revealHotspot(pointer2InnerRef, 5.0, 2.5);
-    revealHotspot(pointer3InnerRef, 7.0, 1.8);
-    revealHotspot(pointer4InnerRef, 8.2, 1.8);
+    revealHotspot(pointer1InnerRef, 4.1, 1.8);
+    revealHotspot(pointer2InnerRef, 5.3, 2.5);
+    revealHotspot(pointer3InnerRef, 7.3, 1.8);
+    revealHotspot(pointer4InnerRef, 8.5, 1.8);
 
     // ScrollTrigger - optimized for smooth bidirectional touch scrolling
     const stTimer = setTimeout(() => {
