@@ -575,24 +575,6 @@ export function RevealZoomMobile({
     >
       <div ref={containerRef} className="relative w-full h-screen overflow-hidden">
         
-        {/* Layer 0: Window Image as fallback (ensures visibility even if canvas fails) */}
-        <img
-          src={resolvedWindowSrc}
-          alt="Window Background"
-          decoding="async"
-          className="absolute w-full h-full"
-          style={{ 
-            zIndex: 0,
-            opacity: allImagesLoaded ? 1 : 0,
-            transition: 'opacity 0.3s ease',
-            objectFit: 'cover',
-            objectPosition: 'center center',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-          }}
-        />
-        
         {/* Layer 1: Window/Canvas - BACKGROUND (visible through transparent building) */}
         <canvas 
           ref={canvasRef} 
