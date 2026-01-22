@@ -455,7 +455,7 @@ export function RevealZoomMobile({
       force3D: true
     }, 0);
 
-    // PHASE 2: TRANSITION - building and text fade out, window zoom starts (2.2 - 2.8)
+    // PHASE 2: TRANSITION - building and text fade out (2.2 - 2.8)
     tl.to(buildingRef.current, { 
       opacity: 0, 
       duration: 0.6, 
@@ -466,18 +466,9 @@ export function RevealZoomMobile({
       duration: 0.6, 
       ease: "power1.inOut"
     }, 2.2);
-    
-    // Canvas zoom and pan animation
-    tl.to(animState.current, {
-      scale: windowZoomScale,
-      panY: windowMoveDistance,
-      duration: 5.2,
-      ease: "power1.inOut",
-      onUpdate: scheduleCanvasDraw
-    }, 2.8);
 
     // PHASE 3: HOTSPOT REVEALS (2.8 - 8.0)
-    // Show hotspots one by one as window zooms
+    // Show hotspots one by one without zooming the window
     const revealHotspot = (ref: React.RefObject<HTMLDivElement | null>, time: number, duration: number = 2.0) => {
       tl.to(ref.current, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.2)" }, time);
       tl.to(ref.current, { opacity: 1, scale: 1, duration: duration }, time + 0.5); // Keep visible
