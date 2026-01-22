@@ -331,8 +331,10 @@ export function RevealZoomMobile({
     const drawWidth = baseWidth * scale;
     const drawHeight = baseHeight * scale;
     
-    // Shift image to the right (adjust this value as needed)
-    const rightShift = displayWidth * 0.15; // 15% shift to right
+    // Shift image to the right only when zooming (scale > 1)
+    // The shift increases as we zoom in
+    const zoomProgress = Math.max(0, (scale - 1) / (windowZoomScale - 1));
+    const rightShift = displayWidth * 0.15 * zoomProgress; // Gradually shift right as zoom increases
     const drawX = ((displayWidth - drawWidth) / 2) + rightShift;
     
     // Start cropped from top (showing upper portion), pan down to reveal bottom
@@ -346,7 +348,7 @@ export function RevealZoomMobile({
       0, 0, img.naturalWidth, img.naturalHeight, 
       drawX, drawY, drawWidth, drawHeight
     );
-  }, []);
+  }, [windowZoomScale]);
 
   const scheduleCanvasDraw = useCallback(() => {
     // Cancel any pending frame to ensure we use latest state
