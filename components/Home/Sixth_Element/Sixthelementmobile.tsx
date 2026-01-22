@@ -119,7 +119,7 @@ export default function SixthElementMobile() {
           flexDirection: 'column',
           justifyContent: 'flex-start',
           alignItems: 'center',
-          padding: '120px 24px 40px',
+          padding: '80px 24px 40px',
           zIndex: 2,
           textAlign: 'center',
           gap: '32px',
